@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AuthenticationController;
@@ -22,9 +23,12 @@ Route::post('/register', [AuthenticationController::class,'register']);
 Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
     Route::get('/test', [AuthenticationController::class, 'test']);
 });
-//Route::middleware('auth:sanctum')->get('/test', function (Request $request) {
-//        return 'auth';
-//})->name('test');
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('department', DepartmentController::class);
+
+});
 
 
 
