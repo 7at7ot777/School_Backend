@@ -12,8 +12,14 @@ class DepartmentController extends Controller
         return Department::all();
     }
 
-    public function show(Department $department)
+    public function show($id)
     {
+        $department = Department::find($id);
+
+        if (!$department) {
+            return response()->json(['error' => 'Department not found'], 404);
+        }
+
         return $department;
     }
 
