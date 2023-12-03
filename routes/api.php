@@ -4,7 +4,7 @@ use App\Http\Controllers\DepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AuthenticationController;
-
+use App\Http\Controllers\EmployeeController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -29,6 +29,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('department', DepartmentController::class);
 
 });
+
+
+
+Route::resource('employees', EmployeeController::class);
+
 
 
 

@@ -30,6 +30,11 @@ class Employee extends Model
         return $this->hasMany(EmployeesAttendance::class);
     }
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
     public function department()
     {
         return $this->belongsTo(Department::class);

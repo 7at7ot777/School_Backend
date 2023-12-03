@@ -13,13 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-//         \App\Models\User::factory(10)->create();
+        //         \App\Models\User::factory(10)->create();
 
-         \App\Models\User::create([
-             'name' => 'Test User',
-             'email' => 'test@example.com',
-             'password' => bcrypt('123456'),
-         ]);
+        \App\Models\User::create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => bcrypt('123456'),
+        ]);
         $departmentNames = ['Financial', 'Managerial', 'Worker', 'TeachingStuff'];
 
         foreach ($departmentNames as $name) {
