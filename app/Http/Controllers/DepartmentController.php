@@ -25,7 +25,7 @@ class DepartmentController extends Controller
 
     public function store(Request $request)
     {
-         Department::create($request->all());
+        Department::create($request->all());
         return response()->json(['success' => 'Department stored successfully'], 201);
     }
 

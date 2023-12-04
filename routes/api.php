@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\RoleController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,9 +32,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('employees', EmployeeController::class);
+
+});
 
 
-Route::resource('employees', EmployeeController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('role', RoleController::class);
+
+});
+
+
+
 
 
 

@@ -14,7 +14,7 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::all();
-        return view('roles.index', compact('roles'));
+        return response()->json($roles);
     }
 
     /**
@@ -22,7 +22,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('roles.create');
+        //return view('roles.create');
     }
 
     /**
@@ -35,10 +35,9 @@ class RoleController extends Controller
             'description' => 'required',
         ]);
 
-        Role::create($request->all());
+        $role = Role::create($request->all());
 
-        return redirect()->route('roles.index')
-            ->with('success', 'Role created successfully');
+        return response()->json($role, 201);
     }
 
     /**
@@ -54,7 +53,7 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        return view('roles.edit', compact('role'));
+        return response()->json($role);
     }
 
     /**
@@ -69,8 +68,7 @@ class RoleController extends Controller
 
         $role->update($request->all());
 
-        return redirect()->route('roles.index')
-            ->with('success', 'Role updated successfully');
+        return response()->json($role);
     }
 
     /**
@@ -80,7 +78,6 @@ class RoleController extends Controller
     {
         $role->delete();
 
-        return redirect()->route('roles.index')
-            ->with('success', 'Role deleted successfully');
+        return response()->json(null, 204);
     }
 }

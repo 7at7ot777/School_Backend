@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Role;
 use App\Models\Department;
 use App\Models\Employee;
@@ -15,7 +16,7 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = Employee::with('role', 'department')->get();
-        return view('employees.index', compact('employees'));
+        return response()->json($employees);
     }
 
     /**
@@ -25,7 +26,7 @@ class EmployeeController extends Controller
     {
         $roles = Role::all();
         $departments = Department::all();
-        return view('employees.create', compact('roles', 'departments'));
+        return response()->json(['roles' => $roles, 'departments' => $departments]);
     }
 
     /**
@@ -39,10 +40,8 @@ class EmployeeController extends Controller
             'department_id' => 'required|exists:departments,id',
         ]);
 
-        Employee::create($request->all());
-
-        return redirect()->route('employees.index')
-            ->with('success', 'Employee created successfully');
+        $employee = Employee::create($request->all());
+        return response()->json($employee, 201);
     }
 
     /**
@@ -60,7 +59,7 @@ class EmployeeController extends Controller
     {
         $roles = Role::all();
         $departments = Department::all();
-        return view('employees.edit', compact('employee', 'roles', 'departments'));
+        return response()->json(['employee' => $employee, 'roles' => $roles, 'departments' => $departments]);
     }
 
     /**
@@ -72,13 +71,12 @@ class EmployeeController extends Controller
             'name' => 'required',
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
-            
+
         ]);
 
         $employee->update($request->all());
 
-        return redirect()->route('employees.index')
-            ->with('success', 'Employee updated successfully');
+        return response()->json($employee);
     }
 
     /**
@@ -88,7 +86,6 @@ class EmployeeController extends Controller
     {
         $employee->delete();
 
-        return redirect()->route('employees.index')
-            ->with('success', 'Employee deleted successfully');
+        return response()->json(null, 204);
     }
 }
