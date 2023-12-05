@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Department;
+use App\Models\Employee;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -25,5 +27,18 @@ class DatabaseSeeder extends Seeder
         foreach ($departmentNames as $name) {
             Department::create(['name' => $name]);
         }
+
+        $roleNames = ['Manager', 'Teacher', 'Worker', 'Employee'];
+        foreach ($roleNames as $name) {
+            Role::create(['name' => $name]);
+        }
+
+        Employee::create([
+            'user_id' => 1,
+            'role_id' => 1,
+            'department_id' => 1,
+            'basic_salary' => 5000
+        ]);
+
     }
 }

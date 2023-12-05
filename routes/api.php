@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('employees', EmployeeController::class);
+    Route::apiResource('employee', EmployeeController::class);
 
 });
 
