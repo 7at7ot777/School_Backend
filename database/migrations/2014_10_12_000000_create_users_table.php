@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('password');
             $table->string('email');//->unique();
-            $table->enum('user_type', ['student','parent','employee']); // تأكد من تعديل 'UserTypes' بالقيم الفعلية للـ enum
+            $table->unsignedBigInteger('role_id');
+            $table->foreign('role_id')->references('id')->on('roles');
+            //$table->enum('user_type', ['student','parent','employee']); // تأكد من تعديل 'UserTypes' بالقيم الفعلية للـ enum
             $table->softDeletes();
             $table->timestamps();
         });

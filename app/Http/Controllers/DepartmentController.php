@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
@@ -18,44 +20,111 @@ class DepartmentController extends Controller
         'name.unique' => 'The specified department name is already taken.',
         'name.max' => 'The department name field must not exceed 255 characters.',
         ];
-    public function index()
-    {
-        return Department::all();
-    }
+        public function index()
+        {
+            $departments = Department::with(['employees' => function ($query) {
+
+                $query->whereHas('role', function ($subquery) {
+                    $subquery->where('name', 'admin');
+                });
+            }])->get();
+        
+            $data = [];
+            foreach ($departments as $department) {
+                $employeesData = [];
+        
+                $admins = User::whereHas('role', function ($subquery) {
+                    $subquery->where('name', 'admin');
+                })
+                ->where('department_id', $department->id)
+                ->get();
+        
+                foreach ($department->employees as $employee) {
+                    $employeesData[] = [
+                        'employee_name' => $employee->name,
+                        'role_id' => $employee->role_id,
+                    ];
+                }
+        
+                $data[] = [
+                    'department_name' => $department->name,
+                    'admin_name' => $admins->implode('name', ', '), 
+                    'employee_count' => count($department->employees),
+                    'employees' => $employeesData,
+                ];
+            }
+        
+            return response()->json($data);
+        }
 
     public function show($id)
     {
-        $department = Department::find($id);
+        $department = Department::with(['employees' => function ($query) {
 
-        if (!$department) {
-            return response()->json(['error' => 'Department not found'], 404);
+            $query->whereHas('role', function ($subquery) {
+                $subquery->where('name', 'admin');
+            });
+        }])
+        ->findOrFail($id);
+    
+        $employeesData = [];
+
+        $admins = User::whereHas('role', function ($subquery) {
+            $subquery->where('name', 'admin');
+        })
+        ->where('department_id', $department->id)
+        ->get();
+    
+        foreach ($department->employees as $employee) {
+            $employeesData[] = [
+                'employee_name' => $employee->name,
+                'role_id' => $employee->role_id,
+            ];
         }
-
-        return $department;
+    
+        $data = [
+            'department_name' => $department->name,
+            'admin_name' => $admins->implode('name', ', '), 
+            'employee_count' => count($department->employees),
+            'employees' => $employeesData,
+        ];
+    
+        return response()->json($data);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), self::$rules , self::$errorMessages);
         if ($validator->fails()) {
-           return $validator->errors();
+            return $validator->errors();
         } else {
             Department::create($request->all());
         return response()->json(['success' => 'Department stored successfully'], 201);
         }
     }
 
-    public function update(Request $request, Department $department)
+    public function update(Request $request, Department $department, $id)
     {
-        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
-        if ($validator->fails()) {
-            return $validator->errors();
-        } else {
+    $validatedData = $request->validated();
+    $department = Department::findOrFail($id);
+    $department->update($validatedData);
+    $admins = User::whereHas('role', function ($query) {
+        $query->where('name', 'admin');
+    })
+    ->where('department_id', $department->id)
+    ->get();
 
-            $department->update($request->all());
-            return response()->json(['success' => 'Department updated successfully'], 200);
-        }
+    $data = [
+        'department_name' => $department->name,
+        'admin_name' => $admins->implode('name', ', '), 
+        'employee_count' => count($department->employees),
+        'employees' => $department->employees,
+    ];
+
+    return response()->json($data);
     }
+
+    
     public function destroy($id)
     {
         $department = Department::find($id);
