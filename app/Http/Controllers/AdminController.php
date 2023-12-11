@@ -117,7 +117,7 @@ class AdminController extends Controller
      */
     public function edit(Employee $employee)
     {
-        $roles = Role::all();
+        $roles = Employee::getRoles();
         $departments = Department::all();
         return response()->json(['employee' => $employee, 'roles' => $roles, 'departments' => $departments]);
     }
@@ -138,7 +138,7 @@ class AdminController extends Controller
 
         $employee->department_id = $request->department_id;
         $employee->basic_salary = $request->basic_salary;
-        $employee->role_id = $request->role_id;
+        $employee->role = $request->role;
         $employee->subject_id = $request->subject_id;
 
         $employee->save();

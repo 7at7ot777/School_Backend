@@ -33,9 +33,9 @@ class Employee extends Model
         return $this->hasMany(EmployeesAttendance::class);
     }
 
-    public function role()
+    public static function getRoles()
     {
-        return $this->belongsTo(Role::class);
+        return ['admin','superAdmin','employee'];
     }
 
     public function department()
