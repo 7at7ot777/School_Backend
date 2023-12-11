@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,11 +46,28 @@ class AuthenticationController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $token = Auth::user()->createToken('auth_token')->plainTextToken;
             $user = Auth::user();
-//            if($user->)
-            return response()->json(['token' => $token,], 200);
+            if($user->user_type == 'employee')
+            {
+                $employee = $this->getEmployee($user->id);
+                if (!$employee)
+                {
+                    return response()->json(['error' => 'Employee not found'], 404);
+                }
+                return response()->json(['token'=>$token, 'employee'=>$employee],200);
+            }elseif($user->user_type == 'student'){
+                return response()->json('student');
+            }else{
+                return response()->json('parent');
+
+            }
         }
 
         return response()->json(['error' => 'Invalid credentials'], 401);
+    }
+
+    private function getEmployee($userId){
+        $employee = Employee::with('user','department')->find($userId);
+        return $employee;
     }
 
     public function test()
