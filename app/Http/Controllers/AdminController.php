@@ -17,7 +17,7 @@ class AdminController extends Controller
         'password' => 'required|string|max:255',
         'email' => 'required|email|unique:users|max:255',
         //========================================================
-        'role_id' => 'required|exists:roles,id',
+//        'role_id' => 'required|exists:roles,id',
         'department_id' => 'required|exists:departments,id',
         'basic_salary' => 'required|integer',
         'subject_id' => 'nullable|exists:subjects,id'
@@ -46,8 +46,8 @@ class AdminController extends Controller
         //================================================================================
 
 
-        'role_id.required' => 'The role ID field is required.',
-        'role_id.exists' => 'The selected role does not exist.',
+//        'role_id.required' => 'The role ID field is required.',
+//        'role_id.exists' => 'The selected role does not exist.',
 
         'department_id.required' => 'The department ID field is required.',
         'department_id.exists' => 'The selected department does not exist.',
@@ -89,7 +89,7 @@ class AdminController extends Controller
                 'user_id' => $user->id,
                 'department_id' => $request->department_id,
                 'basic_salary' => $request->basic_salary,
-                'role_id' => $request->role_id,
+                'role' =>'admin',
                 'subject_id' => $request->subject_id,
 
             ]);

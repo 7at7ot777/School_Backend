@@ -23,73 +23,26 @@ class DepartmentController extends Controller
         public function index()
         {
             $departments = Department::with(['employees' => function ($query) {
-
-                $query->whereHas('role', function ($subquery) {
-                    $subquery->where('name', 'admin');
-                });
+                $query->where('role','admin');
             }])->get();
+
         
-            $data = [];
-            foreach ($departments as $department) {
-                $employeesData = [];
-        
-                $admins = User::whereHas('role', function ($subquery) {
-                    $subquery->where('name', 'admin');
-                })
-                ->where('department_id', $department->id)
-                ->get();
-        
-                foreach ($department->employees as $employee) {
-                    $employeesData[] = [
-                        'employee_name' => $employee->name,
-                        'role_id' => $employee->role_id,
-                    ];
-                }
-        
-                $data[] = [
-                    'department_name' => $department->name,
-                    'admin_name' => $admins->implode('name', ', '), 
-                    'employee_count' => count($department->employees),
-                    'employees' => $employeesData,
-                ];
-            }
-        
-            return response()->json($data);
+            return response()->json($departments);
         }
 
     public function show($id)
     {
         $department = Department::with(['employees' => function ($query) {
+            $query->where('role','admin');
+        }])->findOrFail($id);
+    
+       if (!$department)
+       {
+           return response()->json(['error' => 'Department not found'], 404);
 
-            $query->whereHas('role', function ($subquery) {
-                $subquery->where('name', 'admin');
-            });
-        }])
-        ->findOrFail($id);
+       }
     
-        $employeesData = [];
-
-        $admins = User::whereHas('role', function ($subquery) {
-            $subquery->where('name', 'admin');
-        })
-        ->where('department_id', $department->id)
-        ->get();
-    
-        foreach ($department->employees as $employee) {
-            $employeesData[] = [
-                'employee_name' => $employee->name,
-                'role_id' => $employee->role_id,
-            ];
-        }
-    
-        $data = [
-            'department_name' => $department->name,
-            'admin_name' => $admins->implode('name', ', '), 
-            'employee_count' => count($department->employees),
-            'employees' => $employeesData,
-        ];
-    
-        return response()->json($data);
+        return response()->json($department,200);
     }
 
     public function store(Request $request)
