@@ -43,8 +43,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+use App\Http\Controllers\SuperAdminDashboardController;
 
-
+Route::prefix('superAdmin')->group(function () {
+    Route::get('dashboard', [SuperAdminDashboardController::class, 'dashboard']);
+});
 
 
 
