@@ -4,7 +4,7 @@ use App\Http\Controllers\DepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleController;
 
 /*
@@ -33,8 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('employee', EmployeeController::class);
-    Route::get('/getAllAdmins',[EmployeeController::class,'getAllAdmins']);
+    Route::apiResource('admin', AdminController::class);
 
 });
 

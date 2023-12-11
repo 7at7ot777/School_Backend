@@ -8,7 +8,7 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class EmployeeController extends Controller
+class AdminController extends Controller
 {
     public static $rules = [
         'name' => 'required|string|max:255',
