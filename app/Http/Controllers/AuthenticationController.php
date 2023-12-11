@@ -44,7 +44,9 @@ class AuthenticationController extends Controller
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $token = Auth::user()->createToken('auth_token')->plainTextToken;
-            return response()->json(['token' => $token], 200);
+            $user = Auth::user();
+//            if($user->)
+            return response()->json(['token' => $token,], 200);
         }
 
         return response()->json(['error' => 'Invalid credentials'], 401);

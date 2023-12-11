@@ -59,7 +59,7 @@ class EmployeeController extends Controller
 
     ];
 
-    public function getAllAdmins()
+    public function index()
     {
         $employees = Employee::with('department:id,name', 'user:id,email,name,phone')->where('role','admin')->get();
         return response()->json($employees);
