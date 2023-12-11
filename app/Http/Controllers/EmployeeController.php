@@ -59,9 +59,9 @@ class EmployeeController extends Controller
 
     ];
 
-    public function index()
+    public function getAllAdmins()
     {
-        $employees = Employee::with('role:id,name', 'department:id,name', 'user:id,email,name,phone')->get();
+        $employees = Employee::with('department:id,name', 'user:id,email,name,phone')->where('role','admin')->get();
         return response()->json($employees);
     }
 
@@ -175,4 +175,5 @@ class EmployeeController extends Controller
 
         return response()->json(['success' => 'Employee deleted successfully'], 200);
     }
+
 }

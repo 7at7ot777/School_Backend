@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => bcrypt('123456'),
+            'user_type' => 'employee'
         ]);
         $departmentNames = ['Financial', 'Managerial', 'Worker', 'TeachingStuff'];
 
@@ -35,7 +36,8 @@ class DatabaseSeeder extends Seeder
 
         Employee::create([
             'user_id' => 1,
-            'role_id' => 1,
+//            'role_id' => 1,
+            'role' => 'admin',
             'department_id' => 1,
             'basic_salary' => 5000
         ]);

@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('employee', EmployeeController::class);
+    Route::get('/getAllAdmins',[EmployeeController::class,'getAllAdmins']);
 
 });
 
