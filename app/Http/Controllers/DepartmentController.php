@@ -43,6 +43,7 @@ class DepartmentController extends Controller
                     'numOfAdmins' => $department->employees->where('role', 'admin')->count(),
                     'numOfEmps' => $department->employees->count(),
                     'mainAdmin' => [
+                        'id' => $mainAdmin ? $mainAdmin->user->id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
                         'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
                     ],

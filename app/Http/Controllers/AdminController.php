@@ -211,16 +211,17 @@ class AdminController extends Controller
     public function destroy($id)
     {
         $employee = \App\Models\Employee::find($id);
-        $user = \App\Models\Employee::find($employee->user_id);
+        $user = \App\Models\User::find($employee->user_id);
 
         if (!$employee) {
             return response()->json(['error' => 'Employee not found'], 404);
         }
 
-        $employee->delete();
-        $user->delete();
 
-        return response()->json(['success' => 'Employee deleted successfully'], 200);
+        $user->status = false;
+        $user->save();
+
+        return response()->json(['success' => 'Account Disabled successfully'], 200);
     }
 
 }
