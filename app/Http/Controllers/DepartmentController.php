@@ -23,17 +23,38 @@ class DepartmentController extends Controller
         public function index()
         {
             $departments = Department::with(['employees' => function ($query) {
-                $query->where('role','admin');
+                $query->with('user')->where('role','admin')->oldest();
             }])->get();
 
+            $formatedData = $this->formatData($departments);
         
-            return response()->json($departments);
+            return response()->json($formatedData);
+        }
+        public function formatData($data)
+        {
+            $resultArray = [];
+
+            foreach ($data as $department) {
+                $mainAdmin = $department->employees->first();
+
+                $resultArray[] = [
+                    'id' => $department->id,
+                    'name' => $department->name,
+                    'numOfAdmins' => $department->employees->where('role', 'admin')->count(),
+                    'numOfEmps' => $department->employees->count(),
+                    'mainAdmin' => [
+                        'name' => $mainAdmin ? $mainAdmin->user->name : '',
+                        'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
+                    ],
+                ];
+            }
+            return $resultArray;
         }
 
     public function show($id)
     {
         $department = Department::with(['employees' => function ($query) {
-            $query->where('role','admin');
+            $query->with('user')->where('role','admin');
         }])->findOrFail($id);
     
        if (!$department)
@@ -41,8 +62,9 @@ class DepartmentController extends Controller
            return response()->json(['error' => 'Department not found'], 404);
 
        }
+       $formatedData = $this->formatData([$department]);
     
-        return response()->json($department,200);
+        return response()->json($formatedData[0],200);
     }
 
     public function store(Request $request)
