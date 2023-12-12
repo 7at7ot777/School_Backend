@@ -61,8 +61,34 @@ class AdminController extends Controller
 
     public function index()
     {
-        $employees = Employee::with('department:id,name', 'user:id,email,name,phone')->where('role','admin')->get();
-        return response()->json($employees);
+        $admins = Employee::with('department:id,name', 'user:id,email,name,phone')->where('role','admin')->get();
+        $formattedAdmins = $this->formatAdmins($admins);
+        return response()->json($formattedAdmins);
+    }
+
+    private function formatAdmins($data){
+
+        $resultArray = [];
+
+        foreach ($data as $item) {
+            $resultArray[] = [
+                'id' => $item['id'],
+                'avatarUrl' => '', // Add logic to get the avatar URL if available
+                'name' => $item['user']['name'],
+                'email' => $item['user']['email'],
+                'status' => true, // You can customize the status based on your criteria
+                'department' => [
+                    'id' => $item['department']['id'],
+                    'name' => $item['department']['name'],
+                ],
+                'role' => [
+                    'id' => $item['user']['id'], // You may need to adjust this based on your actual role structure
+                    'name' => $item['role'],
+                ],
+            ];
+        }
+        return $resultArray;
+
     }
 
 
