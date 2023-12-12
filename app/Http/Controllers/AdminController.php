@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -61,13 +62,14 @@ class AdminController extends Controller
 
     public function index()
     {
-        $admins = Employee::with('department:id,name', 'user:id,email,name,phone')->where('role','admin')->get();
+        $admins = Employee::with('department:id,name', 'user:id,email,name,phone')->where('role', 'admin')->get();
 //        return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins);
     }
 
-    private function formatAdmins($data){
+    private function formatAdmins($data)
+    {
 
         $resultArray = [];
 
@@ -95,7 +97,9 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), self::$rules , self::$errorMessages);
+        $newRequest = $this->addDumpData($request,0);
+//        return $request;
+        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
         if ($validator->fails()) {
             return $validator->errors();
         } else {
@@ -103,8 +107,8 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'address' => $request->address,
-                'password' => bcrypt($request->password),
-                'email' => $request->email,
+                'password' => bcrypt($newRequest->password),
+                'email' => $request['email'],
                 'user_type' => 'employee'
             ]);
             $user->save();
@@ -112,8 +116,8 @@ class AdminController extends Controller
             $employee = Employee::create([
                 'user_id' => $user->id,
                 'department_id' => $request->department_id,
-                'basic_salary' => $request->basic_salary,
-                'role' =>'admin',
+                'basic_salary' => $newRequest->basic_salary,
+                'role' => 'admin',
                 'subject_id' => $request->subject_id,
 
             ]);
@@ -127,7 +131,7 @@ class AdminController extends Controller
      */
     public function show($id)
     {
-        $admin = Employee::with( 'department:id,name', 'user:id,email,name,phone')->where('id', $id)->first();
+        $admin = Employee::with('department:id,name', 'user:id,email,name,phone')->where('id', $id)->first();
 //        return $admin;
 
         if (!$admin) {
@@ -151,37 +155,54 @@ class AdminController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Employee $employee)
+    public function update(Request $request, $id)
     {
+         $this->addDumpData($request, 1);
         $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-
+        $employee = Employee::find($id);
         if (!$employee) {
             return response()->json(['error' => 'Employee not found'], 404);
         }
-
         $employee->department_id = $request->department_id;
         $employee->basic_salary = $request->basic_salary;
-        $employee->role = $request->role;
+        $employee->role = 'admin';
         $employee->subject_id = $request->subject_id;
 
         $employee->save();
 
-        $user = $employee->user;
-
+        $user = User::find($employee->user_id);
         // Update user information if needed
         $user->name = $request->name;
         $user->phone = $request->phone;
         $user->address = $request->address;
-        $user->password = bcrypt($request->password);
-        $user->email = $request->email;
-
+        $user->status = $request->status;
+//        $user->password = bcrypt($request->password);
+        if (strcmp($user->email ,$request->email) != 0) {
+            $user->email = $request['swappedEmail'];
+            }
         $user->save();
 
         return response()->json(['success' => 'Employee updated successfully'], 200);
 
+    }
+    private function addDumpData($request,$updateFlag = 0)
+    {
+        /* This function is used to add dump data to the request to escape from validation */
+        if($request['password'] == null){
+
+        $request['password'] = '123456789';
+        }
+
+        if($request['email'] != null && $updateFlag == 1){
+            $request['swappedEmail'] = $request['email'];
+            $request['email'] = random_int(0,99999999).'@gmail.com';
+
+        }
+        $request['basic_salary'] = 0;
+        return $request;
     }
 
     /**
