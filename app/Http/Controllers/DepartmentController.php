@@ -78,26 +78,22 @@ class DepartmentController extends Controller
         }
     }
 
-    public function update(Request $request, Department $department, $id)
+    public function update(Request $request, $id)
     {
-    $validatedData = $request->validated();
-    $department = Department::findOrFail($id);
-    $department->update($validatedData);
-    $admins = User::whereHas('role', function ($query) {
-        $query->where('name', 'admin');
-    })
-    ->where('department_id', $department->id)
-    ->get();
+        $validator = Validator::make($request->all(), self::$rules , self::$errorMessages);
+        if ($validator->fails()) {
+            return $validator->errors();
+        } else {
+            $department = Department::findOrFail($id);
+            if (!$department) {
+                return response()->json(['error' => 'Department not found'], 404);
+            }
+            $department->name = $request->name;
+            $department->save();
 
-    $data = [
-        'department_name' => $department->name,
-        'admin_name' => $admins->implode('name', ', '), 
-        'employee_count' => count($department->employees),
-        'employees' => $department->employees,
-    ];
+            return response()->json(['success' => 'Department updated successfully'], 200);
+        }}
 
-    return response()->json($data);
-    }
 
     
     public function destroy($id)
