@@ -62,6 +62,7 @@ class AdminController extends Controller
     public function index()
     {
         $admins = Employee::with('department:id,name', 'user:id,email,name,phone')->where('role','admin')->get();
+//        return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins);
     }
@@ -81,10 +82,7 @@ class AdminController extends Controller
                     'id' => $item['department']['id'],
                     'name' => $item['department']['name'],
                 ],
-                'role' => [
-                    'id' => $item['user']['id'], // You may need to adjust this based on your actual role structure
-                    'name' => $item['role'],
-                ],
+
             ];
         }
         return $resultArray;
@@ -129,13 +127,15 @@ class AdminController extends Controller
      */
     public function show($id)
     {
-        $employee = Employee::with('role:id,name', 'department:id,name', 'user:id,email,name,phone')->where('id', $id)->first();
+        $admin = Employee::with( 'department:id,name', 'user:id,email,name,phone')->where('id', $id)->first();
+//        return $admin;
 
-        if (!$employee) {
+        if (!$admin) {
             return response()->json(['error' => 'Employee not found'], 404);
         }
+        $formattedAdmin = $this->formatAdmins([$admin]);
 
-        return $employee;
+        return response()->json($formattedAdmin[0], 201);
     }
 
     /**
