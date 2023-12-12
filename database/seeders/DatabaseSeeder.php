@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         Employee::create([
             'user_id' => 1,
 //            'role_id' => 1,
-            'role' => 'admin',
+            'role' => 'superAdmin',
             'department_id' => 1,
             'basic_salary' => 5000
         ]);
