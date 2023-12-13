@@ -23,7 +23,7 @@ class DepartmentController extends Controller
         public function index()
         {
             $departments = Department::with(['employees' => function ($query) {
-                $query->with('user')->where('role','admin')->oldest();
+                $query->with('user')->where('role','admin')->orWhere('role','employee')->oldest();
             }])->get();
 
             $formatedData = $this->formatData($departments);
@@ -41,7 +41,7 @@ class DepartmentController extends Controller
                     'id' => $department->id,
                     'name' => $department->name,
                     'numOfAdmins' => $department->employees->where('role', 'admin')->count(),
-                    'numOfEmps' => $department->employees->count(),
+                    'numOfEmps' => $department->employees->where('role','employee')->count(),
                     'mainAdmin' => [
                         'id' => $mainAdmin ? $mainAdmin->user->id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
