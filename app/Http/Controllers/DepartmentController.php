@@ -99,12 +99,14 @@ class DepartmentController extends Controller
     
     public function destroy($id)
     {
-        $department = Department::find($id);
-
+      $department =  Department::with(['employees' => function ($query) {
+            $query->where('role', 'admin');
+        }])->where('id',$id)->first();
         if (!$department) {
             return response()->json(['error' => 'Department not found'], 404);
         }
-
+//        $department->employees->department_id = null ;
+//        $department->save();
         $department->delete();
 
         return response()->json(['success' => 'Department deleted successfully'], 200);

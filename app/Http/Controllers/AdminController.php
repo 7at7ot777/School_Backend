@@ -62,7 +62,11 @@ class AdminController extends Controller
 
     public function index()
     {
-        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('role', 'admin')->get();
+        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')->
+        where('role', 'admin')->whereHas('user',function ($query){
+            $query->where('status',1);
+        })->get();
+
 //        return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins);
@@ -74,15 +78,20 @@ class AdminController extends Controller
         $resultArray = [];
 
         foreach ($data as $item) {
+
+                    $dept_id =null;
+                    $dept_name = null;
+
             $resultArray[] = [
                 'id' => $item['id'],
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
                 'status' => $item['user']['status'] == 0 ? false : true, // You can customize the status based on your criteria
+
                 'department' => [
-                    'id' => $item['department']['id'],
-                    'name' => $item['department']['name'],
+                    'id' => $item['department']['id'] ?? $dept_id,
+                    'name' => $item['department']['name'] ?? $dept_name,
                 ],
 
             ];

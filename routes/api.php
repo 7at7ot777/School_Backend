@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\DepartmentController;
+use App\Models\Department;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AuthenticationController;
@@ -49,7 +51,12 @@ Route::prefix('superAdmin')->group(function () {
     Route::get('dashboard', [SuperAdminDashboardController::class, 'dashboard']);
 });
 
+Route::get('/test',function (){
+   return   $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('role', 'admin')->whereHas('user',function ($query){
+       $query->where('status',1);
+   })->get();
 
+});
 
 
 
