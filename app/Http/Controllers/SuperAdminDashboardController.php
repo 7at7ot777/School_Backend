@@ -19,12 +19,18 @@ class SuperAdminDashboardController extends Controller
             $departmentId = $department->id;
             $departmentName = $department->name;
 
-            $adminCount = Employee::where('department_id', $departmentId)
-                ->where('role', 'admin')
+            // Count admins where status is true
+            $countAdmins = Employee::where('role', 'admin')
+                ->whereHas('user', function ($query) {
+                    $query->where('status', true);
+                })
                 ->count();
 
-            $employeeCount = Employee::where('department_id', $departmentId)
-                ->where('role', 'employee')
+// Count employees where status is true
+            $countEmployees = Employee::where('role', 'employee')
+                ->whereHas('user', function ($query) {
+                    $query->where('status', true);
+                })
                 ->count();
 
             $mainAdmin = Employee::where('department_id', $departmentId)
@@ -34,8 +40,8 @@ class SuperAdminDashboardController extends Controller
             $departmentData[] = [
                 'id' => $departmentId,
                 'name' => $departmentName,
-                'numOfAdmins' => $adminCount,
-                'numOfEmps' => $employeeCount,
+                'numOfAdmins' => $countAdmins,
+                'numOfEmps' => $countEmployees,
                 'mainAdmin' => [
                     'name' => $mainAdmin ? $mainAdmin->name : null,
                     'avatarUrl' => $mainAdmin ? $mainAdmin->avatar_url : null,
