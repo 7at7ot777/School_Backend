@@ -53,7 +53,8 @@ class RoleController extends Controller
             return response()->json(['error' => 'Role not found'], 404);
         }
 
-        return $role;
+        return response()->json($role);
+;
 
     }
 

@@ -69,7 +69,7 @@ class AdminController extends Controller
 
 //        return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
-        return response()->json($formattedAdmins);
+        return response()->json($formattedAdmins,200);
     }
 
     private function formatAdmins($data)
@@ -148,7 +148,7 @@ class AdminController extends Controller
         }
         $formattedAdmin = $this->formatAdmins([$admin]);
 
-        return response()->json($formattedAdmin[0], 201);
+        return response()->json($formattedAdmin[0], 200);
     }
 
     /**
@@ -158,7 +158,7 @@ class AdminController extends Controller
     {
         $roles = Employee::getRoles();
         $departments = Department::all();
-        return response()->json(['employee' => $employee, 'roles' => $roles, 'departments' => $departments]);
+        return response()->json(['employee' => $employee, 'roles' => $roles, 'departments' => $departments],200);
     }
 
     /**

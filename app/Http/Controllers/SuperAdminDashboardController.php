@@ -49,6 +49,6 @@ class SuperAdminDashboardController extends Controller
             ];
         }
 
-        return response()->json(['data' => $departmentData]);
+        return response()->json(['data' => $departmentData],200);
     }
 }
