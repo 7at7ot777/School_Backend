@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->integer('grade_level');
+            $table->boolean('is_active')->default(true);
             $table->unsignedBigInteger('parent_id_one');
             $table->unsignedBigInteger('parent_id_two');
             $table->unsignedBigInteger('class_id');

@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('departments', function (Blueprint $table) {
                 $table->id();
                 $table->string('name'); // You can customize this field based on your needs
-                $table->timestamps();
+
+            $table->timestamps();
             });
     }
 

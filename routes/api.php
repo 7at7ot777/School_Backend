@@ -51,7 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
 use App\Http\Controllers\SuperAdminDashboardController;
 
 Route::prefix('superAdmin')->group(function () {
-    Route::get('/dashboard', [SuperAdminDashboardController::class, 'dashboard']);
+    Route::get('/departmentDashboard', [SuperAdminDashboardController::class, 'departmentDashboard']);
+    Route::get('/mainDashboard', [SuperAdminDashboardController::class, 'superAdminDashboard']);
 });
 
 Route::get('/test',function (){

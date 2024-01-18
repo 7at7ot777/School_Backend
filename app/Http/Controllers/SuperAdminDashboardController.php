@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\Employee;
 
 class SuperAdminDashboardController extends Controller
 {
-    public function dashboard()
+    public function departmentDashboard()
     {
         $departments = Department::all();
 
@@ -49,6 +50,28 @@ class SuperAdminDashboardController extends Controller
             ];
         }
 
-        return response()->json(['data' => $departmentData],200);
+        return response()->json(['data' => $departmentData], 200);
+    }
+
+    public function superAdminDashboard()
+    {
+        $numOfStudents = Student::where('is_active', true)->count();
+        $numOfEmployees = Employee::where('is_active', true)->where('role', 'employee')->count();
+        $numOfAdmins = Employee::where('is_active', true)->where('role', 'admin')->count();
+        $numOfDepartments = Department::count();
+
+        $result = [
+            'numOfAdmins' => $numOfAdmins,
+            'numOfEmployees' => $numOfEmployees,
+            'numOfStudents' => $numOfStudents,
+            'numOfDepartments' => $numOfDepartments,
+        ];
+
+        // Convert the array to an object if needed
+        $resultObject = (object)$result;
+
+        return response()->json(['data' => $resultObject], 200);
+
+
     }
 }

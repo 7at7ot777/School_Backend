@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->boolean('is_active')->default(true);
+
 //            $table->unsignedBigInteger('role_id');
 //            $table->foreign('role_id')->references('id')->on('roles');
             $table->enum('role', ['admin','superAdmin','employee']); //roles have not been determined yet
