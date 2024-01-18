@@ -9,7 +9,8 @@ class Subject extends Model
 {
     use HasFactory;
 
-
+    protected $fillable = ['name', 'description'];
+    
     public function student(){
         return $this->belongsToMany(Student::class);
     }

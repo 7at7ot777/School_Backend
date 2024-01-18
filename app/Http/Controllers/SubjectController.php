@@ -13,7 +13,8 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        //
+        $subjects = Subject::all();
+        return response()->json($subjects, 200);
     }
 
     /**
@@ -29,7 +30,14 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $subject = Subject::create($request->all());
+
+        return response()->json($subject, 201);
     }
 
     /**
@@ -37,7 +45,7 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
-        //
+        return response()->json($subject, 200);
     }
 
     /**
@@ -53,7 +61,14 @@ class SubjectController extends Controller
      */
     public function update(Request $request, Subject $subject)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $subject->update($request->all());
+
+        return response()->json($subject, 200);
     }
 
     /**
@@ -61,6 +76,8 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
-        //
+        $subject->delete();
+
+        return response()->json(null, 204);
     }
 }
