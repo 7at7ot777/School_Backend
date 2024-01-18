@@ -23,6 +23,8 @@ use App\Http\Controllers\RoleController;
 
 Route::post('/login', [AuthenticationController::class,'login'])->name('login');
 Route::post('/register', [AuthenticationController::class,'register']);
+Route::post('/logout', [AuthenticationController::class,'logout'])->middleware('auth:sanctum');
+
 
 //Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
 //    Route::get('/test', [AuthenticationController::class, 'test']);
@@ -30,6 +32,7 @@ Route::post('/register', [AuthenticationController::class,'register']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
     Route::apiResource('department', DepartmentController::class);
 
 });
