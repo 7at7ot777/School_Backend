@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -61,5 +62,20 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function resetPassword($userId)
+    {
+        // Retrieve the user by ID
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        // Reset the user's password to 'welcome'
+        $user->password = bcrypt('welcome');
+        $user->save();
+
+        return response()->json(['message' => 'Password reset successfully']);
     }
 }
