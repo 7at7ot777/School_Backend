@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-            $table->string('password')->default('welcome');
+            $table->string('password')->default(bcrypt('welcome'));
             $table->boolean('status')->default(true);
             $table->string('email');//->unique();
             $table->string('avatar_url')->default('');//->unique();
