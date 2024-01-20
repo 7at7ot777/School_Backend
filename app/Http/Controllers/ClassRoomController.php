@@ -8,59 +8,51 @@ use Illuminate\Http\Request;
 
 class ClassRoomController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $classRooms = ClassRoom::all();
+        return response()->json($classRooms, 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(ClassRoom $classRoom)
     {
-        //
+        return response()->json($classRoom, 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ClassRoom $classRoom)
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $classRoom = ClassRoom::create($request->all());
+
+        return response()->json($classRoom, 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, ClassRoom $classRoom)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $classRoom->update($request->all());
+
+        return response()->json($classRoom, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ClassRoom $classRoom)
     {
-        //
+        $classRoom->delete();
+
+        return response()->json(null, 204);
+    }
+
+    public function students(ClassRoom $classRoom)
+    {
+        $students = $classRoom->students;
+        return response()->json($students, 200);
     }
 }
