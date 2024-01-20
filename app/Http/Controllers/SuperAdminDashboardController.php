@@ -10,6 +10,7 @@ use App\Models\Employee;
 
 class SuperAdminDashboardController extends Controller
 {
+    //Dead function
     public function departmentDashboard()
     {
         $departments = Department::all();
