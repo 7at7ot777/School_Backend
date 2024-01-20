@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
+    Route::get('teachers/{id}', [TeacherController::class, 'show']);
 });
 use App\Http\Controllers\SuperAdminDashboardController;
 

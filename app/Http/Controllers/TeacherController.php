@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Employee;
-use App\Models\Teacher;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -96,32 +96,17 @@ class TeacherController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Teacher $teacher)
-    {
-        return response()->json(['teacher' => $teacher], 200);
+    public function show($id)
+{
+    $teacher = Employee::with('subject')
+        ->where('role', 'teacher')
+        ->where('id', $id)
+        ->first();
+
+    if (!$teacher) {
+        return response()->json(['error' => 'Teacher not found'], 404);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Teacher $teacher)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Teacher $teacher)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Teacher $teacher)
-    {
-        //
-    }
+    return response()->json(['data' => $teacher], 200);
+}
 }
