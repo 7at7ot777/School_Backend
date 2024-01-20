@@ -116,7 +116,7 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'address' => $request->address,
-                'password' => bcrypt($newRequest->password),
+                'password' => bcrypt('welcome') ,//bcrypt($newRequest->password),
                 'email' => $request['email'],
                 'user_type' => 'employee'
             ]);

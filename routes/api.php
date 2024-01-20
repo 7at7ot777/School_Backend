@@ -39,7 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('resetPassword',[\App\Http\Controllers\UserController::class,'resetPassword']);
+    Route::get('resetPassword/{id}',[\App\Http\Controllers\UserController::class,'resetPassword']);
+    Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
 
 });
 

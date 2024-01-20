@@ -18,7 +18,7 @@ return new class extends Migration
 
 //            $table->unsignedBigInteger('role_id');
 //            $table->foreign('role_id')->references('id')->on('roles');
-            $table->enum('role', ['admin','superAdmin','employee']); //roles have not been determined yet
+            $table->enum('role', ['admin','superAdmin','employee','teacher']); //roles have not been determined yet
             $table->unsignedBigInteger('department_id')->nullable(); // Foreign key
             $table->integer('basic_salary');
             $table->unsignedBigInteger('subject_id')->nullable()->default(null);
