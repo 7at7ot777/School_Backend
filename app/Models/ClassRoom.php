@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ClassRoom extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['class_number', 'grade'];
 
     public function students()
     {

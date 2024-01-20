@@ -9,6 +9,9 @@ use \App\Http\Controllers\AuthenticationController;
 use \App\Http\Controllers\SubjectController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ClassRoomController;
+use App\Http\Controllers\TeacherController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -50,13 +53,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('subject', SubjectController::class);
 });
 
-use App\Http\Controllers\ClassRoomController;
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('class-rooms', ClassRoomController::class);
     Route::get('class-rooms/{classRoom}/students', [ClassRoomController::class, 'students'])->name('class-rooms.students');
 });
 
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('teachers', TeacherController::class);
+});
 use App\Http\Controllers\SuperAdminDashboardController;
 
 Route::prefix('superAdmin')->group(function () {

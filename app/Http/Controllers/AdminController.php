@@ -44,12 +44,6 @@ class AdminController extends Controller
         'email.unique' => 'The specified email address is already taken.',
         'email.max' => 'The email field must not exceed 255 characters.',
 
-        //================================================================================
-
-
-//        'role_id.required' => 'The role ID field is required.',
-//        'role_id.exists' => 'The selected role does not exist.',
-
         'department_id.required' => 'The department ID field is required.',
         'department_id.exists' => 'The selected department does not exist.',
 
