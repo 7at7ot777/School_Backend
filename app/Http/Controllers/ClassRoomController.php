@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ClassRoom;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ClassRoomController extends Controller
 {
@@ -21,38 +22,43 @@ class ClassRoomController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+        $validator = Validator::make($request->all(), [
+            'class_number' => 'required|integer',
+            'grade' => 'required|integer',
         ]);
 
-        $classRoom = ClassRoom::create($request->all());
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
 
-        return response()->json($classRoom, 201);
+        $classRoom = ClassRoom::create($request->all());
+        return response()->json(['success' => 'ClassRoom stored successfully', 'data' => $classRoom], 201);
     }
 
     public function update(Request $request, ClassRoom $classRoom)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+        $validator = Validator::make($request->all(), [
+            'class_number' => 'required|integer',
+            'grade' => 'required|integer',
         ]);
 
-        $classRoom->update($request->all());
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
 
-        return response()->json($classRoom, 200);
+        $classRoom->update($request->all());
+        return response()->json(['success' => 'ClassRoom updated successfully', 'data' => $classRoom], 200);
     }
 
     public function destroy(ClassRoom $classRoom)
     {
         $classRoom->delete();
-
-        return response()->json(null, 204);
+        return response()->json(['success' => 'ClassRoom deleted successfully'], 200);
     }
 
     public function students(ClassRoom $classRoom)
-    {
-        $students = $classRoom->students;
-        return response()->json($students, 200);
-    }
+{
+    $students = $classRoom->students;
+    return response()->json($students, 200);
+}
 }

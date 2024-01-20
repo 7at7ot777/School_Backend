@@ -31,8 +31,7 @@ class SubjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'subject_name' => 'required|string|max:255',
         ]);
 
         $subject = Subject::create($request->all());
@@ -62,13 +61,12 @@ class SubjectController extends Controller
     public function update(Request $request, Subject $subject)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'subject_name' => 'required|string|max:255',
         ]);
-
         $subject->update($request->all());
 
-        return response()->json($subject, 200);
+        return response()->json(['message' => 'Updated successfully', 'data' => $subject], 200);
+
     }
 
     /**
