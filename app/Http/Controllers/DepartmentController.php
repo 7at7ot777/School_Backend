@@ -124,4 +124,12 @@ class DepartmentController extends Controller
         return response()->json(['error', 'No File Provided'],401);
 
     }
+
+    public function downloadImportTemplate()
+    {
+        $filePath = public_path("storage/uploads/importDepartment.xlsx");
+//        return $filePath;
+
+        return response()->download($filePath, 'importDepartment.xlsx');
+    }
 }
