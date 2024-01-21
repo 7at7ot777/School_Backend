@@ -6,6 +6,7 @@ use App\Models\Department;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class ImportDepartment implements ToModel,WithHeadingRow
 {
@@ -17,7 +18,7 @@ class ImportDepartment implements ToModel,WithHeadingRow
     public function model(array $row)
     {
         return new Department([
-            'name' => 'department_name'
+            'name' => $row['department_name']
         ]);
     }
 }

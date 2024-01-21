@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportDepartment;
 use App\Models\Department;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DepartmentController extends Controller
 {
@@ -110,5 +112,16 @@ class DepartmentController extends Controller
         $department->delete();
 
         return response()->json(['success' => 'Department deleted successfully'], 200);
+    }
+
+    public function importDepartment(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            Excel::import(new ImportDepartment(), $file);
+            return response()->json(['success', 'File imported successfully']);
+        }
+        return response()->json(['error', 'No File Provided'],401);
+
     }
 }
