@@ -52,7 +52,7 @@ class TeacherController extends Controller
 
     public function index()
     {
-        $teachers = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('role', 'teacher')->whereHas('user', function ($query) {
+        $teachers = Employee::with('taughtSubjects:id,subject_name', 'user:id,email,name,phone,status')->where('role', 'teacher')->whereHas('user', function ($query) {
             $query->where('status', 1);
         })->get();
         $formattedTeachers = $this->formatTeachers($teachers);
@@ -63,17 +63,16 @@ class TeacherController extends Controller
     {
         $resultArray = [];
         foreach ($data as $item) {
-            $dept_id = null;
-            $dept_name = null;
+
             $resultArray[] = [
                 'id' => $item['id'],
                 'avatarUrl' => '', 
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
                 'status' => $item['user']['status'] == 0 ? false : true, 
-                'department' => [
-                    'id' => $item['department']['id'] ?? $dept_id,
-                    'name' => $item['department']['name'] ?? $dept_name,
+                'subject' => [
+                    'id' => $item['taught_subjects']['id'] ?? null,
+                    'name' => $item['taught_subjects']['name'] ?? null,
                 ],
             ];
         }
@@ -98,7 +97,7 @@ class TeacherController extends Controller
      */
     public function show($id)
 {
-    $teacher = Employee::with('subject')
+    $teacher = Employee::with('taughtSubjects')
         ->where('role', 'teacher')
         ->where('id', $id)
         ->first();

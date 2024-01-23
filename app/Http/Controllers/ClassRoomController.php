@@ -32,7 +32,7 @@ class ClassRoomController extends Controller
         }
 
         $classRoom = ClassRoom::create($request->all());
-        return response()->json(['success' => 'ClassRoom stored successfully', 'data' => $classRoom], 201);
+        return response()->json(['success' => 'ClassRoom stored successfully'], 201);
     }
 
     public function update(Request $request, ClassRoom $classRoom)
@@ -47,7 +47,7 @@ class ClassRoomController extends Controller
         }
 
         $classRoom->update($request->all());
-        return response()->json(['success' => 'ClassRoom updated successfully', 'data' => $classRoom], 200);
+        return response()->json(['success' => 'ClassRoom updated successfully'], 200);
     }
 
     public function destroy(ClassRoom $classRoom)

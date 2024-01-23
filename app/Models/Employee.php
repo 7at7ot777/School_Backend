@@ -22,10 +22,16 @@ class Employee extends Model
         return $this->hasMany(Salary::class);
     }
 
-    //Get Subjects taught By this Employee(Teachers)
-    public function subjects()
+//    //Get Subjects taught By this Employee(Teachers)
+//    public function subject()
+//    {
+//        return $this->hasOne(Subject::class);
+//    }
+
+
+    public function taughtSubjects()
     {
-        return $this->hasMany(Subject::class);
+        return $this->belongsToMany(Subject::class, 'subject_teacher', 'teacher_id', 'subject_id');
     }
 
     public function attendance()
