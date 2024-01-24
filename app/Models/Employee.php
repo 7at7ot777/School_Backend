@@ -10,7 +10,7 @@ class Employee extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $fillable = ['user_id','department_id','role_id','basic_salary','subject_id'];
+    protected $fillable = ['user_id','department_id','role','basic_salary','subject_id'];
 
     public function user()
     {

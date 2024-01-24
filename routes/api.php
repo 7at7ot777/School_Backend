@@ -69,10 +69,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('class-rooms/{classRoom}/students', [ClassRoomController::class, 'students'])->name('class-rooms.students');
 });
 
-Route::prefix('admin')->group(function () {
-    Route::post('/create-employee', [AdminController::class, 'storeEmployee']);
+// Route::prefix('admin')->group(function () {
+//     Route::post('/create-employee', [AdminController::class, 'storeEmployee']);
+// });
 
-});
+use App\Http\Controllers\AdminManageEmployeeController;
+Route::post('/employees/create', [AdminManageEmployeeController::class, 'createEmployee']);
+Route::get('/admin/manage-employee/read/{id}', [AdminManageEmployeeController::class, 'readEmployee']);
+Route::put('/admin/manage-employee/update/{id}', [AdminManageEmployeeController::class, 'updateEmployee']);
+Route::delete('/admin/manage-employee/delete/{id}', [AdminManageEmployeeController::class, 'deleteEmployee']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
