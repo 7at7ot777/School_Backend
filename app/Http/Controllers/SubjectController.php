@@ -36,7 +36,7 @@ class SubjectController extends Controller
 
         $subject = Subject::create($request->all());
 
-        return response()->json(['message' => 'Updated successfully'], 201);
+        return response()->json(['message' => 'stored successfully'], 201);
     }
 
     /**

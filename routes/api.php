@@ -69,6 +69,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('class-rooms/{classRoom}/students', [ClassRoomController::class, 'students'])->name('class-rooms.students');
 });
 
+Route::prefix('admin')->group(function () {
+    Route::post('/create-employee', [AdminController::class, 'storeEmployee']);
+
+});
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);

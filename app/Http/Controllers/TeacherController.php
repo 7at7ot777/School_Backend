@@ -97,7 +97,7 @@ class TeacherController extends Controller
      */
     public function show($id)
 {
-    $teacher = Employee::with('taughtSubjects')
+    $teacher = Employee::with('subject')
         ->where('role', 'teacher')
         ->where('id', $id)
         ->first();
