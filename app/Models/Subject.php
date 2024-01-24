@@ -15,11 +15,10 @@ class Subject extends Model
         return $this->belongsToMany(Student::class);
     }
 
-//GetTeachers that teaches this subject
-    public function taughtBy(){
-        return $this->belongsTo(Employee::class);
+    public function teachers()
+    {
+        return $this->belongsToMany(Employee::class, 'subject_teacher', 'subject_id', 'teacher_id');
     }
-
     public function grades(){
         return $this->hasMany(Grade::class);
     }

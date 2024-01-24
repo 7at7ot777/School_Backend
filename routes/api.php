@@ -38,6 +38,8 @@ Route::post('/logout', [AuthenticationController::class, 'logout'])->middleware(
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('department', DepartmentController::class);
+    Route::post('importDepartment',[DepartmentController::class,'importDepartment']);
+    Route::get('downloadImportTemplate',[DepartmentController::class,'downloadImportTemplate']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -75,7 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
 use App\Http\Controllers\SuperAdminDashboardController;
 
 Route::prefix('superAdmin')->group(function () {
-    Route::get('/departmentDashboard', [SuperAdminDashboardController::class, 'departmentDashboard']);
+    Route::get('/departmentDashboard', [SuperAdminDashboardController::class, 'departmentDashboard']); // Not Used
     Route::get('/mainDashboard', [SuperAdminDashboardController::class, 'superAdminDashboard']);
 });
 
