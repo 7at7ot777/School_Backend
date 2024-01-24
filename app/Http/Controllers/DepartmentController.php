@@ -28,6 +28,9 @@ class DepartmentController extends Controller
                 $query->with('user')->where('role','admin')->orWhere('role','employee')->oldest();
             }])->get();
 
+            $numOfActiveAdmins = Employee::where('role','admin')->where('is_active',1)->count();
+            $numOfActiveEmployees = Employee::where('role','employee')->where('is_active',1)->count();
+
             $formatedData = $this->formatData($departments);
         
             return response()->json($formatedData);
@@ -42,8 +45,8 @@ class DepartmentController extends Controller
                 $resultArray[] = [
                     'id' => $department->id,
                     'name' => $department->name,
-                    'numOfAdmins' => $department->employees->where('role', 'admin')->count(),
-                    'numOfEmps' => $department->employees->where('role','employee')->count(),
+                    'numOfAdmins' => $department->employees->where('role', 'admin')->where('is_active',1)->count(),
+                    'numOfEmps' => $department->employees->where('role','employee')->where('is_active',1)->count(),
                     'mainAdmin' => [
                         'id' => $mainAdmin ? $mainAdmin->user->id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
