@@ -18,7 +18,7 @@ class AdminController extends Controller
         'password' => 'required|string|max:255',
         'email' => 'required|email|unique:users|max:255',
         //========================================================
-//        'role_id' => 'required|exists:roles,id',
+        'role_id' => 'required|exists:roles,id',
         'department_id' => 'required|exists:departments,id',
         'basic_salary' => 'required|integer',
         'subject_id' => 'nullable|exists:subjects,id'
@@ -56,14 +56,13 @@ class AdminController extends Controller
 
     public function index()
     {
-        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')->
-        where('role', 'admin')->whereHas('user',function ($query){
-            $query->where('status',1);
-        })->get();
+        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')
+            ->where('role', 'admin')
+            ->get();
 
-//        return $admins;
+//                return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
-        return response()->json($formattedAdmins,200);
+        return response()->json($formattedAdmins, 200);
     }
 
     private function formatAdmins($data)
@@ -73,15 +72,15 @@ class AdminController extends Controller
 
         foreach ($data as $item) {
 
-                    $dept_id =null;
-                    $dept_name = null;
+            $dept_id = null;
+            $dept_name = null;
 
             $resultArray[] = [
                 'id' => $item['id'],
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
-                'status' => $item['user']['status'] == 0 ? false : true, // You can customize the status based on your criteria
+                'status' => $item['is_active'] ,
 
                 'department' => [
                     'id' => $item['department']['id'] ?? $dept_id,
@@ -91,7 +90,6 @@ class AdminController extends Controller
             ];
         }
         return $resultArray;
-
     }
 
 
@@ -100,8 +98,8 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-        $newRequest = $this->addDumpData($request,0);
-//        return $request;
+        $newRequest = $this->addDumpData($request, 0);
+        //        return $request;
         $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
         if ($validator->fails()) {
             return $validator->errors();
@@ -110,7 +108,7 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'address' => $request->address,
-                'password' => bcrypt('welcome') ,//bcrypt($newRequest->password),
+                'password' => bcrypt('welcome'), //bcrypt($newRequest->password),
                 'email' => $request['email'],
                 'user_type' => 'employee'
             ]);
@@ -121,7 +119,7 @@ class AdminController extends Controller
                 'department_id' => $request->department_id,
                 'basic_salary' => $newRequest->basic_salary,
                 'role' => 'admin',
-                'subject_id' => $request->subject_id ,
+                'subject_id' => $request->subject_id,
 
             ]);
             $employee->save();
@@ -135,7 +133,7 @@ class AdminController extends Controller
     public function show($id)
     {
         $admin = Employee::with('department:id,name', 'user:id,email,name,phone')->where('id', $id)->first();
-//        return $admin;
+        //        return $admin;
 
         if (!$admin) {
             return response()->json(['error' => 'Employee not found'], 404);
@@ -152,7 +150,7 @@ class AdminController extends Controller
     {
         $roles = Employee::getRoles();
         $departments = Department::all();
-        return response()->json(['employee' => $employee, 'roles' => $roles, 'departments' => $departments],200);
+        return response()->json(['employee' => $employee, 'roles' => $roles, 'departments' => $departments], 200);
     }
 
     /**
@@ -160,7 +158,7 @@ class AdminController extends Controller
      */
     public function update(Request $request, $id)
     {
-         $this->addDumpData($request, 1);
+        $this->addDumpData($request, 1);
         $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -182,27 +180,25 @@ class AdminController extends Controller
         $user->phone = $request->phone;
         $user->address = $request->address;
         $user->status = $request->status;
-//        $user->password = bcrypt($request->password);
-        if (strcmp($user->email ,$request->email) != 0) {
+        //        $user->password = bcrypt($request->password);
+        if (strcmp($user->email, $request->email) != 0) {
             $user->email = $request['swappedEmail'];
-            }
+        }
         $user->save();
 
         return response()->json(['success' => 'Employee updated successfully'], 200);
-
     }
-    private function addDumpData($request,$updateFlag = 0)
+    private function addDumpData($request, $updateFlag = 0)
     {
         /* This function is used to add dump data to the request to escape from validation */
-        if($request['password'] == null){
+        if ($request['password'] == null) {
 
-        $request['password'] = '123456789';
+            $request['password'] = '123456789';
         }
 
-        if($request['email'] != null && $updateFlag == 1){
+        if ($request['email'] != null && $updateFlag == 1) {
             $request['swappedEmail'] = $request['email'];
-            $request['email'] = random_int(0,99999999).'@gmail.com';
-
+            $request['email'] = random_int(0, 99999999) . '@gmail.com';
         }
         $request['basic_salary'] = 0;
         return $request;
@@ -227,4 +223,36 @@ class AdminController extends Controller
         return response()->json(['success' => 'Account Disabled successfully'], 200);
     }
 
+    public function storeEmployee(Request $request)
+    {
+        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $role = $request->has('subject_id') ? 'teacher' : 'employee';
+        $departmentId = $role == 'teacher' ? 4 : $request->department_id;
+        // حفظ المستخدم في جدول users
+        $user = \App\Models\User::create([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'password' => bcrypt('welcome'),
+            'email' => $request->email,
+            'user_type' => $role == 'teacher' ? 'teacher' : 'employee',
+        ]);
+
+        // حفظ الموظف في جدول employees
+        $employee = \App\Models\Employee::create([
+            'user_id' => $user->id,
+            'is_active' => true, 
+            'role' => $role,
+            'department_id' => $request->department_id,
+            'basic_salary' => $request->basic_salary,
+            'subject_id' => $request->subject_id,
+        ]);
+
+        return response()->json(['message' => 'Employee created successfully'], 201);
+    }
 }

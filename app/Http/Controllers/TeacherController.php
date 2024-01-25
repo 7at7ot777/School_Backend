@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Employee;
 
 use App\Http\Controllers\Controller;
@@ -52,7 +53,9 @@ class TeacherController extends Controller
 
     public function index()
     {
-        $teachers = Employee::with('taughtSubjects:id,subject_name', 'user:id,email,name,phone,status')->where('role', 'teacher')->whereHas('user', function ($query) {
+        $teachers = Employee::with('taughtSubjects:id,subject_name', 'user:id,email,name,phone,status')
+            ->where('role', 'teacher')
+            ->whereHas('user', function ($query) {
             $query->where('status', 1);
         })->get();
         $formattedTeachers = $this->formatTeachers($teachers);
@@ -66,10 +69,10 @@ class TeacherController extends Controller
 
             $resultArray[] = [
                 'id' => $item['id'],
-                'avatarUrl' => '', 
+                'avatarUrl' => '',
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
-                'status' => $item['user']['status'] == 0 ? false : true, 
+                'status' => $item['user']['status'] == 0 ? false : true,
                 'subject' => [
                     'id' => $item['taught_subjects']['id'] ?? null,
                     'name' => $item['taught_subjects']['name'] ?? null,
@@ -78,7 +81,7 @@ class TeacherController extends Controller
         }
         return $resultArray;
     }
-    
+
     public function create()
     {
         //
@@ -96,16 +99,16 @@ class TeacherController extends Controller
      * Display the specified resource.
      */
     public function show($id)
-{
-    $teacher = Employee::with('taughtSubjects')
-        ->where('role', 'teacher')
-        ->where('id', $id)
-        ->first();
+    {
+        $teacher = Employee::with('taughtSubjects')
+            ->where('role', 'teacher')
+            ->where('id', $id)
+            ->first();
 
-    if (!$teacher) {
-        return response()->json(['error' => 'Teacher not found'], 404);
+        if (!$teacher) {
+            return response()->json(['error' => 'Teacher not found'], 404);
+        }
+
+        return response()->json(['data' => $teacher], 200);
     }
-
-    return response()->json(['data' => $teacher], 200);
-}
 }
