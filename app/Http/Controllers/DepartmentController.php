@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\ImportDepartment;
 use App\Models\Department;
+use App\Models\Employee;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -28,8 +29,8 @@ class DepartmentController extends Controller
                 $query->with('user')->where('role','admin')->orWhere('role','employee')->oldest();
             }])->get();
 
-            $numOfActiveAdmins = Employee::where('role','admin')->where('is_active',1)->count();
-            $numOfActiveEmployees = Employee::where('role','employee')->where('is_active',1)->count();
+//            $numOfActiveAdmins = Employee::where('role','admin')->where('is_active',1)->count();
+//            $numOfActiveEmployees = Employee::where('role','employee')->where('is_active',1)->count();
 
             $formatedData = $this->formatData($departments);
         
@@ -128,7 +129,7 @@ class DepartmentController extends Controller
 
     }
 
-    public function downloadImportTemplate()
+    public function DownloadDepartmentTemplate()
     {
         $filePath = public_path("storage/uploads/importDepartment.xlsx");
 //        return $filePath;

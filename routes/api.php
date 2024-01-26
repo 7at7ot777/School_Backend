@@ -39,7 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('department', DepartmentController::class);
     Route::post('importDepartment',[DepartmentController::class,'importDepartment']);
-    Route::get('downloadImportTemplate',[DepartmentController::class,'downloadImportTemplate']);
+    Route::get('DownloadDepartmentTemplate',[DepartmentController::class,'DownloadDepartmentTemplate']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
