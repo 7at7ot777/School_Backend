@@ -18,7 +18,8 @@ class AdminController extends Controller
         'password' => 'required|string|max:255',
         'email' => 'required|email|unique:users|max:255',
         //========================================================
-        'role_id' => 'required|exists:roles,id',
+        //'role_id' => 'required|exists:roles,id',
+        //'role' => 'required|in:admin,superAdmin,employee,teacher',
         'department_id' => 'required|exists:departments,id',
         'basic_salary' => 'required|integer',
         'subject_id' => 'nullable|exists:subjects,id'
@@ -51,6 +52,9 @@ class AdminController extends Controller
         'basic_salary.integer' => 'The basic salary must be an integer.',
 
         'subject_id.exists' => 'The selected subject does not exist.',
+
+        'role.required' => 'The role field is required.',
+        'role.in' => 'Invalid value for the role field. Allowed values are admin, superAdmin, employee, teacher.',
 
     ];
 
@@ -223,36 +227,36 @@ class AdminController extends Controller
         return response()->json(['success' => 'Account Disabled successfully'], 200);
     }
 
-    public function storeEmployee(Request $request)
-    {
-        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
+    // public function storeEmployee(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
 
-        $role = $request->has('subject_id') ? 'teacher' : 'employee';
-        $departmentId = $role == 'teacher' ? 4 : $request->department_id;
-        // حفظ المستخدم في جدول users
-        $user = \App\Models\User::create([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'password' => bcrypt('welcome'),
-            'email' => $request->email,
-            'user_type' => $role == 'teacher' ? 'teacher' : 'employee',
-        ]);
+    //     $role = $request->has('subject_id') ? 'teacher' : 'employee';
+    //     $departmentId = $role == 'teacher' ? 4 : $request->department_id;
+    //     // حفظ المستخدم في جدول users
+    //     $user = \App\Models\User::create([
+    //         'name' => $request->name,
+    //         'phone' => $request->phone,
+    //         'address' => $request->address,
+    //         'password' => bcrypt('welcome'),
+    //         'email' => $request->email,
+    //         'user_type' => $role == 'teacher' ? 'teacher' : 'employee',
+    //     ]);
 
-        // حفظ الموظف في جدول employees
-        $employee = \App\Models\Employee::create([
-            'user_id' => $user->id,
-            'is_active' => true, 
-            'role' => $role,
-            'department_id' => $request->department_id,
-            'basic_salary' => $request->basic_salary,
-            'subject_id' => $request->subject_id,
-        ]);
+    //     // حفظ الموظف في جدول employees
+    //     $employee = \App\Models\Employee::create([
+    //         'user_id' => $user->id,
+    //         'is_active' => true, 
+    //         'role' => $role,
+    //         'department_id' => $request->department_id,
+    //         'basic_salary' => $request->basic_salary,
+    //         'subject_id' => $request->subject_id,
+    //     ]);
 
-        return response()->json(['message' => 'Employee created successfully'], 201);
-    }
+    //     return response()->json(['message' => 'Employee created successfully'], 201);
+    // }
 }

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('status')->default(true);
             $table->string('email');//->unique();
             $table->string('avatar_url')->default('');//->unique();
-            $table->unsignedBigInteger('role_id')->nullable();
+            //$table->unsignedBigInteger('role_id')->nullable();
             $table->enum('user_type', ['student','parent','employee']);
             $table->softDeletes();
             $table->timestamps();
