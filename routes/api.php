@@ -74,10 +74,10 @@ Route::middleware('auth:sanctum')->group(function () {
 // });
 
 use App\Http\Controllers\AdminManageEmployeeController;
-Route::post('/employees/create', [AdminManageEmployeeController::class, 'createEmployee']);
-Route::get('/admin/manage-employee/read/{id}', [AdminManageEmployeeController::class, 'readEmployee']);
-Route::put('/admin/manage-employee/update/{id}', [AdminManageEmployeeController::class, 'updateEmployee']);
-Route::delete('/admin/manage-employee/delete/{id}', [AdminManageEmployeeController::class, 'deleteEmployee']);
+Route::post('/employee/create', [AdminManageEmployeeController::class, 'createEmployee']);
+Route::get('/employee/index', [AdminManageEmployeeController::class, 'readEmployees']);
+Route::put('employee/update/{id}', [AdminManageEmployeeController::class, 'updateEmployee']);
+Route::delete('employee/delete/{id}', [AdminManageEmployeeController::class, 'deleteEmployee']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
