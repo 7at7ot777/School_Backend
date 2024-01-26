@@ -43,18 +43,19 @@ class AdminManageEmployeeController extends Controller
         return response()->json(['message' => 'Employee created successfully'], 201);
     }
 
-    public function readEmployee($id)
-    {
-        // ابحث عن معلومات الموظف بناءً على الرقم المعرف
-        $employee = Employee::with('user')->find($id);
+    public function readEmployees()
+{
+    // ابحث عن جميع الموظفين مع معلومات المستخدم المرتبطة
+    $employees = Employee::with('user')->get();
 
-        // إذا لم يتم العثور على الموظف، قم بإرجاع رسالة خطأ
-        if (!$employee) {
-            return response()->json(['error' => 'Employee not found'], 404);
-        }
+    // إذا لم يتم العثور على موظفين، قم بإرجاع رسالة خطأ
+    if ($employees->isEmpty()) {
+        return response()->json(['error' => 'No employees found'], 404);
+    }
 
-        // قم بتنسيق معلومات الموظف وإرجاعها
-        $formattedEmployee = [
+    // قم بتنسيق معلومات الموظفين وإرجاعها
+    $formattedEmployees = $employees->map(function ($employee) {
+        return [
             'id' => $employee->id,
             'name' => $employee->user->name,
             'email' => $employee->user->email,
@@ -65,9 +66,11 @@ class AdminManageEmployeeController extends Controller
             'role' => $employee->role,
             'subject_id' => $employee->subject_id,
         ];
+    });
 
-        return response()->json($formattedEmployee, 200);
-    }
+    return response()->json($formattedEmployees, 200);
+}
+
 
     public function updateEmployee(Request $request, $id)
     {
