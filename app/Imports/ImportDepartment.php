@@ -14,6 +14,12 @@ class ImportDepartment implements ToModel,WithHeadingRow
     * @param Collection $collection
     */
 
+    public $counter = 0;
+    public function __construct()
+    {
+        $counter = 0;
+    }
+
     public function model(array $row)
     {
         $departmentName = $row['department_name'];
@@ -22,15 +28,14 @@ class ImportDepartment implements ToModel,WithHeadingRow
         $existingDepartment = Department::where('name', $departmentName)->first();
 
         if (!$existingDepartment) {
+            $this->counter++;
+
             // Department doesn't exist, so create a new one
             return new Department([
                 'name' => $departmentName,
             ]);
         }
 
-        // Department already exists, you can handle this case if needed
-        // For example, you might want to update the existing department instead of creating a new one.
-        // You can add your logic here.
 
         return null; // Returning null skips the insertion for existing departments
     }

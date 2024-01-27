@@ -123,8 +123,9 @@ class DepartmentController extends Controller
     {
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            Excel::import(new ImportDepartment(), $file);
-            return response()->json(['success', 'File imported successfully']);
+            $importDepartment = new ImportDepartment();
+            Excel::import($importDepartment, $file);
+            return response()->json(['success', $importDepartment->counter.' Departments imported successfully']);
         }
         return response()->json(['error', 'No File Provided'],401);
 
