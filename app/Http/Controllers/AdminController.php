@@ -227,36 +227,5 @@ class AdminController extends Controller
         return response()->json(['success' => 'Account Disabled successfully'], 200);
     }
 
-    // public function storeEmployee(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
-
-    //     if ($validator->fails()) {
-    //         return response()->json(['errors' => $validator->errors()], 422);
-    //     }
-
-    //     $role = $request->has('subject_id') ? 'teacher' : 'employee';
-    //     $departmentId = $role == 'teacher' ? 4 : $request->department_id;
-    //     // حفظ المستخدم في جدول users
-    //     $user = \App\Models\User::create([
-    //         'name' => $request->name,
-    //         'phone' => $request->phone,
-    //         'address' => $request->address,
-    //         'password' => bcrypt('welcome'),
-    //         'email' => $request->email,
-    //         'user_type' => $role == 'teacher' ? 'teacher' : 'employee',
-    //     ]);
-
-    //     // حفظ الموظف في جدول employees
-    //     $employee = \App\Models\Employee::create([
-    //         'user_id' => $user->id,
-    //         'is_active' => true, 
-    //         'role' => $role,
-    //         'department_id' => $request->department_id,
-    //         'basic_salary' => $request->basic_salary,
-    //         'subject_id' => $request->subject_id,
-    //     ]);
-
-    //     return response()->json(['message' => 'Employee created successfully'], 201);
-    // }
+    
 }

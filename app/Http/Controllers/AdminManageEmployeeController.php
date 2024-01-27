@@ -43,13 +43,15 @@ class AdminManageEmployeeController extends Controller
         return response()->json(['message' => 'Employee created successfully'], 201);
     }
 
-    public function readEmployees($departmentId)
+    public function index($dept_id)
 {
-    // ابحث عن جميع الموظفين مع معلومات المستخدم المرتبطة في نفس القسم
+    // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
     $employees = Employee::with('user')
-        ->where('role', 'teacher')
-        ->orWhere('role', 'employee')
-        ->where('department_id', $departmentId)
+        ->where('department_id', $dept_id)
+        ->where(function ($query) {
+            $query->where('role', 'teacher')
+                ->orWhere('role', 'employee');
+        })
         ->get();
 
     // إذا لم يتم العثور على موظفين، قم بإرجاع رسالة خطأ
@@ -66,7 +68,8 @@ class AdminManageEmployeeController extends Controller
             'phone' => $employee->user->phone,
             'address' => $employee->user->address,
             'department_id' => $employee->department_id,
-            //'basic_salary' => $employee->basic_salary,
+            'basic_salary' => $employee->basic_salary,
+            'is_active' => $employee->is_active,
             'role' => $employee->role,
             'subject_id' => $employee->subject_id,
         ];
@@ -74,6 +77,7 @@ class AdminManageEmployeeController extends Controller
 
     return response()->json($formattedEmployees, 200);
 }
+
 
 
 
