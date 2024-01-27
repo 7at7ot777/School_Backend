@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,7 +32,7 @@ class DepartmentController extends Controller
 
 //            $numOfActiveAdmins = Employee::where('role','admin')->where('is_active',1)->count();
 //            $numOfActiveEmployees = Employee::where('role','employee')->where('is_active',1)->count();
-
+//            return $departments;
             $formatedData = $this->formatData($departments);
         
             return response()->json($formatedData);
@@ -49,7 +50,7 @@ class DepartmentController extends Controller
                     'numOfAdmins' => $department->employees->where('role', 'admin')->where('is_active',1)->count(),
                     'numOfEmps' => $department->employees->where('role','employee')->where('is_active',1)->count(),
                     'mainAdmin' => [
-                        'id' => $mainAdmin ? $mainAdmin->user->id : '',
+                        'id' => $mainAdmin ? $mainAdmin->id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
                         'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
                     ],
@@ -133,7 +134,15 @@ class DepartmentController extends Controller
     {
         $filePath = public_path("storage/uploads/importDepartment.xlsx");
 //        return $filePath;
+        $filename = 'importDepartment.xlsx';
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
 
-        return response()->download($filePath, 'importDepartment.xlsx');
+//        Http::attach('file', file_get_contents($filePath), 'filename')->withHeaders([
+//            'Content-Type' => 'application/vnd.ms-excel',
+//        ])->post('example.org')->json();
+//        return response()->download($filePath, 'importDepartment.xlsx');
     }
 }
