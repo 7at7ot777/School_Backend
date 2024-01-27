@@ -78,7 +78,7 @@ Route::post('/employee', [AdminManageEmployeeController::class, 'createEmployee'
 Route::get('/employee/{departmentId}', [AdminManageEmployeeController::class, 'index']);
 Route::put('employee/{id}', [AdminManageEmployeeController::class, 'updateEmployee']);
 Route::delete('employee/{id}', [AdminManageEmployeeController::class, 'deleteEmployee']);
-
+Route::put('/employee/{id}/toggle-is-active', [AdminManageEmployeeController::class, 'toggleIsActive']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);

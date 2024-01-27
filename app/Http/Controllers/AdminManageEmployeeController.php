@@ -44,39 +44,39 @@ class AdminManageEmployeeController extends Controller
     }
 
     public function index($dept_id)
-{
-    // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
-    $employees = Employee::with('user')
-        ->where('department_id', $dept_id)
-        ->where(function ($query) {
-            $query->where('role', 'teacher')
-                ->orWhere('role', 'employee');
-        })
-        ->get();
+    {
+        // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
+        $employees = Employee::with('user')
+            ->where('department_id', $dept_id)
+            ->where(function ($query) {
+                $query->where('role', 'teacher')
+                    ->orWhere('role', 'employee');
+            })
+            ->get();
 
-    // إذا لم يتم العثور على موظفين، قم بإرجاع رسالة خطأ
-    if ($employees->isEmpty()) {
-        return response()->json(['error' => 'No employees found in the specified department'], 404);
+        // إذا لم يتم العثور على موظفين، قم بإرجاع رسالة خطأ
+        if ($employees->isEmpty()) {
+            return response()->json(['error' => 'No employees found in the specified department'], 404);
+        }
+
+        // قم بتنسيق معلومات الموظفين وإرجاعها
+        $formattedEmployees = $employees->map(function ($employee) {
+            return [
+                'id' => $employee->id,
+                'name' => $employee->user->name,
+                'email' => $employee->user->email,
+                'phone' => $employee->user->phone,
+                'address' => $employee->user->address,
+                'department_id' => $employee->department_id,
+                'basic_salary' => $employee->basic_salary,
+                'is_active' => $employee->is_active,
+                'role' => $employee->role,
+                'subject_id' => $employee->subject_id,
+            ];
+        });
+
+        return response()->json($formattedEmployees, 200);
     }
-
-    // قم بتنسيق معلومات الموظفين وإرجاعها
-    $formattedEmployees = $employees->map(function ($employee) {
-        return [
-            'id' => $employee->id,
-            'name' => $employee->user->name,
-            'email' => $employee->user->email,
-            'phone' => $employee->user->phone,
-            'address' => $employee->user->address,
-            'department_id' => $employee->department_id,
-            'basic_salary' => $employee->basic_salary,
-            'is_active' => $employee->is_active,
-            'role' => $employee->role,
-            'subject_id' => $employee->subject_id,
-        ];
-    });
-
-    return response()->json($formattedEmployees, 200);
-}
 
 
 
@@ -117,13 +117,28 @@ class AdminManageEmployeeController extends Controller
     {
         $employee = Employee::find($id);
 
-    if (!$employee) {
-        return response()->json(['error' => 'Employee not found'], 404);
-    }
-    
-    $employee->delete(); // يقوم بتحديث deleted_at بتاريخ الحذف
+        if (!$employee) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
 
-    return response()->json(['message' => 'Employee deleted successfully'], 200);
+        $employee->delete(); // يقوم بتحديث deleted_at بتاريخ الحذف
+
+        return response()->json(['message' => 'Employee deleted successfully'], 200);
     }
 
+    public function toggleIsActive($id)
+    {
+        $employee = Employee::find($id);
+
+        if (!$employee) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
+
+        $employee->is_active = $employee->is_active == 0 ? 1 : 0;
+
+        $employee->save();
+
+        $status = $employee->is_active == 1 ? 'active' : 'inactive';
+        return response()->json(['message' => "Employee status toggled successfully. Now the employee is $status"], 200);
+    }
 }
