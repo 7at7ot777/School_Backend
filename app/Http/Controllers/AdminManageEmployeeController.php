@@ -19,7 +19,7 @@ class AdminManageEmployeeController extends Controller
             'name' => $request->input('name'),
             'phone' => $request->input('phone'),
             'address' => $request->input('address'),
-            'password' => bcrypt($request->input('password')),
+            'password' => bcrypt('welcome'),
             'email' => $request->input('email'),
             'user_type' => 'employee'
         ]);
@@ -43,14 +43,18 @@ class AdminManageEmployeeController extends Controller
         return response()->json(['message' => 'Employee created successfully'], 201);
     }
 
-    public function readEmployees()
+    public function readEmployees($departmentId)
 {
-    // ابحث عن جميع الموظفين مع معلومات المستخدم المرتبطة
-    $employees = Employee::with('user')->get();
+    // ابحث عن جميع الموظفين مع معلومات المستخدم المرتبطة في نفس القسم
+    $employees = Employee::with('user')
+        ->where('role', 'teacher')
+        ->orWhere('role', 'employee')
+        ->where('department_id', $departmentId)
+        ->get();
 
     // إذا لم يتم العثور على موظفين، قم بإرجاع رسالة خطأ
     if ($employees->isEmpty()) {
-        return response()->json(['error' => 'No employees found'], 404);
+        return response()->json(['error' => 'No employees found in the specified department'], 404);
     }
 
     // قم بتنسيق معلومات الموظفين وإرجاعها
@@ -62,7 +66,7 @@ class AdminManageEmployeeController extends Controller
             'phone' => $employee->user->phone,
             'address' => $employee->user->address,
             'department_id' => $employee->department_id,
-            'basic_salary' => $employee->basic_salary,
+            //'basic_salary' => $employee->basic_salary,
             'role' => $employee->role,
             'subject_id' => $employee->subject_id,
         ];
@@ -70,6 +74,7 @@ class AdminManageEmployeeController extends Controller
 
     return response()->json($formattedEmployees, 200);
 }
+
 
 
     public function updateEmployee(Request $request, $id)
@@ -106,19 +111,15 @@ class AdminManageEmployeeController extends Controller
 
     public function deleteEmployee($id)
     {
-        // ابحث عن الموظف المراد حذفه
         $employee = Employee::find($id);
 
-        // إذا لم يتم العثور على الموظف، قم بإرجاع رسالة خطأ
-        if (!$employee) {
-            return response()->json(['error' => 'Employee not found'], 404);
-        }
+    if (!$employee) {
+        return response()->json(['error' => 'Employee not found'], 404);
+    }
+    
+    $employee->delete(); // يقوم بتحديث deleted_at بتاريخ الحذف
 
-        // حذف الموظف
-        $employee->delete();
-
-        // قم بإرجاع رسالة نجاح
-        return response()->json(['message' => 'Employee deleted successfully'], 200);
+    return response()->json(['message' => 'Employee deleted successfully'], 200);
     }
 
 }
