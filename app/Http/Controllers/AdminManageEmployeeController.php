@@ -69,7 +69,7 @@ class AdminManageEmployeeController extends Controller
                 'address' => $employee->user->address,
                 'department_id' => $employee->department_id,
                 'basic_salary' => $employee->basic_salary,
-                'is_active' => $employee->is_active,
+                //'is_active' => $employee->is_active,
                 'role' => $employee->role,
                 'subject_id' => $employee->subject_id,
             ];
@@ -128,17 +128,17 @@ class AdminManageEmployeeController extends Controller
 
     public function toggleIsActive($id)
     {
-        $employee = Employee::find($id);
+        $user = User::find($id);
 
-        if (!$employee) {
+        if (!$user) {
             return response()->json(['error' => 'Employee not found'], 404);
         }
 
-        $employee->is_active = $employee->is_active == 0 ? 1 : 0;
+        $user->status = $user->status == 0 ? 1 : 0;
 
-        $employee->save();
+        $user->save();
 
-        $status = $employee->is_active == 1 ? 'active' : 'inactive';
+        $status = $user->status == 1 ? 'active' : 'inactive';
         return response()->json(['message' => "Employee status toggled successfully. Now the employee is $status"], 200);
     }
 }

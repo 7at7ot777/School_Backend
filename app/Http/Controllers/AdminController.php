@@ -64,7 +64,7 @@ class AdminController extends Controller
             ->where('role', 'admin')
             ->get();
 
-//                return $admins;
+        //                return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins, 200);
     }
@@ -78,19 +78,17 @@ class AdminController extends Controller
 
             $dept_id = null;
             $dept_name = null;
-
             $resultArray[] = [
                 'id' => $item['id'],
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
-                'status' => $item['is_active'] ,
-
+                //'status' => $item['is_active'],
+                'status' => $item['user']['status'],
                 'department' => [
                     'id' => $item['department']['id'] ?? $dept_id,
                     'name' => $item['department']['name'] ?? $dept_name,
                 ],
-
             ];
         }
         return $resultArray;
@@ -211,21 +209,32 @@ class AdminController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    // public function destroy($id)
+    // {
+    //     $employee = \App\Models\Employee::find($id);
+    //     $user = \App\Models\User::find($employee->user_id);
+
+    //     if (!$employee) {
+    //         return response()->json(['error' => 'Employee not found'], 404);
+    //     }
+
+
+    //     $user->status = false;
+    //     $user->save();
+
+    //     return response()->json(['success' => 'Account Disabled successfully'], 200);
+    // }
+
     public function destroy($id)
     {
-        $employee = \App\Models\Employee::find($id);
-        $user = \App\Models\User::find($employee->user_id);
-
-        if (!$employee) {
+        $user = User::find($id);
+        if (!$user) {
             return response()->json(['error' => 'Employee not found'], 404);
         }
-
-
-        $user->status = false;
+        $user->status = $user->status == 0 ? 1 : 0;
         $user->save();
-
-        return response()->json(['success' => 'Account Disabled successfully'], 200);
+        $status = $user->status == 1 ? 'active' : 'inactive';
+        return response()->json(['message' => "Employee status toggled successfully. Now the employee is $status"], 200);
     }
-
     
 }
