@@ -60,11 +60,11 @@ class AdminController extends Controller
 
     public function index()
     {
-        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('role', 'admin')->whereHas('user', function ($query) {
-                $query->where('status', 1);
-            })->get();
+        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')
+            ->where('role', 'admin')
+            ->get();
 
-        //        return $admins;
+//                return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins, 200);
     }
@@ -84,7 +84,7 @@ class AdminController extends Controller
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
-                'status' => $item['user']['status'] == 0 ? false : true, // You can customize the status based on your criteria
+                'status' => $item['is_active'] ,
 
                 'department' => [
                     'id' => $item['department']['id'] ?? $dept_id,
