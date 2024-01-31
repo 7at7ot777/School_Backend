@@ -27,7 +27,7 @@ class DepartmentController extends Controller
         public function index()
         {
             $departments = Department::with(['employees' => function ($query) {
-                $query->with('user')->where('role','admin')->orWhere('role','employee')->oldest();
+                $query->with('user')->where('role','admin')->orWhere('role','employee');
             }])->get();
 
 //            $numOfActiveAdmins = Employee::where('role','admin')->where('is_active',1)->count();
@@ -47,8 +47,8 @@ class DepartmentController extends Controller
                 $resultArray[] = [
                     'id' => $department->id,
                     'name' => $department->name,
-                    'numOfAdmins' => $department->employees->where('role', 'admin')->where('is_active',1)->count(),
-                    'numOfEmps' => $department->employees->where('role','employee')->where('is_active',1)->count(),
+                    'numOfAdmins' => $department->employees->where('role', 'admin')->where('user.status',1)->count() ,
+                    'numOfEmps' => $department->employees->where('role','employee')->where('user.status',1)->count(),
                     'mainAdmin' => [
                         'id' => $mainAdmin ? $mainAdmin->id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',

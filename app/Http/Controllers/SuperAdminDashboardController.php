@@ -56,9 +56,15 @@ class SuperAdminDashboardController extends Controller
 
     public function superAdminDashboard()
     {
-        $numOfStudents = Student::where('is_active', true)->count();
-        $numOfEmployees = Employee::where('is_active', true)->where('role', 'employee')->count();
-        $numOfAdmins = Employee::where('is_active', true)->where('role', 'admin')->count();
+        $numOfStudents = Student::whereHas('user',function ($query){
+            $query->where('status', true);
+        })->count();
+        $numOfEmployees = Employee::whereHas('user',function ($query){
+            $query->where('status', true);
+        })->where('role', 'employee')->count();
+        $numOfAdmins = Employee::whereHas('user',function ($query){
+            $query->where('status', true);
+        })->where('role', 'admin')->count();
         $numOfDepartments = Department::count();
 
         $result = [

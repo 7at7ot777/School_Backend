@@ -55,6 +55,8 @@ class AuthenticationController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $token = Auth::user()->createToken('auth_token')->plainTextToken;
             $user = Auth::user();
+            if($user->status == 0)
+                return response()->json(['error' => 'your account is disabled'], 400);
             if($user->user_type == 'employee')
             {
                 $employee = $this->getEmployee($user->id);
