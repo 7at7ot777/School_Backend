@@ -79,7 +79,8 @@ class DepartmentController extends Controller
     {
         $validator = Validator::make($request->all(), self::$rules , self::$errorMessages);
         if ($validator->fails()) {
-            return $validator->errors();
+            //return $validator->errors();
+            return response()->json(['error' => $validator->errors()], 400);
         } else {
             Department::create($request->all());
         return response()->json(['success' => 'Department stored successfully'], 201);

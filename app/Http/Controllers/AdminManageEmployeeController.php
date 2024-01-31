@@ -19,7 +19,7 @@ class AdminManageEmployeeController extends Controller
             'name' => $request->input('name'),
             'phone' => $request->input('phone'),
             'address' => $request->input('address'),
-            'password' => bcrypt($request->input('password')),
+            'password' => bcrypt('welcome'),
             'email' => $request->input('email'),
             'user_type' => 'employee'
         ]);
@@ -43,33 +43,42 @@ class AdminManageEmployeeController extends Controller
         return response()->json(['message' => 'Employee created successfully'], 201);
     }
 
-    public function readEmployees()
-{
-    // ابحث عن جميع الموظفين مع معلومات المستخدم المرتبطة
-    $employees = Employee::with('user')->get();
+    public function index($dept_id)
+    {
+        // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
+        $employees = Employee::with('user')
+            ->where('department_id', $dept_id)
+            ->where(function ($query) {
+                $query->where('role', 'teacher')
+                    ->orWhere('role', 'employee');
+            })
+            ->get();
 
-    // إذا لم يتم العثور على موظفين، قم بإرجاع رسالة خطأ
-    if ($employees->isEmpty()) {
-        return response()->json(['error' => 'No employees found'], 404);
+        // إذا لم يتم العثور على موظفين، قم بإرجاع رسالة خطأ
+        if ($employees->isEmpty()) {
+            return response()->json(['error' => 'No employees found in the specified department'], 404);
+        }
+
+        // قم بتنسيق معلومات الموظفين وإرجاعها
+        $formattedEmployees = $employees->map(function ($employee) {
+            return [
+                'id' => $employee->id,
+                'name' => $employee->user->name,
+                'email' => $employee->user->email,
+                'phone' => $employee->user->phone,
+                'address' => $employee->user->address,
+                'department_id' => $employee->department_id,
+                'basic_salary' => $employee->basic_salary,
+                //'is_active' => $employee->is_active,
+                'role' => $employee->role,
+                'subject_id' => $employee->subject_id,
+            ];
+        });
+
+        return response()->json($formattedEmployees, 200);
     }
 
-    // قم بتنسيق معلومات الموظفين وإرجاعها
-    $formattedEmployees = $employees->map(function ($employee) {
-        return [
-            'id' => $employee->id,
-            'name' => $employee->user->name,
-            'email' => $employee->user->email,
-            'phone' => $employee->user->phone,
-            'address' => $employee->user->address,
-            'department_id' => $employee->department_id,
-            'basic_salary' => $employee->basic_salary,
-            'role' => $employee->role,
-            'subject_id' => $employee->subject_id,
-        ];
-    });
 
-    return response()->json($formattedEmployees, 200);
-}
 
 
     public function updateEmployee(Request $request, $id)
@@ -106,19 +115,30 @@ class AdminManageEmployeeController extends Controller
 
     public function deleteEmployee($id)
     {
-        // ابحث عن الموظف المراد حذفه
         $employee = Employee::find($id);
 
-        // إذا لم يتم العثور على الموظف، قم بإرجاع رسالة خطأ
         if (!$employee) {
             return response()->json(['error' => 'Employee not found'], 404);
         }
 
-        // حذف الموظف
-        $employee->delete();
+        $employee->delete(); // يقوم بتحديث deleted_at بتاريخ الحذف
 
-        // قم بإرجاع رسالة نجاح
         return response()->json(['message' => 'Employee deleted successfully'], 200);
     }
 
+    public function toggleIsActive($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
+
+        $user->status = $user->status == 0 ? 1 : 0;
+
+        $user->save();
+
+        $status = $user->status == 1 ? 'active' : 'inactive';
+        return response()->json(['message' => "Employee status toggled successfully. Now the employee is $status"], 200);
+    }
 }
