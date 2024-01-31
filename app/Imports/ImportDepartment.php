@@ -14,11 +14,29 @@ class ImportDepartment implements ToModel,WithHeadingRow
     * @param Collection $collection
     */
 
+    public $counter = 0;
+    public function __construct()
+    {
+        $counter = 0;
+    }
 
     public function model(array $row)
     {
-        return new Department([
-            'name' => $row['department_name']
-        ]);
+        $departmentName = $row['department_name'];
+
+        // Check if the department already exists in the database
+        $existingDepartment = Department::where('name', $departmentName)->first();
+
+        if (!$existingDepartment) {
+            $this->counter++;
+
+            // Department doesn't exist, so create a new one
+            return new Department([
+                'name' => $departmentName,
+            ]);
+        }
+
+
+        return null; // Returning null skips the insertion for existing departments
     }
 }
