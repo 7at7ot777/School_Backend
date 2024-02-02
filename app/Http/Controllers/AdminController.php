@@ -254,7 +254,7 @@ class AdminController extends Controller
             $file = $request->file('file');
             $importAdmin = new ImportAdmin();
             Excel::import($importAdmin, $file);
-            return response()->json(['success','Admins imported successfully']);
+            return response()->json(['success',$importAdmin->counter.' Admins imported successfully']);
         }
         return response()->json(['error', 'No File Provided'],401);
 
