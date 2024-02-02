@@ -29,9 +29,9 @@ class Employee extends Model
 //    }
 
 
-    public function taughtSubjects()
+    public function subject()
     {
-        return $this->belongsToMany(Subject::class, 'subject_teacher', 'teacher_id', 'subject_id');
+        return $this->belongsTo(Subject::class);
     }
 
     public function attendance()

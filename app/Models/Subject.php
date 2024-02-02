@@ -9,15 +9,15 @@ class Subject extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['subject_name'];
+    protected $fillable = ['name'];
 
     public function student(){
-        return $this->belongsToMany(Student::class);
+        return $this->hasMany(Employee::class);
     }
 
     public function teachers()
     {
-        return $this->belongsToMany(Employee::class, 'subject_teacher', 'subject_id', 'teacher_id');
+        return $this->hasMany(Employee::class);
     }
     public function grades(){
         return $this->hasMany(Grade::class);

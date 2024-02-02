@@ -12,6 +12,8 @@ return new class extends Migration
      * Run the migrations.
      */
 
+
+    //TODO: Remoce this migration
     public function up()
     {
         Schema::create('subject_teacher', function (Blueprint $table) {
