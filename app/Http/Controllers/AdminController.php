@@ -85,7 +85,6 @@ class AdminController extends Controller
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
-                //'status' => $item['is_active'],
                 'status' => $item['user']['status'],
                 'department' => [
                     'id' => $item['department']['id'] ?? $dept_id,
