@@ -48,9 +48,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
 
 });
+Route::get('/admin/DownloadAdminTemplate',[AdminController::class,'DownloadAdminTemplate']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('admin', AdminController::class);
+    Route::post('importAdmin',[AdminController::class,'importAdmin']);
+    Route::get('DownloadAdminTemplate',[AdminController::class,'DownloadAdminTemplate']);
 });
 
 
@@ -92,9 +95,7 @@ Route::prefix('superAdmin')->group(function () {
 });
 
 Route::get('/test', function () {
-    return   $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('role', 'admin')->whereHas('user', function ($query) {
-        $query->where('status', 1);
-    })->get();
+    return   Department::where('name','LIKE', 'Managerial')->first()->id ;
 });
 
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ImportDepartment;
+use App\Imports\ImportAdmin;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
@@ -124,7 +124,7 @@ class DepartmentController extends Controller
     {
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $importDepartment = new ImportDepartment();
+            $importDepartment = new ImportAdmin();
             Excel::import($importDepartment, $file);
             return response()->json(['success', $importDepartment->counter.' Departments imported successfully']);
         }
@@ -135,7 +135,6 @@ class DepartmentController extends Controller
     public function DownloadDepartmentTemplate()
     {
         $filePath = public_path("storage/uploads/importDepartment.xlsx");
-//        return $filePath;
         $filename = 'importDepartment.xlsx';
         return response()->download($filePath, $filename, [
             'Content-Type' => 'application/vnd.ms-excel',
