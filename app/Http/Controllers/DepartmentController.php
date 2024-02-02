@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ImportDepartment;
+use App\Imports\ImportAdmin;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
@@ -27,7 +27,7 @@ class DepartmentController extends Controller
         public function index()
         {
             $departments = Department::with(['employees' => function ($query) {
-                $query->with('user')->where('role','admin')->orWhere('role','employee')->oldest();
+                $query->with('user')->where('role','admin')->orWhere('role','employee');
             }])->get();
 
 //            $numOfActiveAdmins = Employee::where('role','admin')->where('is_active',1)->count();
@@ -47,8 +47,8 @@ class DepartmentController extends Controller
                 $resultArray[] = [
                     'id' => $department->id,
                     'name' => $department->name,
-                    'numOfAdmins' => $department->employees->where('role', 'admin')->where('is_active',1)->count(),
-                    'numOfEmps' => $department->employees->where('role','employee')->where('is_active',1)->count(),
+                    'numOfAdmins' => $department->employees->where('role', 'admin')->where('user.status',1)->count() ,
+                    'numOfEmps' => $department->employees->where('role','employee')->where('user.status',1)->count(),
                     'mainAdmin' => [
                         'id' => $mainAdmin ? $mainAdmin->id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
@@ -124,7 +124,7 @@ class DepartmentController extends Controller
     {
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $importDepartment = new ImportDepartment();
+            $importDepartment = new ImportAdmin();
             Excel::import($importDepartment, $file);
             return response()->json(['success', $importDepartment->counter.' Departments imported successfully']);
         }
@@ -135,7 +135,6 @@ class DepartmentController extends Controller
     public function DownloadDepartmentTemplate()
     {
         $filePath = public_path("storage/uploads/importDepartment.xlsx");
-//        return $filePath;
         $filename = 'importDepartment.xlsx';
         return response()->download($filePath, $filename, [
             'Content-Type' => 'application/vnd.ms-excel',

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportAdmin;
 use App\Models\Role;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
@@ -235,6 +237,27 @@ class AdminController extends Controller
         $user->save();
         $status = $user->status == 1 ? 'active' : 'inactive';
         return response()->json(['message' => "Employee status toggled successfully. Now the employee is $status"], 200);
+    }
+
+    public function DownloadAdminTemplate(){
+        $filePath = public_path("storage/uploads/importAdmin.xlsx");
+        $filename = 'importAdmin.xlsx';
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+
+    }
+    public function importAdmin(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $importAdmin = new ImportAdmin();
+            Excel::import($importAdmin, $file);
+            return response()->json(['success','Admins imported successfully']);
+        }
+        return response()->json(['error', 'No File Provided'],401);
+
     }
     
 }
