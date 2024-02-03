@@ -43,16 +43,27 @@ class EmployeeController extends Controller
         return response()->json(['message' => 'Employee created successfully'], 201);
     }
 
-    public function employeesWithinDepartment($dept_id)
+    public function index($dept_id = null)
     {
-        // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
-         $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
-            ->where(function ($query) {
-                $query->where('role', 'teacher')
-                    ->orWhere('role', 'employee');
-            })
-            ->where('department_id',$dept_id)
-            ->get();
+        if(isset($dept_id))
+        {
+            // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
+            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+                ->where(function ($query) {
+                    $query->where('role', 'teacher')
+                        ->orWhere('role', 'employee');
+                })
+                ->where('department_id',$dept_id)
+                ->get();
+        }else{
+            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+                ->where(function ($query) {
+                    $query->where('role', 'teacher')
+                        ->orWhere('role', 'employee');
+                })
+                ->get();
+        }
+
 
 
         // قم بتنسيق معلومات الموظفين وإرجاعها
@@ -61,22 +72,7 @@ class EmployeeController extends Controller
         return response()->json($formattedEmployees, 200);
     }
 
-    public function index()
-    {
-        // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
-         $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
-            ->where(function ($query) {
-                $query->where('role', 'teacher')
-                    ->orWhere('role', 'employee');
-            })
-            ->get();
 
-
-        // قم بتنسيق معلومات الموظفين وإرجاعها
-        $formattedEmployees = $this->formatDate($employees);
-
-        return response()->json($formattedEmployees, 200);
-    }
 
     private function formatDate($data)
     {

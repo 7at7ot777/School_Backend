@@ -79,8 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // });
 
 Route::post('/employee', [EmployeeController::class, 'createEmployee']);
-Route::get('/employeesWithinDepartment/{departmentId}', [EmployeeController::class, 'employeesWithinDepartment']);
-Route::get('/employee', [EmployeeController::class, 'index']);
+Route::get('/employee/{departmentId?}', [EmployeeController::class, 'index']);
 Route::put('employee/{id}', [EmployeeController::class, 'updateEmployee']);
 //Route::delete('employee/{id}', [AdminManageEmployeeController::class, 'deleteEmployee']);
 Route::delete('/employee/{id}', [EmployeeController::class, 'toggleIsActive']);
