@@ -13,8 +13,31 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        $subjects = Subject::all();
-        return response()->json($subjects, 200);
+        $subjects = Subject::with('teachers.user')->get();
+        $formattedData = $this->formatDate($subjects);
+        return response()->json($formattedData, 200);
+    }
+
+    private function formatDate($data)
+    {
+        $resultArray = [];
+
+        foreach ($data as $subject) {
+            $mainAdmin = $subject->teachers->first();
+
+            $resultArray[] = [
+                'id' => $subject->id,
+                'name' => $subject->name,
+              //  'numOfAdmins' => $subject->employees->where('role', 'admin')->where('user.status',1)->count() ,
+                'NumOfTeachers' => $subject->teachers->where('user.status',1)->count(),
+                'mainAdmin' => [
+                    'id' => $mainAdmin ? $mainAdmin->id : '',
+                    'name' => $mainAdmin ? $mainAdmin->user->name : '',
+                    'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
+                ],
+            ];
+        }
+        return $resultArray;
     }
 
     /**
@@ -31,7 +54,7 @@ class SubjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'subject_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
         ]);
 
         $subject = Subject::create($request->all());
@@ -61,7 +84,7 @@ class SubjectController extends Controller
     public function update(Request $request, Subject $subject)
     {
         $request->validate([
-            'subject_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
         ]);
         $subject->update($request->all());
 

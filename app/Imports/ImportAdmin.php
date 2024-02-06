@@ -25,31 +25,35 @@ class ImportAdmin implements ToModel, WithHeadingRow
     public function model(array $row)
     {
 //        dd($row);
-        if(!isset($row['name']))
+        if (!isset($row['name']))
             return null;
         // Create a new User
-        $newUser = new User([
-            'name' => $row['name'] ?? ' ',
-            'phone' => $row['phone']?? ' ',
-            'address' => $row['address']?? ' ',
-            'password' => bcrypt('welcome'),
-            'email' => $row['email'] ?? ' ',
-            'user_type' => 'employee',
-        ]);
-        $newUser->save();
+        $newUser = User::where('email', 'LIKE', $row['email'])->first();
+        if (!$newUser) {
+            $newUser = new User([
+                'name' => $row['name'] ?? ' ',
+                'phone' => $row['phone'] ?? ' ',
+                'address' => $row['address'] ?? ' ',
+                'password' => bcrypt('welcome'),
+                'email' => $row['email'] ?? ' ',
+                'user_type' => 'employee',
+            ]);
+            $newUser->save();
+            // Create a new Employee
+            $newEmployee = new Employee([
+                'user_id' => $newUser->id,
+                'department_id' => Department::where('name', 'LIKE', $row['department'])->first()->id ?? null,
+                'basic_salary' => $row['basic_salary'] ?? null,
+                'role' => 'admin',
+                'subject_id' => null, // You might need to adjust this based on your actual data
+            ]);
+            $newEmployee->save();
+            $this->counter++;
 
-        // Create a new Employee
-        $newEmployee = new Employee([
-            'user_id' => $newUser->id,
-            'department_id' => Department::where('name','LIKE', $row['department'])->first()->id ?? null,
-            'basic_salary' => $row['basic_salary'] ?? null,
-            'role' => 'admin',
-            'subject_id' => null, // You might need to adjust this based on your actual data
-        ]);
-        $newEmployee->save();
 
-        return $newEmployee;
-
+            return $newEmployee;
+        }
+        return null;
 
     }
 }

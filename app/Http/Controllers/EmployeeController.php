@@ -7,7 +7,7 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class AdminManageEmployeeController extends Controller
+class EmployeeController extends Controller
 {
     public function createEmployee(Request $request)
     {
@@ -43,41 +43,65 @@ class AdminManageEmployeeController extends Controller
         return response()->json(['message' => 'Employee created successfully'], 201);
     }
 
-    public function index($dept_id)
+    public function index($dept_id = null)
     {
-        // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
-        $employees = Employee::with('user')
-            ->where('department_id', $dept_id)
-            ->where(function ($query) {
-                $query->where('role', 'teacher')
-                    ->orWhere('role', 'employee');
-            })
-            ->get();
-
-        // إذا لم يتم العثور على موظفين، قم بإرجاع رسالة خطأ
-        if ($employees->isEmpty()) {
-            return response()->json(['error' => 'No employees found in the specified department'], 404);
+        if(isset($dept_id))
+        {
+            // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
+            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+                ->where(function ($query) {
+                    $query->where('role', 'teacher')
+                        ->orWhere('role', 'employee');
+                })
+                ->where('department_id',$dept_id)
+                ->get();
+        }else{
+            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+                ->where(function ($query) {
+                    $query->where('role', 'teacher')
+                        ->orWhere('role', 'employee');
+                })
+                ->get();
         }
 
+
+
         // قم بتنسيق معلومات الموظفين وإرجاعها
-        $formattedEmployees = $employees->map(function ($employee) {
-            return [
-                'id' => $employee->id,
-                'name' => $employee->user->name,
-                'email' => $employee->user->email,
-                'phone' => $employee->user->phone,
-                'address' => $employee->user->address,
-                'department_id' => $employee->department_id,
-                'basic_salary' => $employee->basic_salary,
-                //'is_active' => $employee->is_active,
-                'role' => $employee->role,
-                'subject_id' => $employee->subject_id,
-            ];
-        });
+        $formattedEmployees = $this->formatDate($employees);
 
         return response()->json($formattedEmployees, 200);
     }
 
+
+
+    private function formatDate($data)
+    {
+        $resultArray = [];
+
+        foreach ($data as $item) {
+
+            $sub_id = null;
+            $sub_name = null;
+            $resultArray[] = [
+                'id' => $item['id'],
+                'avatarUrl' => '', // Add logic to get the avatar URL if available
+                'name' => $item['user']['name'],
+                'email' => $item['user']['email'],
+                'status' => $item['user']['status'],
+                'role' => $item['role'],
+                'basic_salary' => $item['basic_salary'],
+                'subject' =>[
+                    'id' => $item['subject']['id'],
+                    'name' => $item['subject']['name'],
+                ]
+//                'department' => [
+//                    'id' => $item['department']['id'] ?? $dept_id,
+//                    'name' => $item['department']['name'] ?? $dept_name,
+//                ],
+            ];
+        }
+        return $resultArray;
+    }
 
 
 

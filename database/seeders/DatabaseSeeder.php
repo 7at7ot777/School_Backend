@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Role;
+use App\Models\Subject;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -41,6 +42,10 @@ class DatabaseSeeder extends Seeder
             'department_id' => 1,
             'basic_salary' => 5000
         ]);
+
+        Subject::create(
+            ['name' => 'arabic' ],
+        );
 
     }
 }

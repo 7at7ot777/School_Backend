@@ -85,7 +85,6 @@ class AdminController extends Controller
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
-                //'status' => $item['is_active'],
                 'status' => $item['user']['status'],
                 'department' => [
                     'id' => $item['department']['id'] ?? $dept_id,
@@ -97,9 +96,6 @@ class AdminController extends Controller
     }
 
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $newRequest = $this->addDumpData($request, 0);
@@ -131,9 +127,6 @@ class AdminController extends Controller
         return response()->json(['success' => 'Employee stored successfully'], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $admin = Employee::with('department:id,name', 'user:id,email,name,phone')->where('id', $id)->first();
@@ -147,9 +140,7 @@ class AdminController extends Controller
         return response()->json($formattedAdmin[0], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(Employee $employee)
     {
         $roles = Employee::getRoles();
@@ -157,9 +148,7 @@ class AdminController extends Controller
         return response()->json(['employee' => $employee, 'roles' => $roles, 'departments' => $departments], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, $id)
     {
         $this->addDumpData($request, 1);
@@ -208,24 +197,8 @@ class AdminController extends Controller
         return $request;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    // public function destroy($id)
-    // {
-    //     $employee = \App\Models\Employee::find($id);
-    //     $user = \App\Models\User::find($employee->user_id);
-
-    //     if (!$employee) {
-    //         return response()->json(['error' => 'Employee not found'], 404);
-    //     }
 
 
-    //     $user->status = false;
-    //     $user->save();
-
-    //     return response()->json(['success' => 'Account Disabled successfully'], 200);
-    // }
 
     public function destroy($id)
     {
@@ -254,7 +227,7 @@ class AdminController extends Controller
             $file = $request->file('file');
             $importAdmin = new ImportAdmin();
             Excel::import($importAdmin, $file);
-            return response()->json(['success','Admins imported successfully']);
+            return response()->json(['success',$importAdmin->counter.' Admins imported successfully']);
         }
         return response()->json(['error', 'No File Provided'],401);
 

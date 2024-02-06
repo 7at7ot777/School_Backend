@@ -11,6 +11,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\EmployeeController;
+
 
 
 /*
@@ -76,12 +78,11 @@ Route::middleware('auth:sanctum')->group(function () {
 //     Route::post('/create-employee', [AdminController::class, 'storeEmployee']);
 // });
 
-use App\Http\Controllers\AdminManageEmployeeController;
-Route::post('/employee', [AdminManageEmployeeController::class, 'createEmployee']);
-Route::get('/employee/{departmentId}', [AdminManageEmployeeController::class, 'index']);
-Route::put('employee/{id}', [AdminManageEmployeeController::class, 'updateEmployee']);
+Route::post('/employee', [EmployeeController::class, 'createEmployee']);
+Route::get('/employee/{departmentId?}', [EmployeeController::class, 'index']);
+Route::put('employee/{id}', [EmployeeController::class, 'updateEmployee']);
 //Route::delete('employee/{id}', [AdminManageEmployeeController::class, 'deleteEmployee']);
-Route::delete('/employee/{id}', [AdminManageEmployeeController::class, 'toggleIsActive']);
+Route::delete('/employee/{id}', [EmployeeController::class, 'toggleIsActive']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
