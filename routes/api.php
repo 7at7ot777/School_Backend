@@ -12,6 +12,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\SuperAdminDashboardController;
 
 
 
@@ -78,17 +79,19 @@ Route::middleware('auth:sanctum')->group(function () {
 //     Route::post('/create-employee', [AdminController::class, 'storeEmployee']);
 // });
 
-Route::post('/employee', [EmployeeController::class, 'createEmployee']);
-Route::get('/employee/{departmentId?}', [EmployeeController::class, 'index']);
-Route::put('employee/{id}', [EmployeeController::class, 'updateEmployee']);
-//Route::delete('employee/{id}', [AdminManageEmployeeController::class, 'deleteEmployee']);
-Route::delete('/employee/{id}', [EmployeeController::class, 'toggleIsActive']);
 
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::apiResource('employee', EmployeeController::class);
+
+    Route::get('/employee/{departmentId?}', [EmployeeController::class, 'index']);
+
+    Route::delete('/employee/{id}', [EmployeeController::class, 'toggleIsActive']);
+});
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
 });
-use App\Http\Controllers\SuperAdminDashboardController;
 
 Route::prefix('superAdmin')->group(function () {
     Route::get('/departmentDashboard', [SuperAdminDashboardController::class, 'departmentDashboard']); // Not Used
