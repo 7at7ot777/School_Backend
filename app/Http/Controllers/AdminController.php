@@ -17,7 +17,7 @@ class AdminController extends Controller
         'name' => 'required|string|max:255',
         'phone' => 'nullable|string|max:255',
         'address' => 'nullable|string|max:255',
-        'password' => 'required|string|max:255',
+        'password' => 'nullable|string|max:255',
         'email' => 'required|email|unique:users|max:255',
         //========================================================
         //'role_id' => 'required|exists:roles,id',
@@ -230,6 +230,15 @@ class AdminController extends Controller
             return response()->json(['success',$importAdmin->counter.' Admins imported successfully']);
         }
         return response()->json(['error', 'No File Provided'],401);
+
+    }
+
+    public function dashboard($id)
+    {
+        $employeesNumber = Employee::where('department_id',$id)
+            ->where('status',1)
+            ->count();
+
 
     }
     
