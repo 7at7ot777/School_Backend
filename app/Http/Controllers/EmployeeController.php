@@ -176,6 +176,7 @@ class EmployeeController extends Controller
             $user->phone = $request->input('phone') ?? $user->phone;
             $user->address = $request->input('address') ?? $user->address;
             $user->email = $request->input('email') ?? $user->email;
+            $user->status = $request->input('status') ?? $user->status;
             $user->save();
         }
 
