@@ -29,7 +29,7 @@ class SubjectController extends Controller
                 'id' => $subject->id,
                 'name' => $subject->name,
               //  'numOfAdmins' => $subject->employees->where('role', 'admin')->where('user.status',1)->count() ,
-                'NumOfTeachers' => $subject->teachers->where('user.status',1)->count(),
+                'numOfTeachers' => $subject->teachers->where('user.status',1)->count(),
                 'mainAdmin' => [
                     'id' => $mainAdmin ? $mainAdmin->id : '',
                     'name' => $mainAdmin ? $mainAdmin->user->name : '',

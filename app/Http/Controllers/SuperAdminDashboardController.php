@@ -61,7 +61,7 @@ class SuperAdminDashboardController extends Controller
         })->count();
         $numOfEmployees = Employee::whereHas('user',function ($query){
             $query->where('status', true);
-        })->where('role', 'employee')->count();
+        })->where('role', 'employee')->orWhere('role', 'teacher')->count();
         $numOfAdmins = Employee::whereHas('user',function ($query){
             $query->where('status', true);
         })->where('role', 'admin')->count();
