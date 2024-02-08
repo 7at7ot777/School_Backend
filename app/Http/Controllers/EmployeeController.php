@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-    public function createEmployee(Request $request)
+    public function create(Request $request)
     {
         // قم بتحقق من وجود subject_id لتحديد الدور (teacher أو employee)
         $role = $request->has('subject_id') ? 'teacher' : 'employee';
@@ -45,28 +45,14 @@ class EmployeeController extends Controller
 
     public function index($dept_id = null)
     {
-        if(isset($dept_id))
-        {
+        if (!isset($dept_id))
+              return response()->json(['error' => 'Invalid department'], 404);
+
             // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
             $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
-                ->where(function ($query) {
-                    $query->where('role', 'teacher')
-                        ->orWhere('role', 'employee');
-                })
                 ->where('department_id',$dept_id)
                 ->get();
-        }else{
-            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
-                ->where(function ($query) {
-                    $query->where('role', 'teacher')
-                        ->orWhere('role', 'employee');
-                })
-                ->get();
-        }
-
-
-
-        // قم بتنسيق معلومات الموظفين وإرجاعها
+            // قم بتنسيق معلومات الموظفين وإرجاعها
         $formattedEmployees = $this->formatDate($employees);
 
         return response()->json($formattedEmployees, 200);
@@ -81,7 +67,9 @@ class EmployeeController extends Controller
         foreach ($data as $item) {
 
             $sub_id = null;
+            $dept_id = null;
             $sub_name = null;
+            $dept_name = null;
             $resultArray[] = [
                 'id' => $item['id'],
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
@@ -91,13 +79,13 @@ class EmployeeController extends Controller
                 'role' => $item['role'],
                 'basic_salary' => $item['basic_salary'],
                 'subject' =>[
-                    'id' => $item['subject']['id'],
-                    'name' => $item['subject']['name'],
-                ]
-//                'department' => [
-//                    'id' => $item['department']['id'] ?? $dept_id,
-//                    'name' => $item['department']['name'] ?? $dept_name,
-//                ],
+                    'id' => $item['subject']['id'] ?? $sub_id ,
+                    'name' => $item['subject']['name'] ?? $sub_name,
+                ],
+                'department' => [
+                    'id' => $item['department']['id'] ?? $dept_id,
+                    'name' => $item['department']['name'] ?? $dept_name,
+                ],
             ];
         }
         return $resultArray;
