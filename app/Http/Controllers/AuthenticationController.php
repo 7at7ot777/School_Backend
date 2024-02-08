@@ -77,7 +77,7 @@ class AuthenticationController extends Controller
     }
 
     private function getEmployee($userId){
-        $employee = Employee::with('user','department')->find($userId);
+        $employee = Employee::with('user','department')->where('user_id',$userId)->get();
         return $employee;
     }
 

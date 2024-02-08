@@ -97,8 +97,12 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
+        if(!$subject)
+        {
+            return response()->json(['message' => 'Subject Not Found'], 404);
+        }
         $subject->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Subject Deleted Successfully'], 200);
     }
 }

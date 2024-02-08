@@ -24,11 +24,28 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('123456'),
             'user_type' => 'employee'
         ]);
-        $departmentNames = ['Financial', 'Managerial', 'Worker', 'TeachingStuff'];
+        $departmentNames = ['Financial', 'Managerial', 'Worker', 'Teaching Staff','Student Affairs'];
 
-        foreach ($departmentNames as $name) {
-            Department::create(['name' => $name]);
-        }
+
+            Department::insert([
+                [
+                    'id' => 1,
+                    'name' => 'Financial'
+                ] ,[
+                    'id' => 2,
+                    'name' => 'Managerial'
+                ], [
+                    'id' => 3,
+                    'name' => 'Worker'
+                ], [
+                    'id' => 4,
+                    'name' => 'Teaching Staff'
+                ] ,[
+                    'id' => 5,
+                    'name' => 'Student Affairs'
+                ],
+            ]);
+
 
         $roleNames = ['Manager', 'Teacher', 'Worker', 'Employee'];
         foreach ($roleNames as $name) {
@@ -39,7 +56,7 @@ class DatabaseSeeder extends Seeder
             'user_id' => 1,
 //            'role_id' => 1,
             'role' => 'superAdmin',
-            'department_id' => 1,
+            'department_id' => null,
             'basic_salary' => 5000
         ]);
 
