@@ -96,14 +96,15 @@ class EmployeeController extends Controller
 
     public function index($dept_id = null)
     {
+//        return $dept_id;
         if (!isset($dept_id))
               return response()->json(['error' => 'Invalid department'], 404);
 
             // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
             $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
-                ->where('department_id',$dept_id)
                 ->where('role','employee')
                 ->orWhere('role','teacher')
+                ->where('department_id',$dept_id)
                 ->get();
 
             // قم بتنسيق معلومات الموظفين وإرجاعها
