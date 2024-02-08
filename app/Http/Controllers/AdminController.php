@@ -6,6 +6,7 @@ use App\Imports\ImportAdmin;
 use App\Models\Role;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -233,11 +234,23 @@ class AdminController extends Controller
 
     }
 
-    public function dashboard($id)
+    public function dashboard($dept_id)
     {
-        $employeesNumber = Employee::where('department_id',$id)
-            ->where('status',1)
+        $employeesNumber = Employee::
+        where('department_id', $dept_id)
+            ->join('users', 'employees.user_id', '=', 'users.id')
+            ->where('users.status', 1)
             ->count();
+
+        $subject = Subject::count();
+        if($dept_id==4 ){ // teaching department
+
+            return response()->json(['numOfTeachers' => $employeesNumber, 'numOfSubjects' => $subject]);
+        }else{
+            return response()->json(['numOfEmps' => $employeesNumber]);
+
+        }
+
 
 
     }
