@@ -63,7 +63,7 @@ class EmployeeController extends Controller
             return $validator->errors();
         }
         // قم بتحقق من وجود subject_id لتحديد الدور (teacher أو employee)
-        $role = $request->has('subject_id') ? 'teacher' : 'employee';
+        $role = $request->subject_id != null ? 'teacher' : 'employee';
 
         // قم بإنشاء مستخدم جديد
         $user = User::create([
