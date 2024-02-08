@@ -48,7 +48,7 @@ class DepartmentController extends Controller
                     'id' => $department->id,
                     'name' => $department->name,
                     'numOfAdmins' => $department->employees->where('role', 'admin')->where('user.status',1)->count() ,
-                    'numOfEmps' => $department->employees->where('role','employee')->where('user.status',1)->count(),
+                    'numOfEmps' => $department->employees->where('role','employee')->orWhere('role', 'teacher')->where('user.status',1)->count(),
                     'mainAdmin' => [
                         'id' => $mainAdmin ? $mainAdmin->id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
