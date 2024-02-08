@@ -82,11 +82,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::apiResource('employee', EmployeeController::class);
-
-    Route::get('/employee/{departmentId?}', [EmployeeController::class, 'index']);
-
+    Route::get('/employee/{dept_id}', [EmployeeController::class, 'index']);
     Route::delete('/employee/{id}', [EmployeeController::class, 'toggleIsActive']);
+    Route::apiResource('employee', EmployeeController::class);
 });
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
