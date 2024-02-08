@@ -100,12 +100,20 @@ class EmployeeController extends Controller
         if (!isset($dept_id))
               return response()->json(['error' => 'Invalid department'], 404);
 
+        if($dept_id == 4){
+            // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
+            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+                ->Where('role','teacher')
+                ->where('department_id',$dept_id)
+                ->get();
+        }else{
             // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
             $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
                 ->where('role','employee')
-                ->orWhere('role','teacher')
                 ->where('department_id',$dept_id)
                 ->get();
+        }
+
 
             // قم بتنسيق معلومات الموظفين وإرجاعها
         $formattedEmployees = $this->formatDate($employees);
