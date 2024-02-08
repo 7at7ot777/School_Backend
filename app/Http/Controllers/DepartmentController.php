@@ -39,19 +39,18 @@ class DepartmentController extends Controller
         }
         public function formatData($data)
         {
-            $numOfActiveEmployees = Employee::where('role','employee')->orWhere('role', 'teacher')->whereHas('user',function ($query){
-                $query->where('status',1);
-            })->count();
             $resultArray = [];
 
             foreach ($data as $department) {
-                $mainAdmin = $department->employees->first();
+                $mainAdmin = $department->employees->where('role','admin')->first();
 
                 $resultArray[] = [
                     'id' => $department->id,
                     'name' => $department->name,
                     'numOfAdmins' => $department->employees->where('role', 'admin')->where('user.status',1)->count() ,
-                    'numOfEmps' => $numOfActiveEmployees,
+                    'numOfEmps' => $department->employees->filter(function ($employee) {
+                        return ($employee->role == 'employee' || $employee->role == 'teacher') && $employee->user->status == 1;
+                    })->count(),
                     'mainAdmin' => [
                         'id' => $mainAdmin ? $mainAdmin->id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
