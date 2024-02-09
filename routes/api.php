@@ -12,6 +12,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SuperAdminDashboardController;
 
 
@@ -87,6 +88,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/employee/{id}', [EmployeeController::class, 'toggleIsActive']);
     Route::apiResource('employee', EmployeeController::class);
 });
+
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::apiResource('student', StudentController::class);
+// });
+Route::post('/student', [StudentController::class, 'create']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
     Route::get('teachers/{id}', [TeacherController::class, 'show']);

@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     use HasFactory;
+    protected $table = 'students';
+    protected $fillable = [
+        'user_id',
+        'grade_level',
+        'is_active',
+        'parent_id_one',
+        'parent_id_two',
+        'class_id',
+        'semester',
+    ];
 
     public function classroom(){
         return $this->belongsTo(ClassRoom::class);
