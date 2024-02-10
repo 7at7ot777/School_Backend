@@ -92,7 +92,12 @@ Route::middleware('auth:sanctum')->group(function () {
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::apiResource('student', StudentController::class);
 // });
+
 Route::post('/student', [StudentController::class, 'create']);
+Route::get('/student', [StudentController::class, 'index']);
+Route::put('/student/{id}', [StudentController::class, 'update']);
+Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
