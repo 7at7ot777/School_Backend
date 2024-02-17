@@ -9,61 +9,38 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function show($id)
     {
-        //
+        $user = User::find($id);
+
+        switch ($user->user_type){
+            case 'student':
+               return $user->load('student');
+                break;
+            case 'parent' :
+                $this->getParentDate($user);
+                break;
+            case 'employee':
+                $this->getEmployeeDate($user);
+                break;
+        }
+        return $user;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    private function getStudentDate(User $user){
+
+        return $user->load('student');
+
+    }
+ private function getEmployeeDate($user){
+
+    }
+ private function getParentDate($user){
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
     public function resetPassword($userId)
     {
         // Retrieve the user by ID

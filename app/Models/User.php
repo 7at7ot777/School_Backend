@@ -47,8 +47,8 @@ class User extends Authenticatable
     ];
 
 
-    public function Parent (){return  $this->hasOne(Parents::class);}
-    public function Employee (){return $this->hasOne(Employee::class);}
-    public function Student (){return $this->hasOne(Student::class);}
+    public function parent (){return  $this->hasOne(Parents::class);}
+    public function employee (){return $this->hasOne(Employee::class);}
+    public function student (){return $this->hasOne(Student::class);}
     public function role(){return $this->hasOne(Role::class);}
 }

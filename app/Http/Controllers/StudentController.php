@@ -75,7 +75,7 @@ class StudentController extends Controller
         if ($validator->fails()) {
             return $validator->errors();
         }
-        try {
+//        try {
             // Create a new user instance
             $user = User::create([
                 'name' => $request->input('name'),
@@ -103,10 +103,10 @@ class StudentController extends Controller
 
             // Return a success response
             return response()->json(['message' => 'Student created successfully'], 201);
-        } catch (\Exception $e) {
-            // Return an error response if an exception occurred
-            return response()->json(['error' => 'Failed to create student'], 500);
-        }
+//        } catch (\Exception $e) {
+//            // Return an error response if an exception occurred
+//            return response()->json(['error' => 'Failed to create student','ERROR'=>$e], 500);
+//        }
     }
 
     /**

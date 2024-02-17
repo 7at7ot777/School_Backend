@@ -105,7 +105,12 @@ Route::prefix('superAdmin')->group(function () {
 });
 
 Route::get('/test', function () {
-    return   Department::where('name','LIKE', 'Managerial')->first()->id ;
+
+    $userController  = new \App\Http\Controllers\UserController();
+    $user =  $userController->show(1);
+
+    return response()->json($user);
+
 });
 
 

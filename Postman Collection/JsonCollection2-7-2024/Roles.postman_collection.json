@@ -1,0 +1,227 @@
+{
+	"info": {
+		"_postman_id": "f95c05e9-cadc-4907-9b7a-715e210220fe",
+		"name": "Roles",
+		"description": "# 🪝 Get started here\n\nWebhooks are a mechanism that allows services to send real-time notifications to your application regarding asynchronous updates. The collection provides endpoints for setting up and managing webhooks, as well as verifying webhook events.\n\nThis collection demonstrates how to interact with a payment gateway and processing API, focusing specifically on the implementation of webhooks.\n\n### 🔐 Authentication and Authorization\n\nThis template assumes the user making requests to the Webhooks API would be authenticated, for example using a Bearer token. You can choose an authentication method to apply to the whole collection by selecting the collection and navigating to the Authorization tab.\n\n## 🔖 How to use this collection?\n\nThe collection is designed to be flexible and can be customized to meet the specific requirements of your own webhooks API implementation.\n\n#### Step 1: Update the base URL variable\n\nAdd your API's base URL in the `baseUrl` collection variable, replacing the existing dummy endpoint (`https://api.example.com`).\n\n#### Step 2: Create a webhook\n\nStart with `Create Webhook` endpoint to create a webhook and enter the following required information:\n\n- `webhook_url`: the name of the webhook that you're creating\n- `events`: (optional) Events that you want to trigger this webhook with. should be triggered on all events if none was provided.\n    \n\n#### **Step 3: Call the webhook**\n\nProceed to the `Trigger specific webhook` request. This call will utilize the `webhook_id` e.g. `W123456` set in the previous step. Under the **Body** tab, you can optionally update the payload to send.\n\n#### **Step 4: Verify various webhook payloads**\n\nTry sending several payloads to your webhooks with `Verify webhook` endpoint, and monitor your webhook server logs to verify if your webhooks are configured correctly as expected.\n\nYou can see an example of how to configure your webhook to be event-driven. We took Payment Gateway Service as an example here.\n\n#### **Step 5: Continue building the collection**\n\nCreate requests in this collection to test the new API endpoints you develop, and integrate your newly created webhooks in your other services.\n\n## ℹ️ Resources\n\n[Build Webhook with Postman APIs (Video Tutorial)](https://www.youtube.com/watch?v=wdLvXKkXhLk)  \n[Postman's Custom Webhooks](https://learning.postman.com/docs/integrations/webhooks/)\n\n## 💡Related templates\n\n[Content management API](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=8b1997c9-1fb2-453d-81a3-cafd3bbe28ae&sourceTemplateId=88a124f3-20d3-412a-a6a2-3b58307a7b16)  \n[Social media API](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=ce4ff49c-12c2-4a99-891a-07eea2388174&sourceTemplateId=88a124f3-20d3-412a-a6a2-3b58307a7b16)  \n[File storage API](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=45d1f394-35cd-44fa-aecc-fa329a7752a3&sourceTemplateId=88a124f3-20d3-412a-a6a2-3b58307a7b16)  \n[IoT device management API](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=30ebe963-3019-49d3-8087-00b4709687ad&sourceTemplateId=88a124f3-20d3-412a-a6a2-3b58307a7b16)  \n[CRM API](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=dda283f2-49f5-4754-b204-0c89a95e626c&sourceTemplateId=88a124f3-20d3-412a-a6a2-3b58307a7b16)  \n[Payment gateway and processing API](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=2ef318a1-e16c-4761-b8dc-1ccb1167ee8d&sourceTemplateId=88a124f3-20d3-412a-a6a2-3b58307a7b16)  \n[Fintech banking API](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=3b33c827-d9c8-4738-8d3f-09c466007363&sourceTemplateId=88a124f3-20d3-412a-a6a2-3b58307a7b16)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22761454",
+		"_collection_link": "https://xx7at7othelallxx.postman.co/workspace/School-Management-System~37f25350-fe9b-4e03-915e-73485c776db4/collection/22761454-f95c05e9-cadc-4907-9b7a-715e210220fe?action=share&source=collection_link&creator=22761454"
+	},
+	"item": [
+		{
+			"name": "index",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}role",
+					"host": [
+						"{{localhost}}role"
+					]
+				},
+				"description": "Retrieves the details of a specific webhook."
+			},
+			"response": []
+		},
+		{
+			"name": "show",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}role/2",
+					"host": [
+						"{{localhost}}role"
+					],
+					"path": [
+						"2"
+					]
+				},
+				"description": "Retrieve statistics for the events that triggered the webhook."
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "Manger",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "sadaad",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localhost}}role",
+					"host": [
+						"{{localhost}}role"
+					]
+				},
+				"description": "Creates a new webhook to receive real-time notifications for payment, transaction, and refund events.\n\nWhenever any of these events occur, the defined webhook `webhook_url` endpoint e.g. `https://api.example.com/webhooks/listener-for-payment-gateway` will receive a POST request with relevant data.\n\nAlso, you can configure your webhooks to be event-driven by default, as it will only be triggered when one of these system events is fired."
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "teacher",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "dadada",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localhost}}role/1",
+					"host": [
+						"{{localhost}}role"
+					],
+					"path": [
+						"1"
+					]
+				},
+				"description": "Updates the configuration of an existing webhook."
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"url\": \"https://example.com/updated-webhook\",\n  \"events\": [\"payment.created\", \"refund.created\"]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localhost}}role/1",
+					"host": [
+						"{{localhost}}role"
+					],
+					"path": [
+						"1"
+					]
+				},
+				"description": "Updates the configuration of an existing webhook."
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://fcde83ce-ae2a-4165-bf7f-c2bb5f7fe762.mock.pstmn.io",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "dummy_token",
+			"type": "string"
+		}
+	]
+}

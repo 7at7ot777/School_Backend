@@ -1,0 +1,78 @@
+{
+	"info": {
+		"_postman_id": "e04e790c-0939-4066-8ce7-1d1097ce4128",
+		"name": "teacher",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22761454",
+		"_collection_link": "https://xx7at7othelallxx.postman.co/workspace/School-Management-System~37f25350-fe9b-4e03-915e-73485c776db4/collection/31464685-e04e790c-0939-4066-8ce7-1d1097ce4128?action=share&source=collection_link&creator=22761454"
+	},
+	"item": [
+		{
+			"name": "index",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/teachers",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"teachers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "show",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/teachers/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"teachers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
