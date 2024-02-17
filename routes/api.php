@@ -51,12 +51,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
 
 });
-Route::get('/admin/DownloadAdminTemplate',[AdminController::class,'DownloadAdminTemplate']);
+//Route::get('/admin/DownloadAdminTemplate',[AdminController::class,'DownloadAdminTemplate']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('admin', AdminController::class);
     Route::post('importAdmin',[AdminController::class,'importAdmin']);
     Route::get('DownloadAdminTemplate',[AdminController::class,'DownloadAdminTemplate']);
+    Route::get('admin/dashboard/{dept_id}',[AdminController::class,'dashboard']);
 });
 
 
