@@ -20,7 +20,7 @@ class Student extends Model
     ];
 
     public function classroom(){
-        return $this->belongsTo(ClassRoom::class);
+        return $this->belongsTo(ClassRoom::class,'class_id','id');
     }
 
     public function studentExpenses(){
@@ -35,9 +35,14 @@ class Student extends Model
         return $this->hasMany(Subject::class);
     }
 
-    public function parents()
+    public function father()
     {
-        return $this->hasMany(Parents::class);
+        return $this->belongsTo(User::class,'father_id','id');
+    }
+
+    public function mother()
+    {
+        return $this->belongsTo(User::class,'mother_id','id');
     }
 
     public function grades()

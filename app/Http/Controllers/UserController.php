@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -14,24 +15,62 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
+        $formatedUser = null;
+
         switch ($user->user_type){
             case 'student':
-               return $user->load('student');
+              $user->load(['student.father','student.mother','student.classroom']);
+              $formatedUser = $this->formatStudent($user);
                 break;
             case 'parent' :
+                //TODO: to be implemented
                 $this->getParentDate($user);
                 break;
             case 'employee':
-                $this->getEmployeeDate($user);
+                $user->load(['employee.department','employee.subject']);
                 break;
         }
-        return $user;
+        return $formatedUser;
     }
 
-    private function getStudentDate(User $user){
 
-        return $user->load('student');
+    private function formatStudent($user){
 
+        $result = [
+            'name' => $user->name ?? null,
+            'phone' => $user->phone ?? null,
+            'address' => $user->address ?? null,
+            'status' => $user->status ?? null,
+            'email' => $user->email ?? null,
+            'avatarUrl' => $user->avatar_url ?? null,
+            'userType' => $user->user_type ?? null,
+            'grade' => $user->student->grade_level ?? null,
+            'class' => [
+                'grade' => $user->student->classroom->grade ?? null,
+                'class_number' => $user->student->classroom->class_number ?? null,
+            ],
+            'father' => [
+                'id' => $user->student->father->name ?? null,
+                'name' => $user->student->father->name ?? null,
+                'phone' => $user->student->father->phone ?? null,
+                'address' => $user->student->father->address ?? null,
+                'status' => $user->student->father->status ?? null,
+                'email' => $user->student->father->email ?? null,
+                'avatarUrl' => $user->student->father->avatar_url ?? null,
+                'userType' => $user->student->father->user_type ?? null,
+            ],
+            'mother' => [
+                'id' => $user->student->mother->name ?? null,
+                'name' => $user->student->mother->name ?? null,
+                'phone' => $user->student->mother->phone ?? null,
+                'address' => $user->student->mother->address ?? null,
+                'status' => $user->student->mother->status ?? null,
+                'email' => $user->student->mother->email ?? null,
+                'avatarUrl' => $user->student->mother->avatar_url ?? null,
+                'userType' => $user->student->mother->user_type ?? null,
+            ],
+        ];
+        return $result;
     }
  private function getEmployeeDate($user){
 

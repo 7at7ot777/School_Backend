@@ -92,7 +92,12 @@ Route::middleware('auth:sanctum')->group(function () {
 // Route::middleware('auth:sanctum')->group(function () {
 //     Route::apiResource('student', StudentController::class);
 // });
+
 Route::post('/student', [StudentController::class, 'create']);
+Route::get('/student', [StudentController::class, 'index']);
+Route::put('/student/{id}', [StudentController::class, 'update']);
+Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
@@ -107,7 +112,7 @@ Route::prefix('superAdmin')->group(function () {
 Route::get('/test', function () {
 
     $userController  = new \App\Http\Controllers\UserController();
-    $user =  $userController->show(1);
+    $user =  $userController->show(2);
 
     return response()->json($user);
 

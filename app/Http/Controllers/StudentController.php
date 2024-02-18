@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Student;
 use App\Models\User;
 use App\Http\Controllers\Controller;
@@ -63,7 +64,31 @@ class StudentController extends Controller
      */
     public function index()
     {
-        //
+        // استرجاع جميع الطلاب من قاعدة البيانات
+        $students = Student::all();
+
+        // التأكد مما إذا كان هناك طلاب متاحون
+        if ($students->isEmpty()) {
+            return response()->json(['message' => 'No students found'], 404);
+        }
+
+        // تنسيق بيانات الطلاب
+        $formattedStudents = $students->map(function ($student) {
+            return [
+                'id' => $student->id,
+                'name' => $student->user->name,
+                'grade_level' => $student->grade_level,
+                'is_active' => $student->is_active,
+                'parent_id_one' => $student->parent_id_one,
+                'parent_id_two' => $student->parent_id_two,
+                'class_id' => $student->class_id,
+                'semester' => $student->semester,
+                // يمكنك إضافة المزيد من البيانات حسب الحاجة
+            ];
+        });
+
+        // إرجاع بيانات الطلاب كاستجابة JSON
+        return response()->json($formattedStudents, 200);
     }
 
     /**
@@ -85,8 +110,6 @@ class StudentController extends Controller
                 'email' => $request->input('email'),
                 'user_type' => 'student'
             ]);
-            // Save the user
-            $user->save();
 
             // Create a new student instance
             $student = new Student([
@@ -100,6 +123,9 @@ class StudentController extends Controller
 
             // Save the student to the database
             $student->save();
+
+            // Save the user
+            $user->save();
 
             // Return a success response
             return response()->json(['message' => 'Student created successfully'], 201);
@@ -136,9 +162,35 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        // البحث عن الطالب المراد تحديثه
+        $student = Student::find($id);
+
+        // التحقق مما إذا كان الطالب موجودًا
+        if (!$student) {
+            return response()->json(['error' => 'Student not found'], 404);
+        }
+
+        // التحقق من صحة البيانات المرسلة
+        $validatedData = $request->validate([
+            'grade_level' => 'required|integer',
+            'parent_id_one' => 'required|integer',
+            'parent_id_two' => 'required|integer',
+            'class_id' => 'required|integer',
+            'semester' => 'required|integer|in:1,2,3',
+        ]);
+
+        try {
+            // تحديث بيانات الطالب
+            $student->update($validatedData);
+
+            // إرجاع رسالة نجاح
+            return response()->json(['message' => 'Student updated successfully'], 200);
+        } catch (\Exception $e) {
+            // إرجاع رسالة خطأ في حالة حدوث استثناء
+            return response()->json(['error' => 'Failed to update student'], 500);
+        }
     }
 
     /**
@@ -148,4 +200,26 @@ class StudentController extends Controller
     {
         //
     }
+
+    public function toggleIsActive($id)
+{
+    $student = Student::find($id);
+
+    if (!$student) {
+        return response()->json(['error' => 'Student not found'], 404);
+    }
+
+    $user = User::find($student->user_id);
+
+    if (!$user) {
+        return response()->json(['error' => 'User not found for this student'], 404);
+    }
+
+    $user->status = $user->status == 0 ? 1 : 0;
+
+    $user->save();
+
+    $status = $user->status == 1 ? 'active' : 'inactive';
+    return response()->json(['message' => "Student status toggled successfully. Now the student is $status"], 200);
+}
 }
