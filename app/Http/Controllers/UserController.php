@@ -6,79 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-
-    public function show($id)
-    {
-        $user = User::find($id);
-
-        $formatedUser = null;
-
-        switch ($user->user_type){
-            case 'student':
-              $user->load(['student.father','student.mother','student.classroom']);
-              $formatedUser = $this->formatStudent($user);
-                break;
-            case 'parent' :
-                //TODO: to be implemented
-                $this->getParentDate($user);
-                break;
-            case 'employee':
-                $user->load(['employee.department','employee.subject']);
-                break;
-        }
-        return $formatedUser;
-    }
-
-
-    private function formatStudent($user){
-
-        $result = [
-            'name' => $user->name ?? null,
-            'phone' => $user->phone ?? null,
-            'address' => $user->address ?? null,
-            'status' => $user->status ?? null,
-            'email' => $user->email ?? null,
-            'avatarUrl' => $user->avatar_url ?? null,
-            'userType' => $user->user_type ?? null,
-            'grade' => $user->student->grade_level ?? null,
-            'class' => [
-                'grade' => $user->student->classroom->grade ?? null,
-                'class_number' => $user->student->classroom->class_number ?? null,
-            ],
-            'father' => [
-                'id' => $user->student->father->name ?? null,
-                'name' => $user->student->father->name ?? null,
-                'phone' => $user->student->father->phone ?? null,
-                'address' => $user->student->father->address ?? null,
-                'status' => $user->student->father->status ?? null,
-                'email' => $user->student->father->email ?? null,
-                'avatarUrl' => $user->student->father->avatar_url ?? null,
-                'userType' => $user->student->father->user_type ?? null,
-            ],
-            'mother' => [
-                'id' => $user->student->mother->name ?? null,
-                'name' => $user->student->mother->name ?? null,
-                'phone' => $user->student->mother->phone ?? null,
-                'address' => $user->student->mother->address ?? null,
-                'status' => $user->student->mother->status ?? null,
-                'email' => $user->student->mother->email ?? null,
-                'avatarUrl' => $user->student->mother->avatar_url ?? null,
-                'userType' => $user->student->mother->user_type ?? null,
-            ],
-        ];
-        return $result;
-    }
- private function getEmployeeDate($user){
-
-    }
- private function getParentDate($user){
-
-    }
-
 
     public function resetPassword($userId)
     {
@@ -113,6 +45,29 @@ class UserController extends Controller
             return response()->json(['error' => 'Current password is incorrect'], 401);
         }
 
+    }
+
+    public function uploadAvatar(Request $request,$id)
+    {
+        $validator = Validator::make($request->all(),[
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+        $user = User::find($id);
+        if(!$user) {
+            return response()->json(['error' => 'User Not Found'],404);
+
+        }
+        $image = $request->file('image');
+        $imageName = time().'.'.$image->extension();
+
+        $image->move(public_path('storage/avatars'), $imageName);
+
+        $user->avatar_url =  url('storage/avatars/'.$imageName);
+        $user->save();
+
+        return response()->json(['success' => true, 'image' => $user->avatar_url]);
     }
 
 
