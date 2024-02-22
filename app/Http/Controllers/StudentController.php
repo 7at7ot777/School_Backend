@@ -100,39 +100,39 @@ class StudentController extends Controller
         if ($validator->fails()) {
             return $validator->errors();
         }
-//        try {
-            // Create a new user instance
-            $user = User::create([
-                'name' => $request->input('name'),
-                'phone' => $request->input('phone'),
-                'address' => $request->input('address'),
-                'password' => bcrypt('welcome'),
-                'email' => $request->input('email'),
-                'user_type' => 'student'
-            ]);
+        //        try {
+        // Create a new user instance
+        $user = User::create([
+            'name' => $request->input('name'),
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+            'password' => bcrypt('welcome'),
+            'email' => $request->input('email'),
+            'user_type' => 'student'
+        ]);
 
-            // Create a new student instance
-            $student = new Student([
-                'user_id' => $user->id,
-                'grade_level' => $request->input('grade_level'),
-                'parent_id_one' => $request->input('parent_id_one'),
-                'parent_id_two' => $request->input('parent_id_two'),
-                'class_id' => $request->input('class_id'),
-                'semester' => $request->input('semester'),
-            ]);
+        // Create a new student instance
+        $student = new Student([
+            'user_id' => $user->id,
+            'grade_level' => $request->input('grade_level'),
+            'parent_id_one' => $request->input('parent_id_one'),
+            'parent_id_two' => $request->input('parent_id_two'),
+            'class_id' => $request->input('class_id'),
+            'semester' => $request->input('semester'),
+        ]);
 
-            // Save the student to the database
-            $student->save();
+        // Save the student to the database
+        $student->save();
 
-            // Save the user
-            $user->save();
+        // Save the user
+        $user->save();
 
-            // Return a success response
-            return response()->json(['message' => 'Student created successfully'], 201);
-//        } catch (\Exception $e) {
-//            // Return an error response if an exception occurred
-//            return response()->json(['error' => 'Failed to create student','ERROR'=>$e], 500);
-//        }
+        // Return a success response
+        return response()->json(['message' => 'Student created successfully'], 201);
+        //        } catch (\Exception $e) {
+        //            // Return an error response if an exception occurred
+        //            return response()->json(['error' => 'Failed to create student','ERROR'=>$e], 500);
+        //        }
     }
 
     /**
@@ -149,13 +149,14 @@ class StudentController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-        $user->load(['student.father','student.mother','student.classroom']);
+        $user->load(['student.father', 'student.mother', 'student.classroom']);
         $formatedUser = $this->formatStudent($user);
 
         return response()->json($formatedUser);
     }
 
-    private function formatStudent(User $user){
+    private function formatStudent(User $user)
+    {
 
         $result = [
             'name' => $user->name ?? null,
@@ -245,24 +246,24 @@ class StudentController extends Controller
     }
 
     public function toggleIsActive($id)
-{
-    $student = Student::find($id);
+    {
+        $student = Student::find($id);
 
-    if (!$student) {
-        return response()->json(['error' => 'Student not found'], 404);
+        if (!$student) {
+            return response()->json(['error' => 'Student not found'], 404);
+        }
+
+        $user = User::find($student->user_id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found for this student'], 404);
+        }
+
+        $user->status = $user->status == 0 ? 1 : 0;
+
+        $user->save();
+
+        $status = $user->status == 1 ? 'active' : 'inactive';
+        return response()->json(['message' => "Student status toggled successfully. Now the student is $status"], 200);
     }
-
-    $user = User::find($student->user_id);
-
-    if (!$user) {
-        return response()->json(['error' => 'User not found for this student'], 404);
-    }
-
-    $user->status = $user->status == 0 ? 1 : 0;
-
-    $user->save();
-
-    $status = $user->status == 1 ? 'active' : 'inactive';
-    return response()->json(['message' => "Student status toggled successfully. Now the student is $status"], 200);
-}
 }

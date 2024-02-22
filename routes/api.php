@@ -12,6 +12,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ParentController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SuperAdminDashboardController;
 
@@ -42,25 +43,24 @@ Route::post('/logout', [AuthenticationController::class, 'logout'])->middleware(
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('department', DepartmentController::class);
-    Route::post('importDepartment',[DepartmentController::class,'importDepartment']);
-    Route::get('DownloadDepartmentTemplate',[DepartmentController::class,'DownloadDepartmentTemplate']);
+    Route::post('importDepartment', [DepartmentController::class, 'importDepartment']);
+    Route::get('DownloadDepartmentTemplate', [DepartmentController::class, 'DownloadDepartmentTemplate']);
 });
 
 //User
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('resetPassword/{id}',[\App\Http\Controllers\UserController::class,'resetPassword']);
-    Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
-    Route::post('uploadAvatar/{id}',[\App\Http\Controllers\UserController::class,'uploadAvatar']);
-
+    Route::get('resetPassword/{id}', [\App\Http\Controllers\UserController::class, 'resetPassword']);
+    Route::get('setPassword/{id}', [\App\Http\Controllers\UserController::class, 'setPassword']);
+    Route::post('uploadAvatar/{id}', [\App\Http\Controllers\UserController::class, 'uploadAvatar']);
 });
 
 //Admin
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('admin', AdminController::class);
-    Route::post('importAdmin',[AdminController::class,'importAdmin']);
-    Route::get('DownloadAdminTemplate',[AdminController::class,'DownloadAdminTemplate']);
-    Route::get('admin/dashboard/{dept_id}',[AdminController::class,'dashboard']);
+    Route::post('importAdmin', [AdminController::class, 'importAdmin']);
+    Route::get('DownloadAdminTemplate', [AdminController::class, 'DownloadAdminTemplate']);
+    Route::get('admin/dashboard/{dept_id}', [AdminController::class, 'dashboard']);
 });
 
 
@@ -91,11 +91,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('employee', EmployeeController::class);
 });
 
- Route::middleware('auth:sanctum')->group(function () {
-     Route::apiResource('student', StudentController::class);
-     Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('student', StudentController::class);
+    Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
+});
 
- });
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::apiResource('parent', ParentController::class);
+//     Route::delete('/student/{id}', [ParentController::class, 'toggleIsActive']);
+// });
+
+Route::post('/parent', [ParentController::class, 'create']);
+Route::get('/parent', [ParentController::class, 'index']);
+Route::put('/parent/{id}', [ParentController::class, 'update']);
+Route::delete('/parent/{id}', [ParentController::class, 'destroy']);
 
 
 
@@ -115,7 +124,4 @@ Route::get('/test', function () {
     $user =  $userController->show(2);
 
     return response()->json($user);
-
 });
-
-
