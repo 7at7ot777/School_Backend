@@ -118,4 +118,7 @@ Route::get('/test', function () {
 
 });
 
+Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::class, 'loginToPaymentGateway']);
+Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
+
 
