@@ -120,7 +120,11 @@ class PaymentController extends Controller
         $response = Http::post($url, $data);
         $body = $response->getBody()->getContents();
         $data = json_decode($body, true);
-//        dd($data);
+
+        if (!$data['token'])
+        {
+            dd($data);
+        }
 
         return $data['token'];
     }
