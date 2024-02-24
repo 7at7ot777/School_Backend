@@ -93,6 +93,8 @@ Route::middleware('auth:sanctum')->group(function () {
      Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
      Route::post('importStudent',[StudentController::class,'importStudent']);
      Route::get('DownloadStudentTemplate',[StudentController::class,'DownloadStudentTemplate']);
+     Route::post('generatePaymentCodeForStudent',[StudentController::class,'generatePaymentCodeForStudent']);
+     Route::get('assignCodeToAllStudents',[StudentController::class,'assignCodeToAllStudents']);
 
  });
 
@@ -119,7 +121,7 @@ Route::get('/test', function () {
 
 
 //Payments
-Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::class, 'loginToPaymentGateway']);
+Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::class, 'createPaymentCode']);
 Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
 
 

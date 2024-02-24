@@ -277,6 +277,7 @@ class StudentController extends Controller
             'Content-Disposition' => 'inline; filename="' . $filename . '"'
         ]);
     }
+
     public function importStudent(Request $request){
         if ($request->hasFile('file')) {
             $file = $request->file('file');
@@ -286,4 +287,27 @@ class StudentController extends Controller
         }
         return response()->json(['error'=>'No File Provided'],401);
     }
+
+    public function generatePaymentCodeForStudent(Request $request)
+    {
+        $payment = new PaymentController();
+        if($payment->createPaymentCode($request->id,$request->amount))
+            return response()->json(['success'=>'Student bill making has been done']);
+        return response()->json(['error'=>'Student Not Found']);
+    }
+
+    public function assignCodeToAllStudents()
+    {
+        $students = Student::all();
+        $payment = new PaymentController();
+        $numberOfStudents = $students->count();
+        $codeCounter = 0;
+        foreach ($students as $student) {
+            if($payment->createPaymentCode($student->id,1000))
+               $codeCounter++;
+        }
+        return response()->json(['success'=> $codeCounter . ' Student out of '.$numberOfStudents.' has payment codes']);
+
+    }
+
 }
