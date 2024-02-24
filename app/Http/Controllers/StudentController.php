@@ -6,6 +6,7 @@ use App\Imports\ImportStudent;
 use App\Models\Student;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -151,7 +152,8 @@ class StudentController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-        $user->load(['student.father','student.mother','student.classroom']);
+        $user->load(['student.father','student.mother','student.classroom','payments']);
+//        return $user;
         $formatedUser = $this->formatStudent($user);
 
         return response()->json($formatedUser);
@@ -192,7 +194,19 @@ class StudentController extends Controller
                 'avatarUrl' => $user->student->mother->avatar_url ?? null,
                 'userType' => $user->student->mother->user_type ?? null,
             ],
+            'payments' => []
         ];
+
+        foreach ($user->payments as $payment )
+        {
+            $result['payments'][] = [
+                'paymentCode' => $payment->payment_code,
+                'amount' => $payment->amount,
+                'isPaid' => $payment->sucess == 0 ? false : true ,
+                'createdAt' => Carbon::parse($payment->created_at)->format('Y-m-d H:i:s')
+
+            ];
+        }
         return $result;
     }
 

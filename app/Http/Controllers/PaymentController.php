@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use App\Models\StudentPayment;
+use App\Models\Payment;
 use App\Models\User;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -92,11 +92,11 @@ class PaymentController extends Controller
     }
 
     private function saveTransactionData($userId,$bill){
-        $payment = StudentPayment::create([
-           'student_id' => $userId,
+        $payment = Payment::create([
+           'user_id' => $userId,
            'payment_id' => $bill['id'],
            'payment_code' => $bill['data']['bill_reference'],
-            'amount'=>$bill['amount_cents']/100,
+            'amount'=>$bill['amount_cents'],
             'success'=> $bill['success']
         ]);
         $payment->save();
