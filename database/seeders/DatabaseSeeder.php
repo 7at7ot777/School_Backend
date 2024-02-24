@@ -30,20 +30,28 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::create([
             'name' => 'Student',
             'email' => 'student@example.com',
+            'phone' => '123456',
             'password' => bcrypt('123456'),
             'user_type' => 'student'
-        ]);  \App\Models\User::create([
+        ]);
+
+        \App\Models\User::create([
             'name' => 'father',
             'email' => 'father@example.com',
-            'password' => bcrypt('123456'),
+            'phone' => '123456',
+
+        'password' => bcrypt('123456'),
             'user_type' => 'parent'
-        ]);  \App\Models\User::create([
+        ]);
+
+        \App\Models\User::create([
             'name' => 'mother User',
             'email' => 'mother@example.com',
+            'phone' => '123456',
+
             'password' => bcrypt('123456'),
             'user_type' => 'parent'
         ]);
-        $departmentNames = ['Financial', 'Managerial', 'Worker', 'Teaching Staff','Student Affairs'];
 
 
             Department::insert([

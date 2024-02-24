@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportStudent;
 use App\Models\Student;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -265,4 +267,23 @@ class StudentController extends Controller
     $status = $user->status == 1 ? 'active' : 'inactive';
     return response()->json(['message' => "Student status toggled successfully. Now the student is $status"], 200);
 }
+
+    public function DownloadStudentTemplate()
+    {
+        $filePath = public_path("storage/uploads/importStudent.xlsx");
+        $filename = 'importStudent.xlsx';
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
+    public function importStudent(Request $request){
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $importStudent = new ImportStudent();
+            Excel::import($importStudent, $file);
+            return response()->json(['success', $importStudent->counter.' Students imported successfully']);
+        }
+        return response()->json(['error'=>'No File Provided'],401);
+    }
 }

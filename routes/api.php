@@ -73,17 +73,13 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-
+//ClassRooms
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('class-rooms', ClassRoomController::class);
     Route::get('class-rooms/{classRoom}/students', [ClassRoomController::class, 'students'])->name('class-rooms.students');
 });
 
-// Route::prefix('admin')->group(function () {
-//     Route::post('/create-employee', [AdminController::class, 'storeEmployee']);
-// });
-
-
+//Employees
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/employee/{dept_id}', [EmployeeController::class, 'index']);
@@ -91,9 +87,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('employee', EmployeeController::class);
 });
 
+//Student
  Route::middleware('auth:sanctum')->group(function () {
      Route::apiResource('student', StudentController::class);
      Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
+     Route::post('importStudent',[StudentController::class,'importStudent']);
+     Route::get('DownloadStudentTemplate',[StudentController::class,'DownloadStudentTemplate']);
 
  });
 
@@ -118,6 +117,8 @@ Route::get('/test', function () {
 
 });
 
+
+//Payments
 Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::class, 'loginToPaymentGateway']);
 Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
 
