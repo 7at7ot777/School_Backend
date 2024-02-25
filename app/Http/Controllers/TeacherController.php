@@ -111,4 +111,6 @@ class TeacherController extends Controller
 
         return response()->json(['data' => $teacher], 200);
     }
+
+    
 }

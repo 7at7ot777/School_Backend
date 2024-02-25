@@ -137,8 +137,8 @@ class EmployeeController extends Controller
             $sub_name = null;
             $dept_name = null;
             $resultArray[] = [
-                'id' => $item['id'], //employee id
-                'user_id' => $item['user']['id'],
+                'emp_id' => $item['id'], //employee id
+                'id' => $item['user']['id'],
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
