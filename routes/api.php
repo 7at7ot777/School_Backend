@@ -61,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('importAdmin',[AdminController::class,'importAdmin']);
     Route::get('DownloadAdminTemplate',[AdminController::class,'DownloadAdminTemplate']);
     Route::get('admin/dashboard/{dept_id}',[AdminController::class,'dashboard']);
+    Route::get('adminDashboard',[AdminController::class,'adminDashboard']);
 });
 
 
