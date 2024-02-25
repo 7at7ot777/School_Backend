@@ -6,64 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
     public function resetPassword($userId)
     {
         // Retrieve the user by ID
@@ -97,6 +45,29 @@ class UserController extends Controller
             return response()->json(['error' => 'Current password is incorrect'], 401);
         }
 
+    }
+
+    public function uploadAvatar(Request $request,$id)
+    {
+        $validator = Validator::make($request->all(),[
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048']);
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+        $user = User::find($id);
+        if(!$user) {
+            return response()->json(['error' => 'User Not Found'],404);
+
+        }
+        $image = $request->file('image');
+        $imageName = time().'.'.$image->extension();
+
+        $image->move(public_path('storage/avatars'), $imageName);
+
+        $user->avatar_url =  url('storage/avatars/'.$imageName);
+        $user->save();
+
+        return response()->json(['success' => true, 'image' => $user->avatar_url]);
     }
 
 

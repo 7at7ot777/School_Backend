@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportStudent;
 use App\Models\Student;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -100,7 +103,7 @@ class StudentController extends Controller
         if ($validator->fails()) {
             return $validator->errors();
         }
-        try {
+//        try {
             // Create a new user instance
             $user = User::create([
                 'name' => $request->input('name'),
@@ -129,10 +132,10 @@ class StudentController extends Controller
 
             // Return a success response
             return response()->json(['message' => 'Student created successfully'], 201);
-        } catch (\Exception $e) {
-            // Return an error response if an exception occurred
-            return response()->json(['error' => 'Failed to create student'], 500);
-        }
+//        } catch (\Exception $e) {
+//            // Return an error response if an exception occurred
+//            return response()->json(['error' => 'Failed to create student','ERROR'=>$e], 500);
+//        }
     }
 
     /**
@@ -146,9 +149,65 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $user = User::find($id);
+        $user->load(['student.father','student.mother','student.classroom','payments']);
+//        return $user;
+        $formatedUser = $this->formatStudent($user);
+
+        return response()->json($formatedUser);
+    }
+
+    private function formatStudent(User $user){
+
+        $result = [
+            'name' => $user->name ?? null,
+            'phone' => $user->phone ?? null,
+            'address' => $user->address ?? null,
+            'status' => $user->status ?? null,
+            'email' => $user->email ?? null,
+            'avatarUrl' => $user->avatar_url ?? null,
+            'userType' => $user->user_type ?? null,
+            'grade' => $user->student->grade_level ?? null,
+            'class' => [
+                'grade' => $user->student->classroom->grade ?? null,
+                'class_number' => $user->student->classroom->class_number ?? null,
+            ],
+            'father' => [
+                'id' => $user->student->father->name ?? null,
+                'name' => $user->student->father->name ?? null,
+                'phone' => $user->student->father->phone ?? null,
+                'address' => $user->student->father->address ?? null,
+                'status' => $user->student->father->status ?? null,
+                'email' => $user->student->father->email ?? null,
+                'avatarUrl' => $user->student->father->avatar_url ?? null,
+                'userType' => $user->student->father->user_type ?? null,
+            ],
+            'mother' => [
+                'id' => $user->student->mother->name ?? null,
+                'name' => $user->student->mother->name ?? null,
+                'phone' => $user->student->mother->phone ?? null,
+                'address' => $user->student->mother->address ?? null,
+                'status' => $user->student->mother->status ?? null,
+                'email' => $user->student->mother->email ?? null,
+                'avatarUrl' => $user->student->mother->avatar_url ?? null,
+                'userType' => $user->student->mother->user_type ?? null,
+            ],
+            'payments' => []
+        ];
+
+        foreach ($user->payments as $payment )
+        {
+            $result['payments'][] = [
+                'paymentCode' => $payment->payment_code,
+                'amount' => $payment->amount,
+                'isPaid' => $payment->sucess == 0 ? false : true ,
+                'createdAt' => Carbon::parse($payment->created_at)->format('Y-m-d H:i:s')
+
+            ];
+        }
+        return $result;
     }
 
     /**
@@ -222,4 +281,47 @@ class StudentController extends Controller
     $status = $user->status == 1 ? 'active' : 'inactive';
     return response()->json(['message' => "Student status toggled successfully. Now the student is $status"], 200);
 }
+
+    public function DownloadStudentTemplate()
+    {
+        $filePath = public_path("storage/uploads/importStudent.xlsx");
+        $filename = 'importStudent.xlsx';
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
+
+    public function importStudent(Request $request){
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $importStudent = new ImportStudent();
+            Excel::import($importStudent, $file);
+            return response()->json(['success', $importStudent->counter.' Students imported successfully']);
+        }
+        return response()->json(['error'=>'No File Provided'],401);
+    }
+
+    public function generatePaymentCodeForStudent(Request $request)
+    {
+        $payment = new PaymentController();
+        if($payment->createPaymentCode($request->id,$request->amount))
+            return response()->json(['success'=>'Student bill making has been done']);
+        return response()->json(['error'=>'Student Not Found']);
+    }
+
+    public function assignCodeToAllStudents()
+    {
+        $students = Student::all();
+        $payment = new PaymentController();
+        $numberOfStudents = $students->count();
+        $codeCounter = 0;
+        foreach ($students as $student) {
+            if($payment->createPaymentCode($student->id,1000))
+               $codeCounter++;
+        }
+        return response()->json(['success'=> $codeCounter . ' Student out of '.$numberOfStudents.' has payment codes']);
+
+    }
+
 }

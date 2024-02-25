@@ -1,0 +1,55 @@
+{
+	"info": {
+		"_postman_id": "a7934cda-3aba-4551-b7b3-67684259b548",
+		"name": "superadmin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22761454",
+		"_collection_link": "https://xx7at7othelallxx.postman.co/workspace/School-Management-System~37f25350-fe9b-4e03-915e-73485c776db4/collection/31464685-a7934cda-3aba-4551-b7b3-67684259b548?action=share&source=collection_link&creator=22761454"
+	},
+	"item": [
+		{
+			"name": "department dashboard(Not Used Yet)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}superAdmin/departmentDashboard",
+					"host": [
+						"{{localhost}}superAdmin"
+					],
+					"path": [
+						"departmentDashboard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Main DashBoard",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}superAdmin/mainDashboard",
+					"host": [
+						"{{localhost}}superAdmin"
+					],
+					"path": [
+						"mainDashboard"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
