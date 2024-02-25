@@ -266,7 +266,7 @@ class AdminController extends Controller
     }
 
     //TODO: remoe thie
-    public function  dashboard($dept_id)
+    /*public function  dashboard($dept_id)
     {
         $employeesNumber = Employee::
         where('department_id', $dept_id)
@@ -285,6 +285,6 @@ class AdminController extends Controller
 
 
 
-    }
+    }*/
     
 }

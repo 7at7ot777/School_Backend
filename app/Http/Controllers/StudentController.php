@@ -67,8 +67,8 @@ class StudentController extends Controller
      */
     public function index()
     {
-        // استرجاع جميع الطلاب من قاعدة البيانات
-        $students = Student::all();
+        $students = User::where('user_type','student')->get();
+        $students->load(['student.father','student.mother','student.classroom','payments']);
 
         // التأكد مما إذا كان هناك طلاب متاحون
         if ($students->isEmpty()) {
@@ -76,19 +76,12 @@ class StudentController extends Controller
         }
 
         // تنسيق بيانات الطلاب
-        $formattedStudents = $students->map(function ($student) {
-            return [
-                'id' => $student->id,
-                'name' => $student->user->name,
-                'grade_level' => $student->grade_level,
-                'is_active' => $student->is_active,
-                'parent_id_one' => $student->parent_id_one,
-                'parent_id_two' => $student->parent_id_two,
-                'class_id' => $student->class_id,
-                'semester' => $student->semester,
-                // يمكنك إضافة المزيد من البيانات حسب الحاجة
-            ];
-        });
+        $formattedStudents = [];
+
+        foreach ($students as $student)
+        {
+            $formattedStudents[] = $this->formatStudent($student);
+        }
 
         // إرجاع بيانات الطلاب كاستجابة JSON
         return response()->json($formattedStudents, 200);
