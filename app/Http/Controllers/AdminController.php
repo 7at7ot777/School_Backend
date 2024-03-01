@@ -98,7 +98,7 @@ class AdminController extends Controller
             ->where('role', 'admin')
             ->get();
 
-        //                return $admins;
+//                        return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins, 200);
     }
@@ -113,7 +113,8 @@ class AdminController extends Controller
             $dept_id = null;
             $dept_name = null;
             $resultArray[] = [
-                'id' => $item['id'],
+                'id' => $item['user']['id'],
+                'emp_id' => $item['id'],
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
@@ -161,8 +162,8 @@ class AdminController extends Controller
 
     public function show($id)
     {
-        $admin = Employee::with('department:id,name', 'user:id,email,name,phone')->where('id', $id)->first();
-        //        return $admin;
+        $admin = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('id', $id)->first();
+//                return $admin;
 
         if (!$admin) {
             return response()->json(['error' => 'Employee not found'], 404);

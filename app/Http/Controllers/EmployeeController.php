@@ -123,7 +123,21 @@ class EmployeeController extends Controller
 
     public function show($id)
     {
-//            $employee =
+        $employee = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+            ->Where('id',$id)
+            ->first();
+
+        if(!$employee)
+        {
+            return response()->json(['error'=>'Employee not found '], 404);
+
+        }
+
+        $formattedEmployee = $this->formatDate($employee);
+
+        return response()->json($formattedEmployee, 200);
+
+
     }
 
     private function formatDate($data)

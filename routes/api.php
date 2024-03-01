@@ -95,6 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
      Route::post('importStudent',[StudentController::class,'importStudent']);
      Route::get('DownloadStudentTemplate',[StudentController::class,'DownloadStudentTemplate']);
      Route::post('generatePaymentCodeForStudent',[StudentController::class,'generatePaymentCodeForStudent']);
+     Route::post('createStudent',[StudentController::class,'createStudent']);
      Route::get('assignCodeToAllStudents',[StudentController::class,'assignCodeToAllStudents']);
 
  });

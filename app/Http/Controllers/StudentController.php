@@ -19,11 +19,11 @@ class StudentController extends Controller
         'address' => 'nullable|string|max:255',
         'password' => 'nullable|string|max:255',
         'email' => 'required|email|unique:users|max:255',
-        'grade_level' => 'required|integer',
-        'parent_id_one' => 'required|integer',
-        'parent_id_two' => 'required|integer',
+//        'grade_level' => 'required|integer',
+//        'parent_id_one' => 'required|integer',
+//        'parent_id_two' => 'required|integer',
         'class_id' => 'required|integer',
-        'semester' => 'required|integer|in:1,2,3',
+//        'semester' => 'required|integer|in:1,2,3',
     ];
 
     public static $errorMessages = [
@@ -46,21 +46,21 @@ class StudentController extends Controller
         'email.unique' => 'The specified email address is already taken.',
         'email.max' => 'The email field must not exceed 255 characters.',
 
-        'grade_level.required' => 'The grade level field is required.',
-        'grade_level.integer' => 'The grade level must be an integer.',
-
-        'parent_id_one.required' => 'The parent ID one field is required.',
-        'parent_id_one.integer' => 'The parent ID one must be an integer.',
-
-        'parent_id_two.required' => 'The parent ID two field is required.',
-        'parent_id_two.integer' => 'The parent ID two must be an integer.',
+//        'grade_level.required' => 'The grade level field is required.',
+//        'grade_level.integer' => 'The grade level must be an integer.',
+//
+//        'parent_id_one.required' => 'The parent ID one field is required.',
+//        'parent_id_one.integer' => 'The parent ID one must be an integer.',
+//
+//        'parent_id_two.required' => 'The parent ID two field is required.',
+//        'parent_id_two.integer' => 'The parent ID two must be an integer.',
 
         'class_id.required' => 'The class ID field is required.',
         'class_id.integer' => 'The class ID must be an integer.',
-
-        'semester.required' => 'The semester field is required.',
-        'semester.integer' => 'The semester must be an integer.',
-        'semester.in' => 'Invalid value for the semester field. Allowed values are 1, 2, 3.',
+//
+//        'semester.required' => 'The semester field is required.',
+//        'semester.integer' => 'The semester must be an integer.',
+//        'semester.in' => 'Invalid value for the semester field. Allowed values are 1, 2, 3.',
     ];
     /**
      * Display a listing of the resource.
@@ -90,13 +90,14 @@ class StudentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function createStudent(Request $request)
     {
+//        dd($request->all());
         $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
+
         if ($validator->fails()) {
             return $validator->errors();
         }
-//        try {
             // Create a new user instance
             $user = User::create([
                 'name' => $request->input('name'),
@@ -114,21 +115,19 @@ class StudentController extends Controller
                 'parent_id_one' => $request->input('parent_id_one'),
                 'parent_id_two' => $request->input('parent_id_two'),
                 'class_id' => $request->input('class_id'),
-                'semester' => $request->input('semester'),
+                'semester' => $request->input('semester') ?? 1,
             ]);
 
-            // Save the student to the database
-            $student->save();
 
-            // Save the user
-            $user->save();
+        // Save the user
+        $user->save();
+        // Save the student to the database
+        $student->save();
 
             // Return a success response
             return response()->json(['message' => 'Student created successfully'], 201);
-//        } catch (\Exception $e) {
-//            // Return an error response if an exception occurred
-//            return response()->json(['error' => 'Failed to create student','ERROR'=>$e], 500);
-//        }
+
+
     }
 
     /**
@@ -155,6 +154,8 @@ class StudentController extends Controller
     private function formatStudent(User $user){
 
         $result = [
+            'id' => $user->id,
+            'student_id' => $user->student->id,
             'name' => $user->name ?? null,
             'phone' => $user->phone ?? null,
             'address' => $user->address ?? null,
