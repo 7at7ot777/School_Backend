@@ -107,6 +107,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
 });
 
+
+//Timetables
+Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
+    Route::get('/getDataForMakeTable', [\App\Http\Controllers\TimetableController::class, 'getDataForMakeTable']);
+    Route::post('/addNewPeriod', [\App\Http\Controllers\TimetableController::class, 'addNewPeriod']);
+    Route::get('/getTeacherTable', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
+    Route::get('/getClassTable', [\App\Http\Controllers\TimetableController::class, 'getClassTable']);
+
+    // Add routes for edit and delete
+    Route::put('/editPeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'editPeriod']);
+    Route::delete('/deletePeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'deletePeriod']);
+});
+
+
 Route::prefix('superAdmin')->group(function () {
     Route::get('/departmentDashboard', [SuperAdminDashboardController::class, 'departmentDashboard']); // Not Used
     Route::get('/mainDashboard', [SuperAdminDashboardController::class, 'superAdminDashboard']);
@@ -114,8 +128,8 @@ Route::prefix('superAdmin')->group(function () {
 
 Route::get('/test', function () {
 
-    $userController  = new \App\Http\Controllers\UserController();
-    $user =  $userController->show(2);
+    $Controller  = new \App\Http\Controllers\TimetableController();
+    $user =  $Controller->getDataForMakeTable();
 
     return response()->json($user);
 

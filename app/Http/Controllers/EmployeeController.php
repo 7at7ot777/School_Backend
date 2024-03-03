@@ -63,7 +63,7 @@ class EmployeeController extends Controller
             return $validator->errors();
         }
         // قم بتحقق من وجود subject_id لتحديد الدور (teacher أو employee)
-        $role = $request->subject_id != null ? 'teacher' : 'employee';
+        $role = $request->subject_id == null || $request->subject_id == [] ? 'employee': 'teacher' ;
 
         // قم بإنشاء مستخدم جديد
         $user = User::create([
@@ -84,8 +84,13 @@ class EmployeeController extends Controller
             'department_id' => $request->input('department_id'),
             'basic_salary' => $request->input('basic_salary'),
             'role' => $role,
-            'subject_id' => $request->input('subject_id')
+//            'subject_id' => $request->input('subject_id')
         ]);
+        $subject_ids = $request->input('subject_id');
+        if($role=='teacher')
+        {
+            $employee->subject()->sync($subject_ids);
+        }
 
         // قم بحفظ الموظف
         $employee->save();

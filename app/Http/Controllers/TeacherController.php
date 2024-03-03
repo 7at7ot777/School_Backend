@@ -52,7 +52,7 @@ class TeacherController extends Controller
 
     public function index()
     {
-        $teachers = Employee::with('subject:id,name', 'user:id,email,name,phone,status')
+        $teachers = Employee::with('subject:id,name', 'user:id,email,name,phone,status,avatar_url')
             ->where('role', 'teacher')
             ->whereHas('user', function ($query) {
             $query->where('status', 1);
@@ -65,19 +65,28 @@ class TeacherController extends Controller
     {
         $resultArray = [];
         foreach ($data as $item) {
+            $subjects = [];
+            $objSub = $item->subject;
 
+            foreach ($objSub as $subject ){
+
+                $subjects[] = [
+                    'id' => $subject->id,
+                    'name' => $subject->name,
+                ];
+
+//
+            }
             $resultArray[] = [
                 'teacher_id' => $item['id'],
                 'id' => $item['user']['id'],
-                'avatarUrl' => '',
+                'avatarUrl' => $item['user']['avatar_url'] ?? '',
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
                 'status' => $item['user']['status'] == 0 ? false : true,
-                'subject' => [
-                    'id' => $item['subject']['id'] ?? null,
-                    'name' => $item['subject']['name'] ?? null,
-                ],
+                'subject' => $subjects,
             ];
+
         }
         return $resultArray;
     }

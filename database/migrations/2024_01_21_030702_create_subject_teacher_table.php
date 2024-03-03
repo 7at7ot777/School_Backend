@@ -16,14 +16,13 @@ return new class extends Migration
     //TODO: Remoce this migration
     public function up()
     {
-        Schema::create('subject_teacher', function (Blueprint $table) {
+        Schema::create('employee_subject', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('subject_id');
-            $table->unsignedBigInteger('teacher_id');
+            $table->unsignedBigInteger('employee_id');
             $table->timestamps();
 
-            $table->foreign('subject_id')->references('id')->on('subjects');//->onDelete('cascade');
-            $table->foreign('teacher_id')->references('id')->on('employees');//->onDelete('cascade');
+
         });
     }
 

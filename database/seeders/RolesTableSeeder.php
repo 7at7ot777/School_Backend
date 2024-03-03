@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -12,19 +13,9 @@ class RolesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('roles')->insert([
-            [
-                'name' => 'student',
-                'description' => '.....',
-            ],
-            [
-                'name' => 'parent',
-                'description' => '.....',
-            ],
-            [
-                'name' => 'employee',
-                'description' => '.....',
-            ],
-        ]);
+        $roleNames = ['Manager', 'Teacher', 'Worker', 'Employee'];
+        foreach ($roleNames as $name) {
+            Role::create(['name' => $name]);
+        }
     }
 }
