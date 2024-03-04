@@ -13,7 +13,31 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        //
+        $subjects = Subject::with('teachers.user')->get();
+        $formattedData = $this->formatDate($subjects);
+        return response()->json($formattedData, 200);
+    }
+
+    private function formatDate($data)
+    {
+        $resultArray = [];
+
+        foreach ($data as $subject) {
+            $mainAdmin = $subject->teachers->first();
+
+            $resultArray[] = [
+                'id' => $subject->id,
+                'name' => $subject->name,
+              //  'numOfAdmins' => $subject->employees->where('role', 'admin')->where('user.status',1)->count() ,
+                'numOfTeachers' => $subject->teachers->where('user.status',1)->count(),
+                'mainAdmin' => [
+                    'id' => $mainAdmin ? $mainAdmin->id : '',
+                    'name' => $mainAdmin ? $mainAdmin->user->name : '',
+                    'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
+                ],
+            ];
+        }
+        return $resultArray;
     }
 
     /**
@@ -29,7 +53,13 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $subject = Subject::create($request->all());
+
+        return response()->json(['message' => 'stored successfully'], 201);
     }
 
     /**
@@ -37,7 +67,7 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
-        //
+        return response()->json($subject, 200);
     }
 
     /**
@@ -53,7 +83,13 @@ class SubjectController extends Controller
      */
     public function update(Request $request, Subject $subject)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        $subject->update($request->all());
+
+        return response()->json(['message' => 'Updated successfully'], 200);
+
     }
 
     /**
@@ -61,6 +97,12 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
-        //
+        if(!$subject)
+        {
+            return response()->json(['message' => 'Subject Not Found'], 404);
+        }
+        $subject->delete();
+
+        return response()->json(['message' => 'Subject Deleted Successfully'], 200);
     }
 }

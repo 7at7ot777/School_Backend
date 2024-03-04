@@ -1,0 +1,291 @@
+{
+	"info": {
+		"_postman_id": "8f1d9f40-e840-4c2c-8823-c9d5decd0b30",
+		"name": "Admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22761454",
+		"_collection_link": "https://xx7at7othelallxx.postman.co/workspace/School-Management-System~37f25350-fe9b-4e03-915e-73485c776db4/collection/22761454-8f1d9f40-e840-4c2c-8823-c9d5decd0b30?action=share&source=collection_link&creator=22761454"
+	},
+	"item": [
+		{
+			"name": "index",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/admin",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "show",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}admin/3",
+					"host": [
+						"{{localhost}}admin"
+					],
+					"path": [
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "role",
+							"value": "admin",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "name",
+							"value": "mohamed",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "23@gmmail.comm1",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "01128995765",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "address",
+							"value": "aaaaaaa",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "123456",
+							"type": "text"
+						},
+						{
+							"key": "department_id",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "basic_salary",
+							"value": "5000",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "subject_id",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "user_type",
+							"value": "employee",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localhost}}admin",
+					"host": [
+						"{{localhost}}admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"John Doe\",\r\n  //\"phone\": \"+1234567890\",\r\n  //\"address\": \"123 Main St, City\",\r\n  //\"password\": \"123456\",\r\n  \"email\": \"test2@example.com\",\r\n  \"department_id\": 2,\r\n  \"status\": false,\r\n  \"avatar_url\": \"\",\r\n  \"id\": null\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{localhost}}admin/1",
+					"host": [
+						"{{localhost}}admin"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{localhost}}admin/3",
+					"host": [
+						"{{localhost}}admin"
+					],
+					"path": [
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "import Admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/hathout/Desktop/importAdmin.xlsx"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{localhost}}importAdmin",
+					"host": [
+						"{{localhost}}importAdmin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DownloadAdminTemplate",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/vnd.ms-excel",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "{{localhost}}DownloadAdminTemplate",
+					"host": [
+						"{{localhost}}DownloadAdminTemplate"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
