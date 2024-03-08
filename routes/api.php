@@ -113,6 +113,12 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
+use App\Http\Controllers\StudentAttendanceController;
+Route::post('/attendance', [StudentAttendanceController::class, 'recordAttendance']);
+Route::get('/students/absences/{studentId}', [StudentAttendanceController::class, 'calculateAbsenceDays']);
+//Route::get('/students/{studentId}/absence-days', [StudentAttendanceController::class, 'calculateAbsenceDays']);
+
+
 //Timetables
 Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
     Route::get('/getDataForMakeTable', [\App\Http\Controllers\TimetableController::class, 'getDataForMakeTable']);

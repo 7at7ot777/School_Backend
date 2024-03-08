@@ -65,39 +65,49 @@ class StudentAttendanceController extends Controller
         //
     }
 
-    public function recordAbsence(Request $request)
+    public function recordAttendance(Request $request)
     {
+        // التحقق من وجود المعلومات المطلوبة في الطلب
         $request->validate([
             'student_id' => 'required|exists:students,id',
-            'date' => 'required|date',
+            'date' => 'required|date_format:Y-m-d',
+            'status' => 'required|boolean',
         ]);
 
-        $studentId = $request->input('student_id');
-        $date = Carbon::parse($request->input('date'));
+        try {
+            // إنشاء سجل حضور جديد
+            $attendance = new StudentAttendance([
+                'student_id' => $request->student_id,
+                'date' => $request->date,
+                'day' => date('d', strtotime($request->date)),
+                'month' => date('m', strtotime($request->date)),
+                'year' => date('Y', strtotime($request->date)),
+                'status' => $request->status,
+            ]);
 
-        $attendance = StudentAttendance::recordAbsence($studentId, $date);
+            // حفظ السجل في قاعدة البيانات
+            $attendance->save();
 
-        return response()->json(['message' => 'Absence recorded successfully', 'data' => $attendance], 201);
+            return response()->json(['message' => 'Attendance recorded successfully'], 201);
+        } catch (\Exception $e) {
+            // التعامل مع الخطأ إذا حدث
+            return response()->json(['error' => 'Failed to record attendance', 'message' => $e->getMessage()], 500);
+        }
     }
 
 
 
-    
-    public function getAbsenceDays($studentId)
+    public function calculateAbsenceDays($studentId)
     {
-        // احسب الفترة من تاريخ اليوم حتى اليوم السابق
-        $today = Carbon::now();
-        $oneDayAgo = Carbon::now()->subDay();
-
-        // ابحث عن جميع سجلات الحضور للطالب في الفترة المحددة
-        $absentRecords = StudentAttendance::where('student_id', $studentId)
-            ->whereBetween('date', [$oneDayAgo, $today])
+        // العثور على سجلات الغياب للطالب
+        $absenceRecords = StudentAttendance::where('student_id', $studentId)
             ->where('status', 0) // 0 يعني غياب
             ->get();
-
-        // عدد الأيام التي غابها الطالب
-        $absenceDaysCount = $absentRecords->count();
-
-        return $absenceDaysCount;
+    
+        // حساب عدد الأيام التي غاب فيها الطالب
+        $absenceDays = $absenceRecords->count();
+    
+        // إرجاع النتيجة
+        return $absenceDays;
     }
 }
