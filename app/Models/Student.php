@@ -12,9 +12,8 @@ class Student extends Model
     protected $fillable = [
         'user_id',
         'grade_level',
-        'is_active',
-        'parent_id_one',
-        'parent_id_two',
+        'father_id',
+        'mother_id',
         'class_id',
         'semester',
     ];
@@ -54,4 +53,8 @@ class Student extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+//    public function payments(){
+//        return $this->hasMany(Payment::class,'user_id','user.id');
+//    }
 }

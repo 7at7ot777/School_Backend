@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Imports\ImportAdmin;
+use App\Models\ClassRoom;
 use App\Models\Role;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,6 +16,35 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
+
+    public function adminDashboard(Request $request){
+        $admin = Employee::find($request->id);
+//        return $admin;
+        //check the admin if found or it's not really admin
+        if(!$admin || $admin->role != 'admin')
+        {
+            return response()->json(['error' => 'Not Authorized'],401);
+        }
+
+        switch ($admin->department_id)
+        {
+            case 1: //teaching staff
+                $numOfTeachers = Employee::where('role','teacher')->count();
+                $numOfSubjects = Subject::all()->count();
+                return response()->json(['numerOfTeachers' => $numOfTeachers, 'numOfSubjects' => $numOfSubjects]);
+            case 5: //student affairs
+                $numOfStudents = Student::all()->count();
+                $numOfClassRooms = ClassRoom::all()->count();
+                return response()->json(['numOfStudents' => $numOfStudents, 'numOfClassRooms' => $numOfClassRooms]);
+            default:
+                $numOfEmployyes = Employee::all()->count();
+                return response()->json(['numOfEmployyes' => $numOfEmployyes]);
+
+
+        }
+
+    }
+
     public static $rules = [
         'name' => 'required|string|max:255',
         'phone' => 'nullable|string|max:255',
@@ -67,7 +98,7 @@ class AdminController extends Controller
             ->where('role', 'admin')
             ->get();
 
-        //                return $admins;
+//                        return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins, 200);
     }
@@ -82,7 +113,8 @@ class AdminController extends Controller
             $dept_id = null;
             $dept_name = null;
             $resultArray[] = [
-                'id' => $item['id'],
+                'id' => $item['user']['id'],
+                'emp_id' => $item['id'],
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
@@ -130,8 +162,8 @@ class AdminController extends Controller
 
     public function show($id)
     {
-        $admin = Employee::with('department:id,name', 'user:id,email,name,phone')->where('id', $id)->first();
-        //        return $admin;
+        $admin = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('id', $id)->first();
+//                return $admin;
 
         if (!$admin) {
             return response()->json(['error' => 'Employee not found'], 404);
@@ -234,7 +266,8 @@ class AdminController extends Controller
 
     }
 
-    public function dashboard($dept_id)
+    //TODO: remoe thie
+    /*public function  dashboard($dept_id)
     {
         $employeesNumber = Employee::
         where('department_id', $dept_id)
@@ -253,6 +286,6 @@ class AdminController extends Controller
 
 
 
-    }
+    }*/
     
 }

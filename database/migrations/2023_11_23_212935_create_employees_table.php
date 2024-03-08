@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('role', ['admin','superAdmin','employee','teacher']); //roles have not been determined yet
             $table->unsignedBigInteger('department_id')->nullable(); // Foreign key
             $table->integer('basic_salary')->default(0)->nullable();
+            //TODO: May be removed
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->softDeletes();
             $table->timestamps();

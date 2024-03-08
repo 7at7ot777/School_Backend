@@ -63,7 +63,7 @@ class EmployeeController extends Controller
             return $validator->errors();
         }
         // قم بتحقق من وجود subject_id لتحديد الدور (teacher أو employee)
-        $role = $request->subject_id != null ? 'teacher' : 'employee';
+        $role = $request->subject_id == null || $request->subject_id == [] ? 'employee': 'teacher' ;
 
         // قم بإنشاء مستخدم جديد
         $user = User::create([
@@ -84,8 +84,13 @@ class EmployeeController extends Controller
             'department_id' => $request->input('department_id'),
             'basic_salary' => $request->input('basic_salary'),
             'role' => $role,
-            'subject_id' => $request->input('subject_id')
+//            'subject_id' => $request->input('subject_id')
         ]);
+        $subject_ids = $request->input('subject_id');
+        if($role=='teacher')
+        {
+            $employee->subject()->sync($subject_ids);
+        }
 
         // قم بحفظ الموظف
         $employee->save();
@@ -123,7 +128,21 @@ class EmployeeController extends Controller
 
     public function show($id)
     {
-//            $employee =
+        $employee = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+            ->Where('id',$id)
+            ->first();
+
+        if(!$employee)
+        {
+            return response()->json(['error'=>'Employee not found '], 404);
+
+        }
+
+        $formattedEmployee = $this->formatDate($employee);
+
+        return response()->json($formattedEmployee, 200);
+
+
     }
 
     private function formatDate($data)
@@ -137,8 +156,8 @@ class EmployeeController extends Controller
             $sub_name = null;
             $dept_name = null;
             $resultArray[] = [
-                'id' => $item['id'], //employee id
-                'user_id' => $item['user']['id'],
+                'emp_id' => $item['id'], //employee id
+                'id' => $item['user']['id'],
                 'avatarUrl' => '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],

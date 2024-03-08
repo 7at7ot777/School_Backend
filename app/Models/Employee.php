@@ -25,7 +25,9 @@ class Employee extends Model
 
     public function subject()
     {
-        return $this->belongsTo(Subject::class);
+        //return $this->belongsTo(Subject::class);
+        return $this->belongsToMany(Subject::class);
+
     }
 
     public function attendance()

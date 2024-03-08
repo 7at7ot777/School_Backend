@@ -12,7 +12,6 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\ParentController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SuperAdminDashboardController;
 
@@ -43,24 +42,26 @@ Route::post('/logout', [AuthenticationController::class, 'logout'])->middleware(
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('department', DepartmentController::class);
-    Route::post('importDepartment', [DepartmentController::class, 'importDepartment']);
-    Route::get('DownloadDepartmentTemplate', [DepartmentController::class, 'DownloadDepartmentTemplate']);
+    Route::post('importDepartment',[DepartmentController::class,'importDepartment']);
+    Route::get('DownloadDepartmentTemplate',[DepartmentController::class,'DownloadDepartmentTemplate']);
 });
 
 //User
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('resetPassword/{id}', [\App\Http\Controllers\UserController::class, 'resetPassword']);
-    Route::get('setPassword/{id}', [\App\Http\Controllers\UserController::class, 'setPassword']);
-    Route::post('uploadAvatar/{id}', [\App\Http\Controllers\UserController::class, 'uploadAvatar']);
+    Route::get('resetPassword/{id}',[\App\Http\Controllers\UserController::class,'resetPassword']);
+    Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
+    Route::post('uploadAvatar/{id}',[\App\Http\Controllers\UserController::class,'uploadAvatar']);
+
 });
 
 //Admin
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('admin', AdminController::class);
-    Route::post('importAdmin', [AdminController::class, 'importAdmin']);
-    Route::get('DownloadAdminTemplate', [AdminController::class, 'DownloadAdminTemplate']);
-    Route::get('admin/dashboard/{dept_id}', [AdminController::class, 'dashboard']);
+    Route::post('importAdmin',[AdminController::class,'importAdmin']);
+    Route::get('DownloadAdminTemplate',[AdminController::class,'DownloadAdminTemplate']);
+    Route::get('admin/dashboard/{dept_id}',[AdminController::class,'dashboard']);
+    Route::get('adminDashboard',[AdminController::class,'adminDashboard']);
 });
 
 
@@ -73,17 +74,13 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-
+//ClassRooms
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('class-rooms', ClassRoomController::class);
     Route::get('class-rooms/{classRoom}/students', [ClassRoomController::class, 'students'])->name('class-rooms.students');
 });
 
-// Route::prefix('admin')->group(function () {
-//     Route::post('/create-employee', [AdminController::class, 'storeEmployee']);
-// });
-
-
+//Employees
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/employee/{dept_id}', [EmployeeController::class, 'index']);
@@ -91,20 +88,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('employee', EmployeeController::class);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('student', StudentController::class);
-    Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
-});
+//Student
+ Route::middleware('auth:sanctum')->group(function () {
+     Route::apiResource('student', StudentController::class);
+     Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
+     Route::post('importStudent',[StudentController::class,'importStudent']);
+     Route::get('DownloadStudentTemplate',[StudentController::class,'DownloadStudentTemplate']);
+     Route::post('generatePaymentCodeForStudent',[StudentController::class,'generatePaymentCodeForStudent']);
+     Route::post('createStudent',[StudentController::class,'createStudent']);
+     Route::get('assignCodeToAllStudents',[StudentController::class,'assignCodeToAllStudents']);
 
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::apiResource('parent', ParentController::class);
-//     Route::delete('/student/{id}', [ParentController::class, 'toggleIsActive']);
-// });
-
-Route::post('/parent', [ParentController::class, 'create']);
-Route::get('/parent', [ParentController::class, 'index']);
-Route::put('/parent/{id}', [ParentController::class, 'update']);
-Route::delete('/parent/{id}', [ParentController::class, 'destroy']);
+ });
 
 
 
@@ -113,6 +107,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
 });
 
+
+//Timetables
+Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
+    Route::get('/getDataForMakeTable', [\App\Http\Controllers\TimetableController::class, 'getDataForMakeTable']);
+    Route::post('/addNewPeriod', [\App\Http\Controllers\TimetableController::class, 'addNewPeriod']);
+    Route::get('/getTeacherTable', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
+    Route::get('/getClassTable', [\App\Http\Controllers\TimetableController::class, 'getClassTable']);
+
+    // Add routes for edit and delete
+    Route::put('/editPeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'editPeriod']);
+    Route::delete('/deletePeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'deletePeriod']);
+});
+
+
 Route::prefix('superAdmin')->group(function () {
     Route::get('/departmentDashboard', [SuperAdminDashboardController::class, 'departmentDashboard']); // Not Used
     Route::get('/mainDashboard', [SuperAdminDashboardController::class, 'superAdminDashboard']);
@@ -120,8 +128,16 @@ Route::prefix('superAdmin')->group(function () {
 
 Route::get('/test', function () {
 
-    $userController  = new \App\Http\Controllers\UserController();
-    $user =  $userController->show(2);
+    $Controller  = new \App\Http\Controllers\TimetableController();
+    $user =  $Controller->getDataForMakeTable();
 
     return response()->json($user);
+
 });
+
+
+//Payments
+Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::class, 'createPaymentCode']);
+Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
+
+

@@ -51,4 +51,8 @@ class User extends Authenticatable
     public function employee (){return $this->hasOne(Employee::class);}
     public function student (){return $this->hasOne(Student::class);}
     public function role(){return $this->hasOne(Role::class);}
+
+    public function payments(){
+        return $this->hasMany(Payment::class);
+    }
 }

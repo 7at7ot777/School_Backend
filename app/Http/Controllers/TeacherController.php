@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class TeacherController extends Controller
@@ -53,7 +52,7 @@ class TeacherController extends Controller
 
     public function index()
     {
-        $teachers = Employee::with('taughtSubjects:id,subject_name', 'user:id,email,name,phone,status')
+        $teachers = Employee::with('subject:id,name', 'user:id,email,name,phone,status,avatar_url')
             ->where('role', 'teacher')
             ->whereHas('user', function ($query) {
             $query->where('status', 1);
@@ -66,18 +65,28 @@ class TeacherController extends Controller
     {
         $resultArray = [];
         foreach ($data as $item) {
+            $subjects = [];
+            $objSub = $item->subject;
 
+            foreach ($objSub as $subject ){
+
+                $subjects[] = [
+                    'id' => $subject->id,
+                    'name' => $subject->name,
+                ];
+
+//
+            }
             $resultArray[] = [
-                'id' => $item['id'],
-                'avatarUrl' => '',
+                'teacher_id' => $item['id'],
+                'id' => $item['user']['id'],
+                'avatarUrl' => $item['user']['avatar_url'] ?? '',
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
                 'status' => $item['user']['status'] == 0 ? false : true,
-                'subject' => [
-                    'id' => $item['taught_subjects']['id'] ?? null,
-                    'name' => $item['taught_subjects']['name'] ?? null,
-                ],
+                'subject' => $subjects,
             ];
+
         }
         return $resultArray;
     }
@@ -100,7 +109,7 @@ class TeacherController extends Controller
      */
     public function show($id)
     {
-        $teacher = Employee::with('taughtSubjects')
+        $teacher = Employee::with('subject')
             ->where('role', 'teacher')
             ->where('id', $id)
             ->first();
@@ -108,7 +117,11 @@ class TeacherController extends Controller
         if (!$teacher) {
             return response()->json(['error' => 'Teacher not found'], 404);
         }
+        $formattedTeachers = $this->formatTeachers([$teacher]);
 
-        return response()->json(['data' => $teacher], 200);
+
+        return response()->json(['data' => $formattedTeachers], 200);
     }
+
+    
 }

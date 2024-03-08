@@ -20,67 +20,22 @@ class DatabaseSeeder extends Seeder
     {
         //         \App\Models\User::factory(10)->create();
 
-        \App\Models\User::create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('123456'),
-            'user_type' => 'employee'
+        $this->call([
+            UsersTableSeeder::class,
+            DepartmentTableSeeder::class,
+            RolesTableSeeder::class,
+            EmployeeTableSeeder::class,
         ]);
 
-        \App\Models\User::create([
-            'name' => 'Student',
-            'email' => 'student@example.com',
-            'password' => bcrypt('123456'),
-            'user_type' => 'student'
-        ]);  \App\Models\User::create([
-            'name' => 'father',
-            'email' => 'father@example.com',
-            'password' => bcrypt('123456'),
-            'user_type' => 'parent'
-        ]);  \App\Models\User::create([
-            'name' => 'mother User',
-            'email' => 'mother@example.com',
-            'password' => bcrypt('123456'),
-            'user_type' => 'parent'
-        ]);
-        $departmentNames = ['Financial', 'Managerial', 'Worker', 'Teaching Staff','Student Affairs'];
 
 
-            Department::insert([
-                [
-                    'id' => 1,
-                    'name' => 'Financial'
-                ] ,[
-                    'id' => 2,
-                    'name' => 'Managerial'
-                ], [
-                    'id' => 3,
-                    'name' => 'Worker'
-                ], [
-                    'id' => 4,
-                    'name' => 'Teaching Staff'
-                ] ,[
-                    'id' => 5,
-                    'name' => 'Student Affairs'
-                ],
-            ]);
 
 
-        $roleNames = ['Manager', 'Teacher', 'Worker', 'Employee'];
-        foreach ($roleNames as $name) {
-            Role::create(['name' => $name]);
-        }
 
-        Employee::create([
-            'user_id' => 1,
-//            'role_id' => 1,
-            'role' => 'superAdmin',
-            'department_id' => null,
-            'basic_salary' => 5000
-        ]);
 
         Subject::create(
-            ['name' => 'arabic' ],
+            ['id' => 1,'name' => 'arabic' ],
+            ['id' => 2,'name' => 'english' ],
         );
 
         Student::create([

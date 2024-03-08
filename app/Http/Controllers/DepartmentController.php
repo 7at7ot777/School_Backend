@@ -144,9 +144,5 @@ class DepartmentController extends Controller
             'Content-Disposition' => 'inline; filename="' . $filename . '"'
         ]);
 
-//        Http::attach('file', file_get_contents($filePath), 'filename')->withHeaders([
-//            'Content-Type' => 'application/vnd.ms-excel',
-//        ])->post('example.org')->json();
-//        return response()->download($filePath, 'importDepartment.xlsx');
     }
 }
