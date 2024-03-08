@@ -13,6 +13,7 @@ use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ParentController;
 use App\Http\Controllers\SuperAdminDashboardController;
 
 
@@ -100,7 +101,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
  });
 
-
+//parent
+Route::post('/parent', [ParentController::class, 'create']);
+Route::get('/parent', [ParentController::class, 'index']);
+Route::put('/parent/{id}', [ParentController::class, 'update']);
+Route::delete('/parent/{id}', [ParentController::class, 'destroy']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
@@ -139,5 +144,3 @@ Route::get('/test', function () {
 //Payments
 Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::class, 'createPaymentCode']);
 Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
-
-
