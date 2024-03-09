@@ -45,7 +45,7 @@ class ImportAdmin implements ToModel, WithHeadingRow
                 'department_id' => Department::where('name', 'LIKE', $row['department'])->first()->id ?? null,
                 'basic_salary' => $row['basic_salary'] ?? null,
                 'role' => 'admin',
-                'subject_id' => null, // You might need to adjust this based on your actual data
+//                'subject_id' => null, // You might need to adjust this based on your actual data
             ]);
             $newEmployee->save();
             $this->counter++;
