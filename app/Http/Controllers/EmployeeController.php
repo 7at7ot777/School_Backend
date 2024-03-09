@@ -199,8 +199,8 @@ class EmployeeController extends Controller
 
         // Update the employee details
         $employee->update([
-            'department_id' => $request->input('department_id'),
-            'basic_salary' => $request->input('basic_salary'),
+            'department_id' => $request->input('department_id') ?? $employee->department_id,
+            'basic_salary' => $request->input('basic_salary') ?? $employee->basic_salary,
         ]);
 
         // Update the employee role based on subject_id
