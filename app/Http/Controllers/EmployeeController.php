@@ -180,7 +180,8 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         // Find the employee to be updated
-        $employee = Employee::findOrFail($id);
+        $user = User::find($id);
+        $employee = Employee::findOrFail($user->employee->id);
 
         // Validate the request data
 //        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
