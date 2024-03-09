@@ -34,7 +34,7 @@ class AdminController extends Controller
                 $numOfClassRooms = ClassRoom::all()->count();
                 return response()->json(['numOfStudents' => $numOfStudents, 'numOfClassRooms' => $numOfClassRooms]);
             default:
-                $numOfEmployyes = Employee::all()->count();
+                $numOfEmployyes = Employee::where('department_id',$admin->department_id)->count();
                 return response()->json(['numOfEmployyes' => $numOfEmployyes]);
 
 
