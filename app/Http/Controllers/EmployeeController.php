@@ -107,10 +107,11 @@ class EmployeeController extends Controller
 
         if($dept_id == 4){
             // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
-            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
-                ->Where('role','teacher')
-                ->where('department_id',$dept_id)
-                ->get();
+            $employees = Employee::with('subject:id,name', 'user:id,email,name,phone,status,avatar_url')
+                ->where('role', 'teacher')
+                ->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->get();
         }else{
             // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
             $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status')
@@ -121,7 +122,7 @@ class EmployeeController extends Controller
 
 
             // قم بتنسيق معلومات الموظفين وإرجاعها
-        $formattedEmployees = $this->formatDate($employees);
+        $formattedEmployees = $this->formatDate($employees,$dept_id);
 
         return response()->json($formattedEmployees, 200);
     }
@@ -145,10 +146,37 @@ class EmployeeController extends Controller
 
     }
 
-    private function formatDate($data)
+    private function formatDate($data,$dept_id)
     {
         $resultArray = [];
 
+        if($dept_id == 4) {
+            $resultArray = [];
+            foreach ($data as $item) {
+                $subjects = [];
+                $objSub = $item->subject;
+
+                foreach ($objSub as $subject) {
+
+                    $subjects[] = [
+                        'id' => $subject->id,
+                        'name' => $subject->name,
+                    ];
+
+//
+                }
+                $resultArray[] = [
+                    'teacher_id' => $item['id'],
+                    'id' => $item['user']['id'],
+                    'avatarUrl' => $item['user']['avatar_url'] ?? '',
+                    'name' => $item['user']['name'],
+                    'email' => $item['user']['email'],
+                    'status' => $item['user']['status'] == 0 ? false : true,
+                    'subject' => $subjects,
+                ];
+
+            }
+        }else{
         foreach ($data as $item) {
 
             $sub_id = null;
@@ -173,6 +201,7 @@ class EmployeeController extends Controller
 //                    'name' => $item['department']['name'] ?? $dept_name,
 //                ],
             ];
+        }
         }
         return $resultArray;
     }
