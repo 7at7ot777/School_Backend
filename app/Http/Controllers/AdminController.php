@@ -28,14 +28,14 @@ class AdminController extends Controller
             case 4: //teaching staff
                 $numOfTeachers = Employee::where('role','teacher')->count();
                 $numOfSubjects = Subject::all()->count();
-                return response()->json(['numerOfTeachers' => $numOfTeachers, 'numOfSubjects' => $numOfSubjects]);
+                return response()->json(['numOfTeachers' => $numOfTeachers, 'numOfSubjects' => $numOfSubjects]);
             case 5: //student affairs
                 $numOfStudents = Student::all()->count();
                 $numOfClassRooms = ClassRoom::all()->count();
                 return response()->json(['numOfStudents' => $numOfStudents, 'numOfClassRooms' => $numOfClassRooms]);
             default:
                 $numOfEmployyes = Employee::where('department_id',$admin->department_id)->count();
-                return response()->json(['numOfEmployyes' => $numOfEmployyes]);
+                return response()->json(['numOfEmployees' => $numOfEmployyes]);
 
 
         }
