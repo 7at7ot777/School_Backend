@@ -113,7 +113,7 @@ class EmployeeController extends Controller
                 ->get();
         }else{
             // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
-            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status')
                 ->where('role','employee')
                 ->where('department_id',$dept_id)
                 ->get();
