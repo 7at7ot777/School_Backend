@@ -19,7 +19,8 @@ class AdminController extends Controller
 {
 
     public function adminDashboard(){
-        $admin = Employee::find(Auth::id());
+         $emp = Auth::user()->employee;
+        $admin = Employee::find($emp->id);
 //        return $admin;
         //check the admin if found or it's not really admin
 
