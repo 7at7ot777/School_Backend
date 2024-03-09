@@ -11,24 +11,21 @@ use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
 
-    public function adminDashboard(Request $request){
-        $admin = Employee::find($request->id);
+    public function adminDashboard(){
+        $admin = Employee::find(Auth::id());
 //        return $admin;
         //check the admin if found or it's not really admin
-        if(!$admin || $admin->role != 'admin')
-        {
-            return response()->json(['error' => 'Not Authorized'],401);
-        }
 
         switch ($admin->department_id)
         {
-            case 1: //teaching staff
+            case 4: //teaching staff
                 $numOfTeachers = Employee::where('role','teacher')->count();
                 $numOfSubjects = Subject::all()->count();
                 return response()->json(['numerOfTeachers' => $numOfTeachers, 'numOfSubjects' => $numOfSubjects]);
