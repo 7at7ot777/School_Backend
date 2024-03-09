@@ -177,9 +177,48 @@ class EmployeeController extends Controller
         return $resultArray;
     }
 
-
-
     public function update(Request $request, $id)
+    {
+        // Find the employee to be updated
+        $employee = Employee::findOrFail($id);
+
+        // Validate the request data
+//        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
+//        if ($validator->fails()) {
+//            return $validator->errors();
+//        }
+
+        // Update the user associated with the employee
+        $employee->user->update([
+            'name' => $request->input('name'),
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+            'email' => $request->input('email'),
+        ]);
+
+        // Update the employee details
+        $employee->update([
+            'department_id' => $request->input('department_id'),
+            'basic_salary' => $request->input('basic_salary'),
+        ]);
+
+        // Update the employee role based on subject_id
+        $role = $request->subject_id == null || $request->subject_id == [] ? 'employee' : 'teacher';
+        $employee->update(['role' => $role]);
+
+        // If the role is teacher, sync the subjects
+        if ($role == 'teacher') {
+            $subject_ids = $request->input('subject_id');
+            $employee->subject()->sync($subject_ids);
+        }
+
+        // Return a success message
+        return response()->json(['message' => 'Employee updated successfully'], 200);
+    }
+
+
+//TODO: Remove this code
+    /*public function update(Request $request, $id)
     {
         // ابحث عن الموظف المراد تحديثه
         $employee = Employee::find($id);
@@ -211,7 +250,7 @@ class EmployeeController extends Controller
         // قم بإرجاع رسالة نجاح
         return response()->json(['message' => 'Employee updated successfully'], 200);
     }
-
+*/
     public function destroy($id)
     {
         $employee = Employee::find($id);

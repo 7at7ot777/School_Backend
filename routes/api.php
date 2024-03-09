@@ -140,4 +140,8 @@ Route::get('/test', function () {
 Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::class, 'createPaymentCode']);
 Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
 
+//Face Detection
+Route::get('/listAllFaces',[\App\Http\Controllers\FaceRecognitionController::class,'listAllFaces']);
+Route::post('/addFace',[\App\Http\Controllers\FaceRecognitionController::class,'addFace']);
+
 
