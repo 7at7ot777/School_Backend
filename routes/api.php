@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\LectureController;
 use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Http\Request;
@@ -52,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('resetPassword/{id}',[\App\Http\Controllers\UserController::class,'resetPassword']);
     Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
     Route::post('uploadAvatar/{id}',[\App\Http\Controllers\UserController::class,'uploadAvatar']);
+    Route::post('user/update',[\App\Http\Controllers\UserController::class,'update']);
 
 });
 
@@ -101,18 +103,23 @@ Route::middleware('auth:sanctum')->group(function () {
  });
 
 
-
+//Teacher
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
 });
 
+//Lecture
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('lectures', LectureController::class);
+});
+
 
 //Timetables
 Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
+    Route::get('/getTeacherTable/{teacher_id}', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
     Route::get('/getDataForMakeTable', [\App\Http\Controllers\TimetableController::class, 'getDataForMakeTable']);
     Route::post('/addNewPeriod', [\App\Http\Controllers\TimetableController::class, 'addNewPeriod']);
-    Route::get('/getTeacherTable/{teacher_id}', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
     Route::get('/getClassTable', [\App\Http\Controllers\TimetableController::class, 'getClassTable']);
 
     // Add routes for edit and delete

@@ -23,7 +23,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'user_type'
+        'user_type',
+        'address',
+        'phone'
     ];
 
     /**
@@ -54,5 +56,11 @@ class User extends Authenticatable
 
     public function payments(){
         return $this->hasMany(Payment::class);
+    }
+
+    public function edit(array $data)
+    {
+        // Validate and update the user attributes using the update method
+        return $this->update($data);
     }
 }
