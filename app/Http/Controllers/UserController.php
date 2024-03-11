@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -68,6 +69,26 @@ class UserController extends Controller
         $user->save();
 
         return response()->json(['success' => true, 'image' => $user->avatar_url]);
+    }
+
+    public function update(Request $request)
+    {
+        // Validate the incoming request data as needed
+
+        $user = User::find(Auth::id());
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found']);
+        }
+
+        // Call the edit method to update user details
+        if ($user->edit($request->all())) {
+            // Successfully updated
+            return response()->json(['success' =>'User updated successfully.']);
+        } else {
+            // Failed to update
+            return response()->json(['error' => 'Failed to update user details.']);
+        }
     }
 
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\LectureController;
 use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Http\Request;
@@ -53,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('resetPassword/{id}',[\App\Http\Controllers\UserController::class,'resetPassword']);
     Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
     Route::post('uploadAvatar/{id}',[\App\Http\Controllers\UserController::class,'uploadAvatar']);
+    Route::post('user/update',[\App\Http\Controllers\UserController::class,'update']);
 
 });
 
@@ -101,16 +103,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
  });
 
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('teachers', TeacherController::class);
+    Route::get('teachers/{id}', [TeacherController::class, 'show']);
+});
+
 //parent
 Route::post('/parent', [ParentController::class, 'create']);
 Route::get('/parent', [ParentController::class, 'index']);
 Route::put('/parent/{id}', [ParentController::class, 'update']);
 Route::delete('/parent/{id}', [ParentController::class, 'destroy']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('teachers', TeacherController::class);
-    Route::get('teachers/{id}', [TeacherController::class, 'show']);
-});
 
 
 use App\Http\Controllers\StudentAttendanceController;
@@ -119,11 +124,15 @@ Route::get('/students/absences/{studentId}', [StudentAttendanceController::class
 //Route::get('/students/{studentId}/absence-days', [StudentAttendanceController::class, 'calculateAbsenceDays']);
 
 
+//Lecture
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('lectures', LectureController::class);
+});
 //Timetables
 Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
+    Route::get('/getTeacherTable/{teacher_id}', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
     Route::get('/getDataForMakeTable', [\App\Http\Controllers\TimetableController::class, 'getDataForMakeTable']);
     Route::post('/addNewPeriod', [\App\Http\Controllers\TimetableController::class, 'addNewPeriod']);
-    Route::get('/getTeacherTable', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
     Route::get('/getClassTable', [\App\Http\Controllers\TimetableController::class, 'getClassTable']);
 
     // Add routes for edit and delete
@@ -150,3 +159,9 @@ Route::get('/test', function () {
 //Payments
 Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::class, 'createPaymentCode']);
 Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
+
+//Face Detection
+Route::get('/listAllFaces',[\App\Http\Controllers\FaceRecognitionController::class,'listAllFaces']);
+Route::post('/addFace',[\App\Http\Controllers\FaceRecognitionController::class,'addFace']);
+
+

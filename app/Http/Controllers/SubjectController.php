@@ -14,6 +14,7 @@ class SubjectController extends Controller
     public function index()
     {
         $subjects = Subject::with('teachers.user')->get();
+//        return $subjects;
         $formattedData = $this->formatDate($subjects);
         return response()->json($formattedData, 200);
     }
@@ -31,7 +32,7 @@ class SubjectController extends Controller
               //  'numOfAdmins' => $subject->employees->where('role', 'admin')->where('user.status',1)->count() ,
                 'numOfTeachers' => $subject->teachers->where('user.status',1)->count(),
                 'mainAdmin' => [
-                    'id' => $mainAdmin ? $mainAdmin->id : '',
+                    'id' => $mainAdmin ? $mainAdmin->user->id : '',
                     'name' => $mainAdmin ? $mainAdmin->user->name : '',
                     'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
                 ],

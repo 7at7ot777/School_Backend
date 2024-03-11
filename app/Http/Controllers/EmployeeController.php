@@ -107,13 +107,14 @@ class EmployeeController extends Controller
 
         if($dept_id == 4){
             // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
-            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
-                ->Where('role','teacher')
-                ->where('department_id',$dept_id)
-                ->get();
+            $employees = Employee::with('subject:id,name', 'user:id,email,name,phone,status,avatar_url')
+                ->where('role', 'teacher')
+                ->whereHas('user', function ($query) {
+                    $query->where('status', 1);
+                })->get();
         }else{
             // ابحث عن جميع الموظفين في القسم المحدد مع معلومات المستخدم المرتبطة
-            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status','subject')
+            $employees = Employee::with('department:id,name', 'user:id,email,name,phone,status')
                 ->where('role','employee')
                 ->where('department_id',$dept_id)
                 ->get();
@@ -121,7 +122,7 @@ class EmployeeController extends Controller
 
 
             // قم بتنسيق معلومات الموظفين وإرجاعها
-        $formattedEmployees = $this->formatDate($employees);
+        $formattedEmployees = $this->formatDate($employees,$dept_id);
 
         return response()->json($formattedEmployees, 200);
     }
@@ -145,10 +146,37 @@ class EmployeeController extends Controller
 
     }
 
-    private function formatDate($data)
+    private function formatDate($data,$dept_id)
     {
         $resultArray = [];
 
+        if($dept_id == 4) {
+            $resultArray = [];
+            foreach ($data as $item) {
+                $subjects = [];
+                $objSub = $item->subject;
+
+                foreach ($objSub as $subject) {
+
+                    $subjects[] = [
+                        'id' => $subject->id,
+                        'name' => $subject->name,
+                    ];
+
+//
+                }
+                $resultArray[] = [
+                    'teacher_id' => $item['id'],
+                    'id' => $item['user']['id'],
+                    'avatarUrl' => $item['user']['avatar_url'] ?? '',
+                    'name' => $item['user']['name'],
+                    'email' => $item['user']['email'],
+                    'status' => $item['user']['status'] == 0 ? false : true,
+                    'subject' => $subjects,
+                ];
+
+            }
+        }else{
         foreach ($data as $item) {
 
             $sub_id = null;
@@ -174,12 +202,53 @@ class EmployeeController extends Controller
 //                ],
             ];
         }
+        }
         return $resultArray;
     }
 
-
-
     public function update(Request $request, $id)
+    {
+        // Find the employee to be updated
+        $user = User::find($id);
+        $employee = Employee::findOrFail($user->employee->id);
+
+        // Validate the request data
+//        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
+//        if ($validator->fails()) {
+//            return $validator->errors();
+//        }
+
+        // Update the user associated with the employee
+        $employee->user->update([
+            'name' => $request->input('name'),
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+            'email' => $request->input('email'),
+        ]);
+
+        // Update the employee details
+        $employee->update([
+            'department_id' => $request->input('department_id') ?? $employee->department_id,
+            'basic_salary' => $request->input('basic_salary') ?? $employee->basic_salary,
+        ]);
+
+        // Update the employee role based on subject_id
+        $role = $request->subject_id == null || $request->subject_id == [] ? 'employee' : 'teacher';
+        $employee->update(['role' => $role]);
+
+        // If the role is teacher, sync the subjects
+        if ($role == 'teacher') {
+            $subject_ids = $request->input('subject_id');
+            $employee->subject()->sync($subject_ids);
+        }
+
+        // Return a success message
+        return response()->json(['message' => 'Employee updated successfully'], 200);
+    }
+
+
+//TODO: Remove this code
+    /*public function update(Request $request, $id)
     {
         // ابحث عن الموظف المراد تحديثه
         $employee = Employee::find($id);
@@ -211,7 +280,7 @@ class EmployeeController extends Controller
         // قم بإرجاع رسالة نجاح
         return response()->json(['message' => 'Employee updated successfully'], 200);
     }
-
+*/
     public function destroy($id)
     {
         $employee = Employee::find($id);
