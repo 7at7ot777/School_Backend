@@ -89,6 +89,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/employee/{dept_id}', [EmployeeController::class, 'index']);
+    Route::get('/DownloadEmployeeTemplate', [EmployeeController::class, 'DownloadEmployeeTemplate']);
+    Route::post('/importEmployee/{dept_id}',[EmployeeController::class,'importEmployee']);
     Route::delete('/employee/{id}', [EmployeeController::class, 'toggleIsActive']);
     Route::apiResource('employee', EmployeeController::class);
 });

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Imports\ImportEmployee;
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeController extends Controller
 {
@@ -246,41 +249,6 @@ class EmployeeController extends Controller
         return response()->json(['message' => 'Employee updated successfully'], 200);
     }
 
-
-//TODO: Remove this code
-    /*public function update(Request $request, $id)
-    {
-        // ابحث عن الموظف المراد تحديثه
-        $employee = Employee::find($id);
-
-        // إذا لم يتم العثور على الموظف، قم بإرجاع رسالة خطأ
-        if (!$employee) {
-            return response()->json(['error' => 'Employee not found'], 404);
-        }
-
-        // قم بتحديث معلومات الموظف
-        $employee->department_id = $request->input('department_id') ?? $employee->department_id;
-        $employee->basic_salary = $request->input('basic_salary') ?? $employee->basic_salary;
-        $employee->subject_id = $request->input('subject_id') ?? $employee->subject_id;
-
-        // قم بحفظ التغييرات
-        $employee->save();
-
-        // قم بتحديث معلومات المستخدم إذا كانت هناك تغييرات
-        $user = $employee->user;
-        if ($user) {
-            $user->name = $request->input('name') ?? $user->name;
-            $user->phone = $request->input('phone') ?? $user->phone;
-            $user->address = $request->input('address') ?? $user->address;
-            $user->email = $request->input('email') ?? $user->email;
-            $user->status = $request->input('status') ?? $user->status;
-            $user->save();
-        }
-
-        // قم بإرجاع رسالة نجاح
-        return response()->json(['message' => 'Employee updated successfully'], 200);
-    }
-*/
     public function destroy($id)
     {
         $employee = Employee::find($id);
@@ -309,4 +277,31 @@ class EmployeeController extends Controller
         $status = $user->status == 1 ? 'active' : 'inactive';
         return response()->json(['message' => "Employee status toggled successfully. Now the employee is $status"], 200);
     }
+
+    public function DownloadEmployeeTemplate()
+    {
+        $filePath = public_path("storage/uploads/importEmployee.xlsx");
+            $filename = 'importEmployee.xlsx';
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
+
+    public function importEmployee(Request $request,$dept_id){
+        $exists = Department::where('id', $dept_id)->exists();
+
+        if ($exists) {
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $importEmployee = new ImportEmployee($dept_id);
+                Excel::import($importEmployee, $file);
+                return response()->json(['success', $importEmployee->counter . ' Employees imported successfully']);
+            }
+            return response()->json(['error' => 'No File Provided'], 401);
+        }
+        return response()->json(['error' => 'Department Doesn\'t Exitst'], 404);
+
+    }
+
 }
