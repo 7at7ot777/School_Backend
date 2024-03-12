@@ -16,7 +16,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\SuperAdminDashboardController;
-
+use App\Http\Controllers\EmployeesAttendanceController;
 
 
 /*
@@ -117,11 +117,15 @@ Route::put('/parent/{id}', [ParentController::class, 'update']);
 Route::delete('/parent/{id}', [ParentController::class, 'destroy']);
 
 
-
+//StudentAttendance
 use App\Http\Controllers\StudentAttendanceController;
 Route::post('/attendance', [StudentAttendanceController::class, 'recordAttendance']);
 Route::get('/students/absences/{studentId}', [StudentAttendanceController::class, 'calculateAbsenceDays']);
-//Route::get('/students/{studentId}/absence-days', [StudentAttendanceController::class, 'calculateAbsenceDays']);
+
+
+//EmployeeAttendance
+Route::post('/employee/attendance', [EmployeesAttendanceController::class, 'recordAttendance']);
+Route::get('/employee/absences/{employeeId}', [EmployeesAttendanceController::class, 'calculateAbsenceDays']);
 
 
 //Lecture
