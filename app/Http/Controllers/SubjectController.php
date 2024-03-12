@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportSubject;
 use App\Models\Subject;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SubjectController extends Controller
 {
@@ -106,4 +108,25 @@ class SubjectController extends Controller
 
         return response()->json(['message' => 'Subject Deleted Successfully'], 200);
     }
+
+    public function DownloadSubjectTemplate()
+    {
+        $filePath = public_path("storage/uploads/importSubject.xlsx");
+        $filename = 'importSubject.xlsx';
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
+
+    public function importSubject(Request $request){
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $importSubject = new ImportSubject();
+            Excel::import($importSubject, $file);
+            return response()->json(['success' =>  $importSubject->counter. ' Subjects imported successfully']);
+        }
+        return response()->json(['error'=>'No File Provided'],401);
+    }
+
 }

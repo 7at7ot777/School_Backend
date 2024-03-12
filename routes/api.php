@@ -71,8 +71,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('role', RoleController::class);
 });
 
+//Subject
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('subject', SubjectController::class);
+    Route::post('importSubject',[SubjectController::class,'importSubject']);
+    Route::get('DownloadSubjectTemplate',[SubjectController::class,'DownloadSubjectTemplate']);
 });
 
 
