@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\LectureController;
+use App\Http\Controllers\StudentNoteController;
 use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Http\Request;
@@ -112,11 +113,13 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
+    Route::get('getTeachersSubjects/{teacher_id}', [TeacherController::class, 'getTeachersSubjects']);
 });
 
 //Lecture
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('lectures', LectureController::class);
+    Route::get('/getSubjectLectures/{subject_id}',[LectureController::class,'getSubjectLectures']);
 });
 
 
@@ -130,6 +133,14 @@ Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
     // Add routes for edit and delete
     Route::put('/editPeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'editPeriod']);
     Route::delete('/deletePeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'deletePeriod']);
+});
+
+
+//Student Notes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('student-notes', StudentNoteController::class);
+    Route::get('/showAllNotesForSpecificStudent/{student_id}',[StudentNoteController::class,'showAllNotesForSpecificStudent']);
+    Route::get('/showAllNotesFor1StudentAnd1Subject/{student_id}/{subject_id}',[StudentNoteController::class,'showAllNotesFor1StudentAnd1Subject']);
 });
 
 

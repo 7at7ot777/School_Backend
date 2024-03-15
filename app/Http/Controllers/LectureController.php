@@ -10,9 +10,10 @@ use Illuminate\Support\Facades\Validator;
 
 class LectureController extends Controller
 {
+    //Get All Lectures for All Subjects for a specific Teacher
     public function index()
     {
-        $teacher = Employee::where('user_id', 2)->first();
+        $teacher = Employee::where('user_id', Auth::id())->first();
         $lectures = Lecture::with(['employee.user', 'subject'])->where('employee_id', $teacher->id)->get();
         $formatedLecture = $this->formatData($lectures);
         return response()->json($formatedLecture);
@@ -60,13 +61,12 @@ class LectureController extends Controller
             $formattedLecture[] = [
                 'id' => $lecture->id,
                 'subject_id' => $lecture->subject_id,
-                'employee_id' => $lecture->employee_id,
-                'user_id' => $lecture->user_id,
                 'title' => $lecture->title,
                 'url' => $lecture->url,
                 'description' => $lecture->description,
                 'employee' => [
-                    'id' => $lecture->employee->id,
+                    'id' => $lecture->user_id,
+                    'employee_id' => $lecture->employee->id,
                     'role' => $lecture->employee->role,
                 ],
                 'subject' => [
@@ -128,5 +128,11 @@ class LectureController extends Controller
 
         // Return a success response with a status code of 200 OK
         return response()->json(['success' => 'Lecture deleted successfully'], 200);
+    }
+
+    public function getSubjectLectures($subjectId)
+    {
+        return $lectures = Lecture::select('title','url','description')->where('subject_id',$subjectId)->get();
+
     }
 }

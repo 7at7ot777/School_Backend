@@ -91,22 +91,7 @@ class TeacherController extends Controller
         return $resultArray;
     }
 
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $teacher = Employee::with('subject')
@@ -121,6 +106,25 @@ class TeacherController extends Controller
 
 
         return response()->json(['data' => $formattedTeachers], 200);
+    }
+
+    public function getTeachersSubjects($teacher_id)
+    {
+        $teacher = Employee::where('role','teacher')->find($teacher_id);
+
+        if ($teacher) {
+            $subjectsTaughtByTeacher = $teacher->subject->map(function ($subject) {
+                return [
+                    'id' => $subject->id,
+                    'name' => $subject->name,
+                    // Add more attributes if needed
+                ];
+            });
+            return response()->json($subjectsTaughtByTeacher, 200);
+
+        }
+        return response()->json(['error'=>'Teacher Not Found'], 404);
+
     }
 
     

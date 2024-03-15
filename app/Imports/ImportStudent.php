@@ -59,7 +59,7 @@ return null;
 
     }
 
-    public function getFatherId($row)
+    public static function getFatherId($row)
     {
         $fatherId = User::where('email', 'LIKE', $row['father_email'])->first();
         if($fatherId)
@@ -81,7 +81,7 @@ return null;
 
     }
 
-    public function getMotherId($row)
+    public static function getMotherId($row)
     {
         $motherId = User::where('email', 'LIKE', $row['mother_email'])->first();
         if($motherId)

@@ -112,8 +112,8 @@ class StudentController extends Controller
             $student = new Student([
                 'user_id' => $user->id,
                 'grade_level' => $request->input('grade_level'),
-                'parent_id_one' => $request->input('parent_id_one'),
-                'parent_id_two' => $request->input('parent_id_two'),
+                'father_id' => ImportStudent::getFatherId($request),
+                'mother_id' => ImportStudent::getMotherId($request),
                 'class_id' => $request->input('class_id'),
                 'semester' => $request->input('semester') ?? 1,
             ]);
@@ -130,13 +130,6 @@ class StudentController extends Controller
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -228,8 +221,8 @@ class StudentController extends Controller
         // التحقق من صحة البيانات المرسلة
         $validatedData = $request->validate([
             'grade_level' => 'required|integer',
-            'parent_id_one' => 'required|integer',
-            'parent_id_two' => 'required|integer',
+            'father_id' => 'required|integer',
+            'mother_id' => 'required|integer',
             'class_id' => 'required|integer',
             'semester' => 'required|integer|in:1,2,3',
         ]);

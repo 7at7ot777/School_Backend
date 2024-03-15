@@ -21,6 +21,7 @@ class Subject extends Model
         return $this->belongsToMany(Employee::class, 'employee_subject', 'subject_id', 'employee_id');
 
     }
+
     public function grades(){
         return $this->hasMany(Grade::class);
     }
@@ -28,5 +29,9 @@ class Subject extends Model
     public function lectures()
     {
         return $this->hasMany(Lecture::class);
+    }
+
+    public function classrooms(){
+        return $this->belongsToMany(Classroom::class, 'subject_classroom', 'subject_id', 'classroom_id');
     }
 }
