@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportClassroom;
 use App\Models\ClassRoom;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClassRoomController extends Controller
 {
@@ -61,4 +63,26 @@ class ClassRoomController extends Controller
     $students = $classRoom->students;
     return response()->json($students, 200);
 }
+
+    public function DownloadClassroomTemplate()
+    {
+        $filePath = public_path("storage/uploads/importClassroom.xlsx");
+        $filename = 'importClassroom.xlsx';
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
+
+    public function importClassroom(Request $request){
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $importClassroom = new ImportClassroom();
+            Excel::import($importClassroom, $file);
+            return response()->json(['success', $importClassroom->counter.' Classrooms imported successfully']);
+        }
+        return response()->json(['error'=>'No File Provided'],401);
+    }
+
+
 }

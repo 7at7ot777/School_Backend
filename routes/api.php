@@ -84,6 +84,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('class-rooms', ClassRoomController::class);
     Route::get('class-rooms/{classRoom}/students', [ClassRoomController::class, 'students'])->name('class-rooms.students');
+    Route::post('/importClassroom',[ClassroomController::class,'importClassroom']);
+    Route::get('/DownloadClassroomTemplate',[ClassroomController::class,'DownloadClassroomTemplate']);
+
 });
 
 //Employees
