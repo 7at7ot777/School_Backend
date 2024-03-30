@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\LectureController;
+use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentNoteController;
 use App\Models\Department;
 use App\Models\Employee;
@@ -144,6 +145,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('student-notes', StudentNoteController::class);
     Route::get('/showAllNotesForSpecificStudent/{student_id}',[StudentNoteController::class,'showAllNotesForSpecificStudent']);
     Route::get('/showAllNotesFor1StudentAnd1Subject/{student_id}/{subject_id}',[StudentNoteController::class,'showAllNotesFor1StudentAnd1Subject']);
+});
+
+//Student Notes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/student-grades/index/{subjectId}',[StudentGradesController::class,'index']);
+    Route::get('/student-grades/show/{subjectId}/{studentId}',[StudentGradesController::class,'show']);
+    Route::get('/student-grades/getStudentGrade/{studentId}',[StudentGradesController::class,'getStudentGrade']);
+    Route::apiResource('student-grades', StudentGradesController::class);
+
 });
 
 
