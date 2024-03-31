@@ -16,8 +16,9 @@ use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ParentController;
 use App\Http\Controllers\SuperAdminDashboardController;
-
+use App\Http\Controllers\EmployeesAttendanceController;
 
 
 /*
@@ -113,20 +114,36 @@ Route::middleware('auth:sanctum')->group(function () {
  });
 
 
-//Teacher
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
     Route::get('getTeachersSubjects/{teacher_id}', [TeacherController::class, 'getTeachersSubjects']);
 });
 
+//parent
+Route::post('/parent', [ParentController::class, 'create']);
+Route::get('/parent', [ParentController::class, 'index']);
+Route::put('/parent/{id}', [ParentController::class, 'update']);
+Route::delete('/parent/{id}', [ParentController::class, 'destroy']);
+
+
+//StudentAttendance
+use App\Http\Controllers\StudentAttendanceController;
+Route::post('/attendance', [StudentAttendanceController::class, 'recordAttendance']);
+Route::get('/students/absences/{studentId}', [StudentAttendanceController::class, 'calculateAbsenceDays']);
+
+
+//EmployeeAttendance
+Route::post('/employee/attendance', [EmployeesAttendanceController::class, 'recordAttendance']);
+Route::get('/employee/absences/{employeeId}', [EmployeesAttendanceController::class, 'calculateAbsenceDays']);
+
+
 //Lecture
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('lectures', LectureController::class);
     Route::get('/getSubjectLectures/{subject_id}',[LectureController::class,'getSubjectLectures']);
 });
-
-
 //Timetables
 Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
     Route::get('/getTeacherTable/{teacher_id}', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);

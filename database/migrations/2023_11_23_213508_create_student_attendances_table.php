@@ -15,6 +15,9 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')->references('id')->on('students');
             $table->date('date');
+            $table->integer('day');
+            $table->integer('month');
+            $table->integer('year');
             $table->boolean('status')->default(0); // 1 = Present, 0 = Absent
             $table->timestamps();
         });
