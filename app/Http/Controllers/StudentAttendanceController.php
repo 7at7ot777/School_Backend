@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\StudentAttendance;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -62,5 +63,51 @@ class StudentAttendanceController extends Controller
     public function destroy(StudentAttendance $studentAttendance)
     {
         //
+    }
+
+    public function recordAttendance(Request $request)
+    {
+        // التحقق من وجود المعلومات المطلوبة في الطلب
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'date' => 'required|date_format:Y-m-d',
+            'status' => 'required|boolean',
+        ]);
+
+        try {
+            // إنشاء سجل حضور جديد
+            $attendance = new StudentAttendance([
+                'student_id' => $request->student_id,
+                'date' => $request->date,
+                'day' => date('d', strtotime($request->date)),
+                'month' => date('m', strtotime($request->date)),
+                'year' => date('Y', strtotime($request->date)),
+                'status' => $request->status,
+            ]);
+
+            // حفظ السجل في قاعدة البيانات
+            $attendance->save();
+
+            return response()->json(['message' => 'Attendance recorded successfully'], 201);
+        } catch (\Exception $e) {
+            // التعامل مع الخطأ إذا حدث
+            return response()->json(['error' => 'Failed to record attendance', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+
+
+    public function calculateAbsenceDays($studentId)
+    {
+        // العثور على سجلات الغياب للطالب
+        $absenceRecords = StudentAttendance::where('student_id', $studentId)
+            ->where('status', 0) // 0 يعني غياب
+            ->get();
+    
+        // حساب عدد الأيام التي غاب فيها الطالب
+        $absenceDays = $absenceRecords->count();
+    
+        // إرجاع النتيجة
+        return $absenceDays;
     }
 }

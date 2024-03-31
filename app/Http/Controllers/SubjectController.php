@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportSubject;
 use App\Models\Subject;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SubjectController extends Controller
 {
@@ -13,7 +15,32 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        //
+        $subjects = Subject::with('teachers.user')->get();
+//        return $subjects;
+        $formattedData = $this->formatDate($subjects);
+        return response()->json($formattedData, 200);
+    }
+
+    private function formatDate($data)
+    {
+        $resultArray = [];
+
+        foreach ($data as $subject) {
+            $mainAdmin = $subject->teachers->first();
+
+            $resultArray[] = [
+                'id' => $subject->id,
+                'name' => $subject->name,
+              //  'numOfAdmins' => $subject->employees->where('role', 'admin')->where('user.status',1)->count() ,
+                'numOfTeachers' => $subject->teachers->where('user.status',1)->count(),
+                'mainAdmin' => [
+                    'id' => $mainAdmin ? $mainAdmin->user->id : '',
+                    'name' => $mainAdmin ? $mainAdmin->user->name : '',
+                    'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
+                ],
+            ];
+        }
+        return $resultArray;
     }
 
     /**
@@ -29,7 +56,13 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $subject = Subject::create($request->all());
+
+        return response()->json(['message' => 'stored successfully'], 201);
     }
 
     /**
@@ -37,7 +70,7 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
-        //
+        return response()->json($subject, 200);
     }
 
     /**
@@ -53,7 +86,13 @@ class SubjectController extends Controller
      */
     public function update(Request $request, Subject $subject)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        $subject->update($request->all());
+
+        return response()->json(['message' => 'Updated successfully'], 200);
+
     }
 
     /**
@@ -61,6 +100,33 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
-        //
+        if(!$subject)
+        {
+            return response()->json(['message' => 'Subject Not Found'], 404);
+        }
+        $subject->delete();
+
+        return response()->json(['message' => 'Subject Deleted Successfully'], 200);
     }
+
+    public function DownloadSubjectTemplate()
+    {
+        $filePath = public_path("storage/uploads/importSubject.xlsx");
+        $filename = 'importSubject.xlsx';
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    }
+
+    public function importSubject(Request $request){
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $importSubject = new ImportSubject();
+            Excel::import($importSubject, $file);
+            return response()->json(['success' =>  $importSubject->counter. ' Subjects imported successfully']);
+        }
+        return response()->json(['error'=>'No File Provided'],401);
+    }
+
 }

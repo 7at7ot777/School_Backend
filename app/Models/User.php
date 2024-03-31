@@ -4,13 +4,15 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +23,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'user_type',
+        'address',
+        'phone'
     ];
 
     /**
@@ -42,4 +47,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    public function parent (){return  $this->hasOne(Parents::class);}
+    public function employee (){return $this->hasOne(Employee::class);}
+    public function student (){return $this->hasOne(Student::class);}
+    public function role(){return $this->hasOne(Role::class);}
+
+    public function payments(){
+        return $this->hasMany(Payment::class);
+    }
+
+    public function edit(array $data)
+    {
+        // Validate and update the user attributes using the update method
+        return $this->update($data);
+    }
 }

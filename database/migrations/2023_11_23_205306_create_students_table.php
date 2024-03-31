@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->integer('grade_level');
-            $table->unsignedBigInteger('parent_id_one');
-            $table->unsignedBigInteger('parent_id_two');
+            $table->integer('grade_level')->nullable();
+            $table->unsignedBigInteger('father_id')->nullable();
+            $table->unsignedBigInteger('mother_id')->nullable();
             $table->unsignedBigInteger('class_id');
-            $table->foreign('class_id')->references('id')->on('class_rooms');
-            $table->enum('semester', [1, 2, 3]);
+            $table->enum('semester', [1, 2, 3])->default(1);
             $table->timestamps();
+            //$table->boolean('is_active')->default(true);
+            //$table->foreign('class_id')->references('id')->on('class_rooms');
+            //$table->foreign('user_id')->references('id')->on('users');
         });
     }
 

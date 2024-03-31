@@ -14,12 +14,10 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->enum('role', ['Roles']); //roles have not been determined yet
-            $table->enum('department', ['Financial','Managerial','Worker','TeachingStuff']); 
-            $table->integer('basic_salary');
-            $table->unsignedBigInteger('subject_id')->nullable()->default(null);
-            $table->foreign('subject_id')->references('id')->on('subjects');
+            $table->enum('role', ['admin','superAdmin','employee','teacher']); //roles have not been determined yet
+            $table->unsignedBigInteger('department_id')->nullable(); // Foreign key
+            $table->integer('basic_salary')->default(0)->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

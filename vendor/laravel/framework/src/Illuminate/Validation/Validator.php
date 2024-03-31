@@ -187,6 +187,7 @@ class Validator implements ValidatorContract
     protected $fileRules = [
         'Between',
         'Dimensions',
+        'Extensions',
         'File',
         'Image',
         'Max',
@@ -256,10 +257,18 @@ class Validator implements ValidatorContract
         'RequiredWithAll',
         'RequiredWithout',
         'RequiredWithoutAll',
+        'PresentIf',
+        'PresentUnless',
+        'PresentWith',
+        'PresentWithAll',
         'Prohibited',
         'ProhibitedIf',
         'ProhibitedUnless',
         'Prohibits',
+        'MissingIf',
+        'MissingUnless',
+        'MissingWith',
+        'MissingWithAll',
         'Same',
         'Unique',
     ];
@@ -284,6 +293,13 @@ class Validator implements ValidatorContract
      * @var string[]
      */
     protected $numericRules = ['Numeric', 'Integer', 'Decimal'];
+
+    /**
+     * The default numeric related validation rules.
+     *
+     * @var string[]
+     */
+    protected $defaultNumericRules = ['Numeric', 'Integer', 'Decimal'];
 
     /**
      * The current placeholder for dots in rule keys.
@@ -568,13 +584,14 @@ class Validator implements ValidatorContract
         $missingValue = new stdClass;
 
         foreach ($this->getRules() as $key => $rules) {
+            $value = data_get($this->getData(), $key, $missingValue);
+
             if ($this->excludeUnvalidatedArrayKeys &&
                 in_array('array', $rules) &&
+                $value !== null &&
                 ! empty(preg_grep('/^'.preg_quote($key, '/').'\.+/', array_keys($this->getRules())))) {
                 continue;
             }
-
-            $value = data_get($this->getData(), $key, $missingValue);
 
             if ($value !== $missingValue) {
                 Arr::set($results, $key, $value);
@@ -635,6 +652,8 @@ class Validator implements ValidatorContract
         }
 
         $method = "validate{$rule}";
+
+        $this->numericRules = $this->defaultNumericRules;
 
         if ($validatable && ! $this->$method($attribute, $value, $parameters, $this)) {
             $this->addFailure($attribute, $rule, $parameters);
@@ -1104,7 +1123,7 @@ class Validator implements ValidatorContract
      * @param  string  $attribute
      * @return mixed
      */
-    protected function getValue($attribute)
+    public function getValue($attribute)
     {
         return Arr::get($this->data, $attribute);
     }
