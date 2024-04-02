@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Imports\ImportClassroom;
 use App\Models\ClassRoom;
 use App\Http\Controllers\Controller;
+use App\Models\Student;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -59,10 +61,21 @@ class ClassRoomController extends Controller
     }
 
     public function students(ClassRoom $classRoom)
-{
-    $students = $classRoom->students;
-    return response()->json($students, 200);
-}
+    {
+        $studentIds = $classRoom->students->pluck('user_id')->toArray();
+        $students = User::with('student')->whereIn('id', $studentIds)->get();
+
+        $formattedStudents = $students->map(function ($student) {
+            return [
+                'id' => $student->student->id,
+                'user_id' => $student->id,
+                'name' => $student->name,
+                'phone' => $student->phone,
+                'email' => $student->email,
+            ];
+        });
+        return response()->json($formattedStudents, 200);
+    }
 
     public function DownloadClassroomTemplate()
     {
@@ -74,14 +87,15 @@ class ClassRoomController extends Controller
         ]);
     }
 
-    public function importClassroom(Request $request){
+    public function importClassroom(Request $request)
+    {
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $importClassroom = new ImportClassroom();
             Excel::import($importClassroom, $file);
-            return response()->json(['success', $importClassroom->counter.' Classrooms imported successfully']);
+            return response()->json(['success', $importClassroom->counter . ' Classrooms imported successfully']);
         }
-        return response()->json(['error'=>'No File Provided'],401);
+        return response()->json(['error' => 'No File Provided'], 401);
     }
 
 

@@ -79,6 +79,10 @@ class AuthenticationController extends Controller
     private function getEmployee($userId){
         $employee = Employee::with('user','department')->where('user_id',$userId)
             ->first();
+        if($employee->role == 'teacher')
+        {
+            $employee->load('subject');
+        }
         return $employee;
     }
 

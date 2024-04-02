@@ -6,6 +6,7 @@ use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentNoteController;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AuthenticationController;
@@ -110,6 +111,7 @@ Route::middleware('auth:sanctum')->group(function () {
      Route::post('generatePaymentCodeForStudent',[StudentController::class,'generatePaymentCodeForStudent']);
      Route::post('createStudent',[StudentController::class,'createStudent']);
      Route::get('assignCodeToAllStudents',[StudentController::class,'assignCodeToAllStudents']);
+     Route::post('generatePaymentCodePerGrade',[StudentController::class,'generatePaymentCodePerGrade']);
 
  });
 
@@ -119,6 +121,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
     Route::get('getTeachersSubjects/{teacher_id}', [TeacherController::class, 'getTeachersSubjects']);
+    Route::get('teacher/dashboard', [TeacherController::class, 'dashboard']);
 });
 
 //parent
@@ -181,11 +184,7 @@ Route::prefix('superAdmin')->group(function () {
 
 Route::get('/test', function () {
 
-    $Controller  = new \App\Http\Controllers\TimetableController();
-    $user =  $Controller->getDataForMakeTable();
-
-    return response()->json($user);
-
+    return date('l');
 });
 
 

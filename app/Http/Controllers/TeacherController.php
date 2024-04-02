@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 
+use App\Models\TimeTable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherController extends Controller
 {
@@ -124,6 +126,16 @@ class TeacherController extends Controller
 
         }
         return response()->json(['error'=>'Teacher Not Found'], 404);
+
+    }
+
+    public function dashboard()
+    {
+        $employee = Employee::where('id',Auth::id())->first();
+        $numOfSubjects = $employee->subject()->count();
+        $numOfPeriodsToday = TimeTable::where('teacher_id',$employee->id)->where('day',date('l'))->count();
+
+        return response()->json(['numOfSubjects'=>$numOfSubjects,'numOfPeriodsToday' => $numOfPeriodsToday]);
 
     }
 

@@ -297,18 +297,34 @@ class StudentController extends Controller
         return response()->json(['error'=>'Student Not Found']);
     }
 
-    public function assignCodeToAllStudents()
+    public function assignCodeToAllStudents(Request $request)
     {
         $students = Student::all();
         $payment = new PaymentController();
         $numberOfStudents = $students->count();
         $codeCounter = 0;
         foreach ($students as $student) {
-            if($payment->createPaymentCode($student->id,1000))
+            if($payment->createPaymentCode($student->id,$request->amount))
                $codeCounter++;
         }
         return response()->json(['success'=> $codeCounter . ' Student out of '.$numberOfStudents.' has payment codes']);
 
+    }
+
+    public function generatePaymentCodePerGrade(Request $request){
+
+        $grade = $request->grade;
+        $students = Student::whereHas('classroom', function ($query) use ($grade) {
+            $query->where('grade', $grade);
+        })->get();
+        $payment = new PaymentController();
+        $numberOfStudents = $students->count();
+        $codeCounter = 0;
+        foreach ($students as $student) {
+            if($payment->createPaymentCode($student->id,$request->amount))
+                $codeCounter++;
+        }
+        return response()->json(['success'=> $codeCounter . ' Student out of '.$numberOfStudents.' has payment codes']);
     }
 
 }

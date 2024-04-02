@@ -264,26 +264,10 @@ class AdminController extends Controller
 
     }
 
-    //TODO: remoe thie
-    /*public function  dashboard($dept_id)
-    {
-        $employeesNumber = Employee::
-        where('department_id', $dept_id)
-            ->join('users', 'employees.user_id', '=', 'users.id')
-            ->where('users.status', 1)
-            ->count();
-
-        $subject = Subject::count();
-        if($dept_id==4 ){ // teaching department
-
-            return response()->json(['numOfTeachers' => $employeesNumber, 'numOfSubjects' => $subject]);
-        }else{
-            return response()->json(['numOfEmps' => $employeesNumber]);
-
-        }
 
 
 
-    }*/
+
+
     
 }
