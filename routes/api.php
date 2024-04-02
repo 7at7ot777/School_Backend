@@ -149,7 +149,7 @@ Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
     Route::get('/getTeacherTable/{teacher_id}', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
     Route::get('/getDataForMakeTable', [\App\Http\Controllers\TimetableController::class, 'getDataForMakeTable']);
     Route::post('/addNewPeriod', [\App\Http\Controllers\TimetableController::class, 'addNewPeriod']);
-    Route::get('/getClassTable', [\App\Http\Controllers\TimetableController::class, 'getClassTable']);
+    Route::get('/getClassTable/{class_id}', [\App\Http\Controllers\TimetableController::class, 'getClassTable']);
 
     // Add routes for edit and delete
     Route::put('/editPeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'editPeriod']);

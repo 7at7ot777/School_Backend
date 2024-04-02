@@ -13,8 +13,9 @@ class StudentNoteController extends Controller
 
     public function store(Request $request)
     {
+
         $teacher = Employee::where('user_id', Auth::id())->first();
-        $student = Student::with('father','mother')->where('id', $request->student_id)->first();
+        $student = Student::with('father','mother')->where('user_id', $request->student_id)->first();
         $father_id = $student->father->id;
         $mother_id = $student->mother->id;
 
@@ -23,9 +24,8 @@ class StudentNoteController extends Controller
             'teacher_id' => $teacher->id,
             'father_id' => $father_id,
             'mother_id' => $mother_id,
-            'student_id' => $student->id,
+            'student_id' => $request->student_id,
             'note' => $request->note,
-
         ]);
         $note->save();
         return response()->json(['success' => 'Note is added successfully']);
