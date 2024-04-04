@@ -131,8 +131,16 @@ class TeacherController extends Controller
 
     public function dashboard()
     {
-        $employee = Employee::where('id',Auth::id())->first();
-        $numOfSubjects = $employee->subject()->count();
+        //TODO: You have to return this code if it doesn't work with muhannad
+//        $employee = Employee::where('id',Auth::id())->first();
+//        $numOfSubjects = $employee->subject()->count();
+        $employee = Employee::where('id', Auth::id())->firstOrFail(); // Use firstOrFail to throw an exception if no employee found
+
+// You can eager load the subjects to avoid additional queries
+        $employeeWithSubjects = $employee->load('subject');
+
+        $numOfSubjects = $employeeWithSubjects->subject->count(); // Use eager loaded subjects
+
         $numOfPeriodsToday = TimeTable::where('teacher_id',$employee->id)->where('day',date('l'))->count();
 
         return response()->json(['numOfSubjects'=>$numOfSubjects,'numOfPeriodsToday' => $numOfPeriodsToday]);
