@@ -4,6 +4,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\LectureController;
 use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentNoteController;
+use App\Http\Controllers\GradeSubjectController;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Student;
@@ -80,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('subject', SubjectController::class);
     Route::post('importSubject',[SubjectController::class,'importSubject']);
     Route::get('DownloadSubjectTemplate',[SubjectController::class,'DownloadSubjectTemplate']);
+    Route::get('getSubjectStudents/{subject_id}',[SubjectController::class,'getSubjectStudents']);
 });
 
 
@@ -173,6 +175,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/student-grades/show/{subjectId}/{studentId}',[StudentGradesController::class,'show']);
     Route::get('/student-grades/getStudentGrade/{studentId}',[StudentGradesController::class,'getStudentGrade']);
     Route::apiResource('student-grades', StudentGradesController::class);
+
+});
+
+//Student Subjects Attachment
+Route::middleware('auth:sanctum')->group(function () {
+
+        Route::post('grade/attach/{grade_id}', [GradeSubjectController::class, 'attachSubject']);
+    Route::post('grade/detach/{grade_id}', [GradeSubjectController::class, 'detachSubject']);
+
 
 });
 

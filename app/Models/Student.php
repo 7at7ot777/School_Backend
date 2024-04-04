@@ -29,9 +29,12 @@ class Student extends Model
         return $this->hasMany(StudentAttendance::class);
     }
 
+    //TODO: If you have any problem with student subjects plase return it as it was
     public function subjects()
     {
-        return $this->hasMany(Subject::class);
+//        return $this->hasMany(Subject::class);
+        return $this->belongsToMany(Subject::class,'student_subject'/*,'subject_id','student_id'*/);
+
     }
 
     public function father()

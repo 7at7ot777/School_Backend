@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\ImportSubject;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -129,4 +130,20 @@ class SubjectController extends Controller
         return response()->json(['error'=>'No File Provided'],401);
     }
 
+    public function getSubjectStudents($subjectId)
+    {
+        $students = Student::with('user')->whereHas('subjects', function ($query) use ($subjectId) {
+            $query->where('subjects.id', $subjectId);
+        })->get();
+
+        $mappedData = collect($students)->map(function ($item) {
+            return [
+                'student_id' => $item['id'],
+                'id' => $item['user']['id'],
+                'name' => $item['user']['name'],
+                'email' => $item['user']['email'],
+            ];
+        });
+        return $mappedData;
+    }
 }
