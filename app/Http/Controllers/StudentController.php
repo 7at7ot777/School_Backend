@@ -197,13 +197,7 @@ class StudentController extends Controller
         return $result;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+
 
     /**
      * Update the specified resource in storage.
@@ -211,6 +205,7 @@ class StudentController extends Controller
     public function update(Request $request, $id)
     {
         // البحث عن الطالب المراد تحديثه
+
         $student = Student::find($id);
 
         // التحقق مما إذا كان الطالب موجودًا
@@ -244,7 +239,18 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $student = Student::find($id);
+        $user = User::find($student->user_id);
+
+        if(!$user || !$student)
+        {
+            return response()->json(['error' => 'Student Not Found '], 404);
+        }
+
+        $student->delete();
+        $user->delete();
+        return response()->json(['message' => 'Student deleted successfully'], 200);
+
     }
 
     public function toggleIsActive($id)

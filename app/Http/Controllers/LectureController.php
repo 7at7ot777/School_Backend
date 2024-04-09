@@ -13,7 +13,8 @@ class LectureController extends Controller
     //Get All Lectures for All Subjects for a specific Teacher
     public function index()
     {
-        $teacher = Employee::where('user_id', Auth::id())->first();
+         $teacher = Employee::where('user_id', Auth::id())->first();
+
         $lectures = Lecture::with(['employee.user', 'subject'])->where('employee_id', $teacher->id)->get();
         $formatedLecture = $this->formatData($lectures);
         return response()->json($formatedLecture);
@@ -132,7 +133,7 @@ class LectureController extends Controller
 
     public function getSubjectLectures($subjectId)
     {
-        return $lectures = Lecture::select('title','url','description')->where('subject_id',$subjectId)->get();
+        return Lecture::select('title','url','description')->where('subject_id',$subjectId)->get();
 
     }
 }

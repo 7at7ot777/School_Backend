@@ -71,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('adminDashboard',[AdminController::class,'adminDashboard']);
 });
 
-
+//TODO: Role API May be removed
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('role', RoleController::class);
 });
@@ -117,7 +117,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
  });
 
-
+//Lecture
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/lectures', [LectureController::class, 'index']); // Get all lectures
+    Route::post('/lectures', [LectureController::class, 'store']); // Create a new lecture
+    Route::get('/lectures/{lecture}', [LectureController::class, 'show']); // Get a specific lecture
+    Route::put('/lectures/{lecture}', [LectureController::class, 'update']); // Update a specific lecture
+    Route::delete('/lectures/{lecture}', [LectureController::class, 'destroy']); // Delete a specific lecture
+    Route::get('/getSubjectLectures/{subject_id}',[LectureController::class,'getSubjectLectures']);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
@@ -144,11 +152,7 @@ Route::post('/employee/attendance', [EmployeesAttendanceController::class, 'reco
 Route::get('/employee/absences/{employeeId}', [EmployeesAttendanceController::class, 'calculateAbsenceDays']);
 
 
-//Lecture
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('lectures', LectureController::class);
-    Route::get('/getSubjectLectures/{subject_id}',[LectureController::class,'getSubjectLectures']);
-});
+
 //Timetables
 Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
     Route::get('/getTeacherTable/{teacher_id}', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
@@ -181,7 +185,7 @@ Route::middleware('auth:sanctum')->group(function () {
 //Student Subjects Attachment
 Route::middleware('auth:sanctum')->group(function () {
 
-        Route::post('grade/attach/{grade_id}', [GradeSubjectController::class, 'attachSubject']);
+    Route::post('grade/attach/{grade_id}', [GradeSubjectController::class, 'attachSubject']);
     Route::post('grade/detach/{grade_id}', [GradeSubjectController::class, 'detachSubject']);
 
 
