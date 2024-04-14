@@ -9,9 +9,50 @@ class StudentGradesController extends Controller
 {
     public function index($subjectId)
     {
-        $models = StudentGrades::with('student.user','subject')->where('subject_id',$subjectId)->get();
-        $formatedStudentGrades = $this->formatData($models);
+        $models = StudentGrades::with('student.user','subject','student.classroom')->where('subject_id',$subjectId)->get();
+//        return $models;
+        $formatedStudentGrades = $this->formatIndexData($models);
         return response()->json($formatedStudentGrades);
+    }
+
+    private function formatIndexData($data)
+    {
+        $extractedData = [];
+        foreach ($data as $grade) {
+            $student = $grade['student'];
+            $user = $student['user'];
+            $classroom = $student['classroom'];
+            $subject = $grade['subject'];
+
+            $extractedData[] = [
+                'grades' =>
+                    [
+                        'id' => $grade['id'],
+                        'midterm' => $grade['midterm'],
+                        'behavior' => $grade['behavior'],
+                        'final' => $grade['final'],
+                        'attendance' => $grade['attendance'],
+                        'total' => $grade['total']
+                    ],
+                'student' =>[
+                    'id' => $user['id'],
+                    'student_id' => $grade['student_id'],
+                    'name' => $user['name'],
+                    'email' => $user['email']
+                ],
+                'subject' =>[
+                    'id' => $subject['id'],
+                    'name' => $subject['name']
+                ],
+                'classroom' =>[
+                    'id' => $classroom['id'],
+                    'grade' => $classroom['grade'],
+                    'class_number' => $classroom['class_number']
+                ],
+            ];
+    }
+        return $extractedData;
+
     }
 
     public function store(Request $request)
@@ -59,8 +100,8 @@ class StudentGradesController extends Controller
                 'attendance' => $grade['attendance'],
                 'total' => $grade['total']
                     ],
+                'user_id' => $user['id'],
                 'student' =>[
-                'id' => $user['id'],
                 'student_id' => $grade['student_id'],
                 'name' => $user['name'],
                 'email' => $user['email']
@@ -78,7 +119,6 @@ class StudentGradesController extends Controller
     {
         $model = StudentGrades::with('subject')
             ->where('student_id',$studentId)->get();
-
         $formattedData = $model->map(function ($grade) {
             return [
                 'subject_name' => $grade['subject']['name'],  // Include subject name

@@ -133,7 +133,7 @@ class LectureController extends Controller
 
     public function getSubjectLectures($subjectId)
     {
-        return Lecture::select('title','url','description')->where('subject_id',$subjectId)->get();
+        return Lecture::select('id','title','url','description')->where('subject_id',$subjectId)->get();
 
     }
 }
