@@ -131,10 +131,8 @@ class TeacherController extends Controller
 
     public function dashboard()
     {
-        //TODO: You have to return this code if it doesn't work with muhannad
-//        $employee = Employee::where('id',Auth::id())->first();
-//        $numOfSubjects = $employee->subject()->count();
-        $employee = Employee::where('id', Auth::id())->first(); // Use firstOrFail to throw an exception if no employee found
+
+        $employee = Employee::where('user_id', Auth::id())->first(); // Use firstOrFail to throw an exception if no employee found
 
         $employeeWithSubjects = $employee->load('subject');
 
