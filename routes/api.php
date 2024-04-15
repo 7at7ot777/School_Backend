@@ -173,11 +173,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/showAllNotesFor1StudentAnd1Subject/{student_id}/{subject_id}',[StudentNoteController::class,'showAllNotesFor1StudentAnd1Subject']);
 });
 
-//Student Notes
+//Student Grade
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/student-grades/index/{subjectId}',[StudentGradesController::class,'index']);
     Route::get('/student-grades/show/{subjectId}/{studentId}',[StudentGradesController::class,'show']);
     Route::get('/student-grades/getStudentGrade/{studentId}',[StudentGradesController::class,'getStudentGrade']);
+    Route::get('/studentsWithNoGrades/{subject_id}',[StudentGradesController::class,'studentsWithNoGrades']);
     Route::apiResource('student-grades', StudentGradesController::class);
 
 });

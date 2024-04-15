@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Student;
 use App\Models\StudentGrades;
 use Illuminate\Http\Request;
 
@@ -132,5 +133,37 @@ class StudentGradesController extends Controller
             ];
         });
         return $formattedData;
+    }
+
+    public function studentsWithNoGrades($subject_id)
+    {
+        $existingGradesStudentIds = StudentGrades::where('subject_id',$subject_id)
+            ->pluck('student_id')
+            ->toArray();
+         $allStudentIds  = Student::with('subjects')->whereHas('subjects',function ($query)use($subject_id){
+            $query->where('subject_id',$subject_id);
+        })
+          ->pluck('id')
+          ->toArray();
+
+        $missingStudentIds = array_diff($allStudentIds, $existingGradesStudentIds);
+        $missingStudentIds = array_values($missingStudentIds);
+
+         $students = Student::with('user','classroom')->whereIn('id', $missingStudentIds)->get()->toArray();
+        $transformedData = array_map(function ($item) {
+            return [
+                'id' => isset($item['user']['id']) ? $item['user']['id'] : null,
+                'student_id' => isset($item['id']) ? $item['id'] : null,
+                'name' => isset($item['user']['name']) ? $item['user']['name'] : null,
+                'email' => isset($item['user']['email']) ? $item['user']['email'] : null,
+                'classroom_id' => isset($item['classroom']['id']) ? $item['classroom']['id'] : null,
+                'grade' => isset($item['classroom']['grade']) ? $item['classroom']['grade'] : null,
+                'class_number' => isset($item['classroom']['class_number']) ? $item['classroom']['class_number'] : null,
+            ];
+        }, $students);
+
+        return $transformedData;
+
+
     }
 }
