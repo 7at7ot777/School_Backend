@@ -91,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('class-rooms/{classRoom}/students', [ClassRoomController::class, 'students'])->name('class-rooms.students');
     Route::post('/importClassroom',[ClassroomController::class,'importClassroom']);
     Route::get('/DownloadClassroomTemplate',[ClassroomController::class,'DownloadClassroomTemplate']);
+    Route::get('/studentsInClass/{class_id}',[ClassroomController::class,'studentsInClass']);
 
 });
 

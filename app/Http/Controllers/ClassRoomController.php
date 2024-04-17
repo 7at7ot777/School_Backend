@@ -100,5 +100,23 @@ class ClassRoomController extends Controller
         return response()->json(['error' => 'No File Provided'], 401);
     }
 
+    public function studentsInClass($class_id)
+    {
+        $students = Student::with('user')->where('class_id',$class_id)->get()->toArray();
+
+        $transformedData = array_map(function ($item) {
+            return [
+                'id'=>$item['user']['id'],
+                'user_id' =>$item['id'],
+                'name' => $item['user']['name'] ?? null,
+                'email' => $item['user']['email'] ?? null,
+                'phone' => $item['user']['phone'] ?? null,
+                'avatar_url' => $item['user']['avatar_url'] ?? null,
+            ];
+        }, $students);
+
+        return $transformedData;
+    }
+
 
 }
