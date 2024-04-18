@@ -69,7 +69,6 @@ class StudentController extends Controller
     {
         $students = User::where('user_type','student')->get();
         $students->load(['student.father','student.mother','student.classroom','payments']);
-        // التأكد مما إذا كان هناك طلاب متاحون
         if ($students->isEmpty()) {
             return response()->json(['message' => 'No students found'], 404);
         }
@@ -226,8 +225,17 @@ class StudentController extends Controller
             // تحديث بيانات الطالب
             $student->update($validatedData);
 
+            $user = User::find($student->user_id);
+
+            if (!$user) {
+                return response()->json(['error' => 'User not found']);
+            }
+
+            // Call the edit method to update user details
+            if ($user->edit($request->all())) {
             // إرجاع رسالة نجاح
             return response()->json(['message' => 'Student updated successfully'], 200);
+            }
         } catch (\Exception $e) {
             // إرجاع رسالة خطأ في حالة حدوث استثناء
             return response()->json(['error' => 'Failed to update student'], 500);
@@ -239,8 +247,8 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        $student = Student::find($id);
-        $user = User::find($student->user_id);
+        $user = User::find($id);
+        $student = Student::where('user_id',$user->id);
 
         if(!$user || !$student)
         {
