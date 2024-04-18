@@ -102,20 +102,26 @@ class ClassRoomController extends Controller
 
     public function studentsInClass($class_id)
     {
-        $students = Student::with('user')->where('class_id',$class_id)->get()->toArray();
+        $students = User::where('user_type', 'student')
+            ->whereHas('student.classroom', function ($query) use ($class_id) {
+                $query->where('id', $class_id);
+            })
+            ->with(['student.father', 'student.mother', 'student.classroom', 'payments'])
+            ->get();
+        // التأكد مما إذا كان هناك طلاب متاحون
+        if ($students->isEmpty()) {
+            return response()->json(['message' => 'No students found'], 404);
+        }
 
-        $transformedData = array_map(function ($item) {
-            return [
-                'id'=>$item['user']['id'],
-                'user_id' =>$item['id'],
-                'name' => $item['user']['name'] ?? null,
-                'email' => $item['user']['email'] ?? null,
-                'phone' => $item['user']['phone'] ?? null,
-                'avatar_url' => $item['user']['avatar_url'] ?? null,
-            ];
-        }, $students);
+        // تنسيق بيانات الطلاب
+        $formattedStudents = [];
+        $studentController = new StudentController();
+        foreach ($students as $student)
+        {
+            $formattedStudents[] = $studentController->formatStudent($student);
+        }
 
-        return $transformedData;
+        return $formattedStudents;
     }
 
 

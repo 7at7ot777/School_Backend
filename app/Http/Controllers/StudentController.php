@@ -69,7 +69,6 @@ class StudentController extends Controller
     {
         $students = User::where('user_type','student')->get();
         $students->load(['student.father','student.mother','student.classroom','payments']);
-
         // التأكد مما إذا كان هناك طلاب متاحون
         if ($students->isEmpty()) {
             return response()->json(['message' => 'No students found'], 404);
@@ -144,7 +143,7 @@ class StudentController extends Controller
         return response()->json($formatedUser);
     }
 
-    private function formatStudent(User $user){
+    public function formatStudent(User $user){
 
         $result = [
             'id' => $user->id,
@@ -158,6 +157,7 @@ class StudentController extends Controller
             'userType' => $user->user_type ?? null,
             'grade' => $user->student->grade_level ?? null,
             'class' => [
+                'id' => $user->student->classroom->id ?? null,
                 'grade' => $user->student->classroom->grade ?? null,
                 'class_number' => $user->student->classroom->class_number ?? null,
             ],
