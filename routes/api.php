@@ -82,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('importSubject',[SubjectController::class,'importSubject']);
     Route::get('DownloadSubjectTemplate',[SubjectController::class,'DownloadSubjectTemplate']);
     Route::get('getSubjectStudents/{subject_id}',[SubjectController::class,'getSubjectStudents']);
+    Route::get('getClassSubjects/{class_id}',[SubjectController::class,'getClassSubjects']);
 });
 
 

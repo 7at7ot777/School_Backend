@@ -6,6 +6,7 @@ use App\Imports\ImportSubject;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Http\Controllers\Controller;
+use App\Models\TimeTable;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -145,5 +146,11 @@ class SubjectController extends Controller
             ];
         });
         return $mappedData;
+    }
+
+    public function getClassSubjects($class_id)
+    {
+        $subjectIds = TimeTable::where('class_id', $class_id)->pluck('subject_id')->toArray();
+        return Subject::whereIn('id',$subjectIds)->get();
     }
 }
