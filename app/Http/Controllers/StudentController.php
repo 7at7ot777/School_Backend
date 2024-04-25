@@ -221,25 +221,21 @@ class StudentController extends Controller
             'semester' => 'required|integer|in:1,2,3',
         ]);
 
-        try {
+
             // تحديث بيانات الطالب
             $student->update($validatedData);
 
             $user = User::find($student->user_id);
-
             if (!$user) {
                 return response()->json(['error' => 'User not found']);
             }
+            $updateUserData = new UserController();
+            $updateUserData->update($request);
 
-            // Call the edit method to update user details
-            if ($user->edit($request->all())) {
-            // إرجاع رسالة نجاح
             return response()->json(['message' => 'Student updated successfully'], 200);
-            }
-        } catch (\Exception $e) {
-            // إرجاع رسالة خطأ في حالة حدوث استثناء
-            return response()->json(['error' => 'Failed to update student'], 500);
-        }
+
+
+
     }
 
     /**

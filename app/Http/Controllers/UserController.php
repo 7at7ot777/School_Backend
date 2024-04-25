@@ -75,7 +75,8 @@ class UserController extends Controller
     {
         // Validate the incoming request data as needed
 
-        $user = User::find(Auth::id());
+        $userId = $request->has('user_id_2') ? $request->user_id_2 : Auth::id();
+        $user = User::find($userId);
 
         if (!$user) {
             return response()->json(['error' => 'User not found']);
