@@ -66,7 +66,8 @@ class AuthenticationController extends Controller
                 }
                 return response()->json(['token'=>$token, 'employee'=>$employee],200);
             }elseif($user->user_type == 'student'){
-                return response()->json('student');
+                $student = new StudentController();
+                return $student->show(Auth::id());
             }else{
                 return response()->json('parent');
 
