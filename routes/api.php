@@ -108,6 +108,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //Student
  Route::middleware('auth:sanctum')->group(function () {
+//     Route::put('update',[StudentController::class,'update']);
+
      Route::apiResource('student', StudentController::class);
      Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
      Route::post('importStudent',[StudentController::class,'importStudent']);

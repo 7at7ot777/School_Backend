@@ -229,7 +229,7 @@ class StudentController extends Controller
                 return response()->json(['error' => 'User not found']);
             }
             $updateUserData = new UserController();
-        $dummy =  $updateUserData->update($request);
+        $dummy =  $updateUserData->update($request,$student->user_id);
 
             return response()->json(['message' => 'Student updated successfully'], 200);
 
