@@ -223,14 +223,13 @@ class StudentController extends Controller
 
 
             // تحديث بيانات الطالب
-            $student->update($validatedData);
-
+             $student->update($validatedData);
             $user = User::find($student->user_id);
             if (!$user) {
                 return response()->json(['error' => 'User not found']);
             }
             $updateUserData = new UserController();
-            $updateUserData->update($request);
+        $dummy =  $updateUserData->update($request);
 
             return response()->json(['message' => 'Student updated successfully'], 200);
 
