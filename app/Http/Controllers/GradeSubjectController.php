@@ -13,6 +13,8 @@ class GradeSubjectController extends Controller
         foreach ($students as $student) {
             if (!$student->subjects->contains($request->subject_id)) {
                 $student->subjects()->attach($request->subject_id);
+                $student->save();
+
             }
         }
         return response()->json(['message' => 'Subjects attached successfully']);
