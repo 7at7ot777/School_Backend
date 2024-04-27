@@ -213,17 +213,17 @@ class StudentController extends Controller
         }
 
         // التحقق من صحة البيانات المرسلة
-        $validatedData = $request->validate([
-            'grade_level' => 'required|integer',
-            'father_id' => 'required|integer',
-            'mother_id' => 'required|integer',
-            'class_id' => 'required|integer',
-            'semester' => 'required|integer|in:1,2,3',
-        ]);
+//        $validatedData = $request->validate([
+//            'grade_level' => 'required|integer',
+//            'father_id' => 'required|integer',
+//            'mother_id' => 'required|integer',
+//            'class_id' => 'required|integer',
+//            'semester' => 'required|integer|in:1,2,3',
+//        ]);
 
 
             // تحديث بيانات الطالب
-             $student->update($validatedData);
+             $student->update($request->all());
             $user = User::find($student->user_id);
             if (!$user) {
                 return response()->json(['error' => 'User not found']);
