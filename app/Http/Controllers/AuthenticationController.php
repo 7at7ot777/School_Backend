@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Student;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,13 +66,9 @@ class AuthenticationController extends Controller
                 {
                     return response()->json(['error' => 'Employee not found'], 404);
                 }
-                return response()->json(['token'=>$token, 'employee'=>$employee],200);
+                return response()->json(['token'=>$token, 'user'=>$employee],200);
             }elseif($user->user_type == 'student'){
-                $student = new StudentController();
-                $student =  $student->show(Auth::id());
-            $student = $student->original;
-        $student['role'] = 'student';
-                return response()->json(['token'=>$token, 'student'=>$student],200);
+                return response()->json(['token'=>$token, 'user'=>$this->getStudent($user->id)],200);
 
             }else{
                 return response()->json('parent');
@@ -89,6 +87,62 @@ class AuthenticationController extends Controller
             $employee->load('subject');
         }
         return $employee;
+    }
+
+    private function getStudent($userId){
+        $user = User::find($userId);
+        $user->load(['student.father','student.mother','student.classroom','payments']);
+        $result = [
+            'id' => $user->id,
+            'student_id' => $user->student->id,
+            'name' => $user->name ?? null,
+            'phone' => $user->phone ?? null,
+            'address' => $user->address ?? null,
+            'status' => $user->status ?? null,
+            'email' => $user->email ?? null,
+            'avatarUrl' => $user->avatar_url ?? null,
+            'userType' => $user->user_type ?? null,
+            'grade' => $user->student->grade_level ?? null,
+            'role'=> 'student',
+            'class' => [
+                'id' => $user->student->classroom->id ?? null,
+                'grade' => $user->student->classroom->grade ?? null,
+                'class_number' => $user->student->classroom->class_number ?? null,
+            ],
+            'father' => [
+                'id' => $user->student->father->name ?? null,
+                'name' => $user->student->father->name ?? null,
+                'phone' => $user->student->father->phone ?? null,
+                'address' => $user->student->father->address ?? null,
+                'status' => $user->student->father->status ?? null,
+                'email' => $user->student->father->email ?? null,
+                'avatarUrl' => $user->student->father->avatar_url ?? null,
+                'userType' => $user->student->father->user_type ?? null,
+            ],
+            'mother' => [
+                'id' => $user->student->mother->name ?? null,
+                'name' => $user->student->mother->name ?? null,
+                'phone' => $user->student->mother->phone ?? null,
+                'address' => $user->student->mother->address ?? null,
+                'status' => $user->student->mother->status ?? null,
+                'email' => $user->student->mother->email ?? null,
+                'avatarUrl' => $user->student->mother->avatar_url ?? null,
+                'userType' => $user->student->mother->user_type ?? null,
+            ],
+            'payments' => []
+        ];
+
+        foreach ($user->payments as $payment )
+        {
+            $result['payments'][] = [
+                'paymentCode' => $payment->payment_code,
+                'amount' => $payment->amount,
+                'isPaid' => $payment->sucess == 0 ? false : true ,
+                'createdAt' => Carbon::parse($payment->created_at)->format('Y-m-d H:i:s')
+
+            ];
+        }
+        return $result;
     }
 
     public function test()
