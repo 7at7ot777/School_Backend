@@ -25,27 +25,13 @@ class DatabaseSeeder extends Seeder
             DepartmentTableSeeder::class,
             RolesTableSeeder::class,
             EmployeeTableSeeder::class,
+            SubjectSeeder::class,
+            StudentSeeder::class,
+            StudentGradesSeeder::class
         ]);
 
 
 
-
-
-
-
-        Subject::create(
-            ['id' => 1,'name' => 'arabic' ],
-            ['id' => 2,'name' => 'english' ],
-        );
-
-        Student::create([
-            'user_id' => 2,
-            'grade_level' => 10,
-            'father_id' => 3,
-            'mother_id' => 4,
-            'class_id' => 1,
-            'semester' => 1,
-        ]);
 
         ClassRoom::create([
             'class_number' => 101,
@@ -56,6 +42,7 @@ class DatabaseSeeder extends Seeder
             'class_number' => 201,
             'grade' => 11,
         ]);
+
 
 
     }

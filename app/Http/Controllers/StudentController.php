@@ -69,8 +69,6 @@ class StudentController extends Controller
     {
         $students = User::where('user_type','student')->get();
         $students->load(['student.father','student.mother','student.classroom','payments']);
-
-        // التأكد مما إذا كان هناك طلاب متاحون
         if ($students->isEmpty()) {
             return response()->json(['message' => 'No students found'], 404);
         }
@@ -112,8 +110,8 @@ class StudentController extends Controller
             $student = new Student([
                 'user_id' => $user->id,
                 'grade_level' => $request->input('grade_level'),
-                'parent_id_one' => $request->input('parent_id_one'),
-                'parent_id_two' => $request->input('parent_id_two'),
+                'father_id' => ImportStudent::getFatherId($request),
+                'mother_id' => ImportStudent::getMotherId($request),
                 'class_id' => $request->input('class_id'),
                 'semester' => $request->input('semester') ?? 1,
             ]);
@@ -130,13 +128,6 @@ class StudentController extends Controller
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -151,7 +142,7 @@ class StudentController extends Controller
         return response()->json($formatedUser);
     }
 
-    private function formatStudent(User $user){
+    public function formatStudent(User $user){
 
         $result = [
             'id' => $user->id,
@@ -165,6 +156,7 @@ class StudentController extends Controller
             'userType' => $user->user_type ?? null,
             'grade' => $user->student->grade_level ?? null,
             'class' => [
+                'id' => $user->student->classroom->id ?? null,
                 'grade' => $user->student->classroom->grade ?? null,
                 'class_number' => $user->student->classroom->class_number ?? null,
             ],
@@ -204,13 +196,7 @@ class StudentController extends Controller
         return $result;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+
 
     /**
      * Update the specified resource in storage.
@@ -218,6 +204,7 @@ class StudentController extends Controller
     public function update(Request $request, $id)
     {
         // البحث عن الطالب المراد تحديثه
+
         $student = Student::find($id);
 
         // التحقق مما إذا كان الطالب موجودًا
@@ -226,24 +213,28 @@ class StudentController extends Controller
         }
 
         // التحقق من صحة البيانات المرسلة
-        $validatedData = $request->validate([
-            'grade_level' => 'required|integer',
-            'parent_id_one' => 'required|integer',
-            'parent_id_two' => 'required|integer',
-            'class_id' => 'required|integer',
-            'semester' => 'required|integer|in:1,2,3',
-        ]);
+//        $validatedData = $request->validate([
+//            'grade_level' => 'required|integer',
+//            'father_id' => 'required|integer',
+//            'mother_id' => 'required|integer',
+//            'class_id' => 'required|integer',
+//            'semester' => 'required|integer|in:1,2,3',
+//        ]);
 
-        try {
+
             // تحديث بيانات الطالب
-            $student->update($validatedData);
+             $student->update($request->all());
+            $user = User::find($student->user_id);
+            if (!$user) {
+                return response()->json(['error' => 'User not found']);
+            }
+            $updateUserData = new UserController();
+        $dummy =  $updateUserData->update($request,$student->user_id);
 
-            // إرجاع رسالة نجاح
             return response()->json(['message' => 'Student updated successfully'], 200);
-        } catch (\Exception $e) {
-            // إرجاع رسالة خطأ في حالة حدوث استثناء
-            return response()->json(['error' => 'Failed to update student'], 500);
-        }
+
+
+
     }
 
     /**
@@ -251,7 +242,18 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::find($id);
+        $student = Student::where('user_id',$user->id);
+
+        if(!$user || !$student)
+        {
+            return response()->json(['error' => 'Student Not Found '], 404);
+        }
+
+        $student->delete();
+        $user->delete();
+        return response()->json(['message' => 'Student deleted successfully'], 200);
+
     }
 
     public function toggleIsActive($id)
@@ -304,18 +306,34 @@ class StudentController extends Controller
         return response()->json(['error'=>'Student Not Found']);
     }
 
-    public function assignCodeToAllStudents()
+    public function assignCodeToAllStudents(Request $request)
     {
         $students = Student::all();
         $payment = new PaymentController();
         $numberOfStudents = $students->count();
         $codeCounter = 0;
         foreach ($students as $student) {
-            if($payment->createPaymentCode($student->id,1000))
+            if($payment->createPaymentCode($student->id,$request->amount))
                $codeCounter++;
         }
         return response()->json(['success'=> $codeCounter . ' Student out of '.$numberOfStudents.' has payment codes']);
 
+    }
+
+    public function generatePaymentCodePerGrade(Request $request){
+
+        $grade = $request->grade;
+        $students = Student::whereHas('classroom', function ($query) use ($grade) {
+            $query->where('grade', $grade);
+        })->get();
+        $payment = new PaymentController();
+        $numberOfStudents = $students->count();
+        $codeCounter = 0;
+        foreach ($students as $student) {
+            if($payment->createPaymentCode($student->id,$request->amount))
+                $codeCounter++;
+        }
+        return response()->json(['success'=> $codeCounter . ' Student out of '.$numberOfStudents.' has payment codes']);
     }
 
 }

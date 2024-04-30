@@ -11,18 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grades', function (Blueprint $table) {
+        Schema::create('student_subject', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('student_id');
-            $table->foreign('student_id')->references('id')->on('students');
             $table->unsignedBigInteger('subject_id');
-            $table->foreign('subject_id')->references('id')->on('subjects');
-            $table->integer('student_level');
-            $table->integer('semester');
-            $table->integer('midterm_degree');
-            $table->integer('attendance_degree');
-            $table->integer('final_degree');
-            $table->integer('total_degree');
             $table->timestamps();
         });
     }
@@ -32,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grades');
+        Schema::dropIfExists('student_subject');
     }
 };

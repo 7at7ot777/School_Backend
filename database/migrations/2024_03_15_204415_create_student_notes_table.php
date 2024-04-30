@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employees', function (Blueprint $table) {
+        Schema::create('student_notes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->enum('role', ['admin','superAdmin','employee','teacher']); //roles have not been determined yet
-            $table->unsignedBigInteger('department_id')->nullable(); // Foreign key
-            $table->integer('basic_salary')->default(0)->nullable();
+            $table->unsignedBigInteger('subject_id');
+            $table->unsignedBigInteger('teacher_id');
+            $table->unsignedBigInteger('father_id')->nullable();
+            $table->unsignedBigInteger('mother_id')->nullable();
+            $table->unsignedBigInteger('student_id');
+            $table->text('note');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('employees');
+        Schema::dropIfExists('student_notes');
     }
 };

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     protected $table = 'students';
     protected $fillable = [
         'user_id',
@@ -29,9 +30,12 @@ class Student extends Model
         return $this->hasMany(StudentAttendance::class);
     }
 
+    //TODO: If you have any problem with student subjects plase return it as it was
     public function subjects()
     {
-        return $this->hasMany(Subject::class);
+//        return $this->hasMany(Subject::class);
+        return $this->belongsToMany(Subject::class,'student_subject','student_id','subject_id');
+
     }
 
     public function father()

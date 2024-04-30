@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 
+use App\Models\TimeTable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherController extends Controller
 {
@@ -91,22 +93,7 @@ class TeacherController extends Controller
         return $resultArray;
     }
 
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $teacher = Employee::with('subject')
@@ -121,6 +108,40 @@ class TeacherController extends Controller
 
 
         return response()->json(['data' => $formattedTeachers], 200);
+    }
+
+    public function getTeachersSubjects($teacher_id)
+    {
+        $teacher = Employee::where('role','teacher')->find($teacher_id);
+
+        if ($teacher) {
+            $subjectsTaughtByTeacher = $teacher->subject->map(function ($subject) {
+                return [
+                    'id' => $subject->id,
+                    'name' => $subject->name,
+                    // Add more attributes if needed
+                ];
+            });
+            return response()->json($subjectsTaughtByTeacher, 200);
+
+        }
+        return response()->json(['error'=>'Teacher Not Found'], 404);
+
+    }
+
+    public function dashboard()
+    {
+
+        $employee = Employee::where('user_id', Auth::id())->first(); // Use firstOrFail to throw an exception if no employee found
+
+        $employeeWithSubjects = $employee->load('subject');
+
+        $numOfSubjects = $employeeWithSubjects->subject->count() ?? 0; // Use eager loaded subjects
+
+        $numOfPeriodsToday = TimeTable::where('teacher_id',$employee->id)->where('day',date('l'))->count() ?? 0;
+
+        return response()->json(['numOfSubjects'=>$numOfSubjects,'numOfPeriodsToday' => $numOfPeriodsToday]);
+
     }
 
     

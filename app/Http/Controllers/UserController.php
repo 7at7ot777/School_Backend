@@ -71,11 +71,12 @@ class UserController extends Controller
         return response()->json(['success' => true, 'image' => $user->avatar_url]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request,$id)
     {
         // Validate the incoming request data as needed
 
-        $user = User::find(Auth::id());
+        $userId = $id;
+        $user = User::find($userId);
 
         if (!$user) {
             return response()->json(['error' => 'User not found']);

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('mother_id')->nullable();
             $table->unsignedBigInteger('class_id');
             $table->enum('semester', [1, 2, 3])->default(1);
+            $table->softDeletes();
             $table->timestamps();
             //$table->boolean('is_active')->default(true);
             //$table->foreign('class_id')->references('id')->on('class_rooms');
