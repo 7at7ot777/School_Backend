@@ -79,8 +79,9 @@ class TeacherVideoController extends Controller
 
             // حفظ بيانات الفيديو في قاعدة البيانات
             $teacherVideo = TeacherVideo::create([
-                'video_path' => $path,
-                // يمكنك إضافة المزيد من البيانات هنا، مثل اسم الفيديو أو أي معلومات إضافية
+                'title' => $request->title, // اسم الفيديو
+                'description' => $request->description, // وصف الفيديو
+                'file_path' => $path, // مسار الملف
             ]);
 
             // إرجاع رسالة ناجحة
