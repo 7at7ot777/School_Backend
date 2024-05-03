@@ -17,8 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('employee_id');
             $table->unsignedBigInteger('user_id');
             $table->string('title');
-            $table->string('url');
-            $table->text('description');
+            $table->string('url')->nullable();
+            $table->text('description')->nullable();
+            $table->string('video_name')->nullable();
             $table->timestamps();
         });
     }

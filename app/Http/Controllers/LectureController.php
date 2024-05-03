@@ -136,4 +136,41 @@ class LectureController extends Controller
         return Lecture::select('id','title','url','description')->where('subject_id',$subjectId)->get();
 
     }
+
+    public function uploadLecture(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'employee_id' => 'required|exists:employees,id',
+            'subject_id' => 'required',
+            'title' => 'required|string|max:255',
+            'url' => 'nullable|url',
+            'description' => 'required|string',
+            'video' => 'required|mimes:mp4,mov,avi|max:20000', // Example validation rules
+
+        ]);
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+        if ($request->hasFile('video')) {
+            $video = $request->file('video');
+            $fileName = time() . '_' . $video->getClientOriginalName();
+            $video->storeAs('videos', $fileName, 'public');
+
+             $filePath = env('APP_URL') .'/storage/videos/' . $fileName;
+            $lecture = new Lecture();
+            $lecture->employee_id = $request->employee_id;
+            $lecture->user_id = Auth::id();
+            $lecture->title = $request->title;
+            $lecture->url = $filePath;
+            $lecture->description = $request->description;
+            $lecture->subject_id = $request->subject_id;
+            $lecture->video_name = $filePath; //TODO: dead code // remove it later
+            $lecture->save();
+
+            return response()->json(['message' => 'Video uploaded successfully' , $filePath], 200);
+        } else {
+            return response()->json(['error' => 'No video file selected'], 400);
+        }
+    }
+
 }

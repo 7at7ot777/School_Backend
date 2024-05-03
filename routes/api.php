@@ -170,6 +170,12 @@ Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
 });
 
 
+Route::middleware('auth:sanctum')->prefix('/video')->group(function () {
+    Route::post('uploadLecture', [\App\Http\Controllers\LectureController::class, 'uploadLecture']);
+
+});
+
+
 //Student Notes
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('student-notes', StudentNoteController::class);
