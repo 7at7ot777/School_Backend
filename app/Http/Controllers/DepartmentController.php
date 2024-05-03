@@ -53,7 +53,7 @@ class DepartmentController extends Controller
                         return ($employee->role == 'employee' || $employee->role == 'teacher') && $employee->user->status == 1;
                     })->count(),
                     'mainAdmin' => [
-                        'id' => $mainAdmin ? $mainAdmin->id : '',
+                        'id' => $mainAdmin ? $mainAdmin->user_id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
                         'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
                     ],
