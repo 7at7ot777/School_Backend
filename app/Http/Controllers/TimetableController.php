@@ -15,7 +15,14 @@ class TimetableController extends Controller
         $classrooms= $this->getAllClasses();
         $periods = [1,2,3,4,5];
         $days = TimeTable::$DAYS;
-        return response()->json([$teachers,$classrooms,$days,$periods]);
+        $obj = new \stdClass();
+        $obj->teachers = $teachers;
+        $obj->classrooms = $classrooms;
+        $obj->periods = $periods;
+        $obj->days = $days;
+
+
+        return response()->json($obj);
     }
 
     public function addNewPeriod(Request $request){
