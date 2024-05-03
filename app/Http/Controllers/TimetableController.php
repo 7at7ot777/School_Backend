@@ -68,7 +68,7 @@ class TimetableController extends Controller
 
     public function getTeacherTable($teacherId)
     {
-        $timetableEntry = Timetable::with('teacher:name','subject:name','class:class_number,grade')
+        $timetableEntry = Timetable::with('subject:id,name','class:class_number,grade')
             ->where('teacher_id',$teacherId)->get();
         return response()->json($timetableEntry);
 
