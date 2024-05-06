@@ -57,20 +57,18 @@ class AuthenticationController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $token = Auth::user()->createToken('auth_token')->plainTextToken;
             $user = Auth::user();
-            if($user->status == 0)
+            if ($user->status == 0)
                 return response()->json(['error' => 'your account is disabled'], 400);
-            if($user->user_type == 'employee')
-            {
+            if ($user->user_type == 'employee') {
                 $employee = $this->getEmployee($user->id);
-                if (!$employee)
-                {
+                if (!$employee) {
                     return response()->json(['error' => 'Employee not found'], 404);
                 }
-                return response()->json(['token'=>$token, 'user'=>$employee],200);
-            }elseif($user->user_type == 'student'){
-                return response()->json(['token'=>$token, 'user'=>$this->getStudent($user->id)],200);
+                return response()->json(['token' => $token, 'user' => $employee], 200);
+            } elseif ($user->user_type == 'student') {
+                return response()->json(['token' => $token, 'user' => $this->getStudent($user->id)], 200);
 
-            }else{
+            } else {
                 return response()->json('parent');
 
             }
@@ -79,31 +77,35 @@ class AuthenticationController extends Controller
         return response()->json(['error' => 'Invalid credentials'], 401);
     }
 
-    private function getEmployee($userId){
-        $employee = Employee::with('user','department')->where('user_id',$userId)
+    private function getEmployee($userId)
+    {
+        $employee = Employee::with('user', 'department')->where('user_id', $userId)
             ->first();
-        if($employee->role == 'teacher')
-        {
+        if ($employee->role == 'teacher') {
             $employee->load('subject');
         }
         return $employee;
     }
 
-    private function getStudent($userId){
+    private function getStudent($userId)
+    {
         $user = User::find($userId);
-        $user->load(['student.father','student.mother','student.classroom','payments']);
+        $user->load(['student.father', 'student.mother', 'student.classroom', 'payments']);
         $result = [
-            'id' => $user->id,
-            'student_id' => $user->student->id,
-            'name' => $user->name ?? null,
-            'phone' => $user->phone ?? null,
-            'address' => $user->address ?? null,
-            'status' => $user->status ?? null,
-            'email' => $user->email ?? null,
-            'avatarUrl' => $user->avatar_url ?? null,
-            'userType' => $user->user_type ?? null,
-            'grade' => $user->student->grade_level ?? null,
-            'role'=> 'student',
+            'user' =>
+                [
+                    'id' => $user->id,
+                    'student_id' => $user->student->id,
+                    'name' => $user->name ?? null,
+                    'phone' => $user->phone ?? null,
+                    'address' => $user->address ?? null,
+                    'status' => $user->status ?? null,
+                    'email' => $user->email ?? null,
+                    'avatarUrl' => $user->avatar_url ?? null,
+                    'userType' => $user->user_type ?? null,
+                    'grade' => $user->student->grade_level ?? null,
+                ],
+            'role' => 'student',
             'class' => [
                 'id' => $user->student->classroom->id ?? null,
                 'grade' => $user->student->classroom->grade ?? null,
@@ -132,12 +134,11 @@ class AuthenticationController extends Controller
             'payments' => []
         ];
 
-        foreach ($user->payments as $payment )
-        {
+        foreach ($user->payments as $payment) {
             $result['payments'][] = [
                 'paymentCode' => $payment->payment_code,
                 'amount' => $payment->amount,
-                'isPaid' => $payment->sucess == 0 ? false : true ,
+                'isPaid' => $payment->sucess == 0 ? false : true,
                 'createdAt' => Carbon::parse($payment->created_at)->format('Y-m-d H:i:s')
 
             ];

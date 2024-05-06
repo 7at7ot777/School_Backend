@@ -86,7 +86,7 @@ class TimetableController extends Controller
                 'period' => $item['period'],
                 'data'=>[
                     'sub' => $item['subject']['name'],
-                    'class' => $item['class']['class_number'] . "/" . $item['class']['grade']
+                    'class' => $item['class']['grade']  . "/" . $item['class']['class_number']
                 ],
             ];
         });

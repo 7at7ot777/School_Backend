@@ -12,7 +12,8 @@ class GradeSubjectController extends Controller
         $students = Student::where('grade_level', $gradeNumber)->get();
         foreach ($students as $student) {
             if (!$student->subjects->contains($request->subject_id)) {
-                $student->subjects()->attach($request->subject_id);
+
+                 $student->subjects()->attach($request->subject_id);
                 $student->save();
 
             }
