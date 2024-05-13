@@ -58,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('resetPassword/{id}',[\App\Http\Controllers\UserController::class,'resetPassword']);
     Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
     Route::post('uploadAvatar/{id}',[\App\Http\Controllers\UserController::class,'uploadAvatar']);
-    Route::post('user/update',[\App\Http\Controllers\UserController::class,'update']);
+    Route::post('user/update/{user_id}',[\App\Http\Controllers\UserController::class,'update']);
 
 });
 
@@ -118,6 +118,7 @@ Route::middleware('auth:sanctum')->group(function () {
      Route::post('createStudent',[StudentController::class,'createStudent']);
      Route::get('assignCodeToAllStudents',[StudentController::class,'assignCodeToAllStudents']);
      Route::post('generatePaymentCodePerGrade',[StudentController::class,'generatePaymentCodePerGrade']);
+     Route::get('dashboard',[StudentController::class,'dashboard']);
 
  });
 
@@ -140,6 +141,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //parent
 Route::post('/parent', [ParentController::class, 'create']);
+Route::post('/assignParentToStudent', [ParentController::class, 'assignParentToStudent']);
 Route::get('/parent', [ParentController::class, 'index']);
 Route::put('/parent/{id}', [ParentController::class, 'update']);
 Route::delete('/parent/{id}', [ParentController::class, 'destroy']);
@@ -167,6 +169,7 @@ Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
     // Add routes for edit and delete
     Route::put('/editPeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'editPeriod']);
     Route::delete('/deletePeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'deletePeriod']);
+    Route::delete('/removeSubjectFromClass/{class_id}/{subject_id}', [\App\Http\Controllers\TimetableController::class, 'removeSubjectFromClass']);
 });
 
 
@@ -219,7 +222,7 @@ Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::cla
 Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
 
 //Face Detection
-Route::get('/listAllFaces',[\App\Http\Controllers\FaceRecognitionController::class,'listAllFaces']);
+Route::get('/trainUsersWithAvatars',[\App\Http\Controllers\FaceRecognitionController::class,'trainUsersWithAvatars']);
 Route::post('/addFace',[\App\Http\Controllers\FaceRecognitionController::class,'addFace']);
 
 

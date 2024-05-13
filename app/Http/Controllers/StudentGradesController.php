@@ -67,8 +67,11 @@ class StudentGradesController extends Controller
         $model = StudentGrades::with('student.user','subject')
             ->where('subject_id',$subjectId)
             ->where('student_id',$studentId)->first();
-        $formatedStudentGrades = $this->formatData([$model]);
-        return response()->json($formatedStudentGrades);
+        if($model != null) {
+            $formatedStudentGrades = $this->formatData([$model]);
+            return response()->json($formatedStudentGrades);
+        }
+        return  response()->json(['error'=>'Student Grade Not Found'],404);
     }
 
     public function update(Request $request, $id)
@@ -88,28 +91,28 @@ class StudentGradesController extends Controller
     {
         $extractedData = [];
         foreach ($data as $grade) {
-           $student = $grade['student'];
-            $user = $student['user'];
-            $subject = $grade['subject'];
+           $student = $grade['student'] ?? null;
+            $user = $student['user'] ?? null;
+            $subject = $grade['subject'] ?? null;
 
             $extractedData[] = [
                 'grades' =>
                     [
-                'midterm' => $grade['midterm'],
-                'behavior' => $grade['behavior'],
-                'final' => $grade['final'],
-                'attendance' => $grade['attendance'],
-                'total' => $grade['total']
+                'midterm' => $grade['midterm'] ?? null,
+                'behavior' => $grade['behavior'] ?? null,
+                'final' => $grade['final'] ?? null,
+                'attendance' => $grade['attendance'] ?? null,
+                'total' => $grade['total'] ?? null
                     ],
-                'user_id' => $user['id'],
+                'user_id' => $user['id'] ?? null,
                 'student' =>[
-                'student_id' => $grade['student_id'],
-                'name' => $user['name'],
-                'email' => $user['email']
+                'student_id' => $grade['student_id'] ?? null,
+                'name' => $user['name'] ?? null,
+                'email' => $user['email'] ?? null
                     ],
                 'subject' =>[
-                'id' => $subject['id'],
-                'name' => $subject['name']
+                'id' => $subject['id'] ?? null,
+                'name' => $subject['name'] ?? null
                     ],
             ];
         }
@@ -163,7 +166,5 @@ class StudentGradesController extends Controller
         }, $students);
 
         return $transformedData;
-
-
     }
 }

@@ -97,7 +97,12 @@ class TimetableController extends Controller
 
     public function getClassTable($classId)
     {
-        $timetableEntry = Timetable::with('teacher:name','subject:name','class:class_number,grade')->where('class_id',$classId)->get();
+        $timetableEntry = Timetable::with('teacher.user:id,name','subject:id,name','class:id,class_number,grade')
+            ->where('class_id',$classId)
+            ->get();
+
+
+
         return response()->json($timetableEntry);
     }
 
@@ -160,6 +165,16 @@ class TimetableController extends Controller
         $timetableEntry->delete();
 
         return response()->json(['success' => 'Period deleted successfully']);
+    }
+
+    public function removeSubjectFromClass($class_id,$subject_id)
+    {
+             TimeTable::where('class_id',$class_id)
+            ->where('subject_id',$subject_id)
+            ->delete();
+            return response()->json(['success' => 'Deleted Successfully.'], 200);
+
+
     }
 
 }

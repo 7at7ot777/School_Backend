@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Imports\ImportStudent;
 use App\Models\Student;
+use App\Models\TimeTable;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
+use Ramsey\Uuid\Type\Time;
 
 class StudentController extends Controller
 {
@@ -110,8 +113,6 @@ class StudentController extends Controller
             $student = new Student([
                 'user_id' => $user->id,
                 'grade_level' => $request->input('grade_level'),
-                'father_id' => ImportStudent::getFatherId($request),
-                'mother_id' => ImportStudent::getMotherId($request),
                 'class_id' => $request->input('class_id'),
                 'semester' => $request->input('semester') ?? 1,
             ]);
@@ -335,5 +336,19 @@ class StudentController extends Controller
         }
         return response()->json(['success'=> $codeCounter . ' Student out of '.$numberOfStudents.' has payment codes']);
     }
+
+    public function dashboard()
+    {
+        $student = Student::where('user_id',Auth::id())->first();
+        $numberOfSubjects = TimeTable::where('class_id',$student->class_id)
+            ->distinct('subject_id')
+            ->count('subject_id');
+        $todaysLectures =  TimeTable::where('class_id',$student->class_id)
+            ->where('day',Carbon::today()->format('l'))
+            ->count();
+        return response()->json(['numberOfSubjects' => $numberOfSubjects ,  'todaysLectures'=>$todaysLectures]);
+    }
+
+
 
 }

@@ -150,7 +150,24 @@ class SubjectController extends Controller
 
     public function getClassSubjects($class_id)
     {
-        $subjectIds = TimeTable::where('class_id', $class_id)->pluck('subject_id')->toArray();
-        return Subject::whereIn('id',$subjectIds)->get();
+        $timetables = TimeTable::with('subject:id,name', 'teacher.user:id,name')->where('class_id', $class_id)->get();
+
+        $formattedTimetables = $timetables->map(function ($timetable) {
+            return [
+                'subject' => [
+                    'id' => $timetable->subject->id,
+                    'name' => $timetable->subject->name,
+                ],
+                'user_id' => $timetable->teacher->user->id,
+                'teacher' => [
+                    'id' => $timetable->teacher->id,
+                    'name' => $timetable->teacher->user->name,
+                ],
+                'day' => $timetable->day,
+                'period' => $timetable->period,
+            ];
+        });
+
+        return $formattedTimetables;
     }
 }
