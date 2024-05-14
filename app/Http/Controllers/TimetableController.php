@@ -101,9 +101,21 @@ class TimetableController extends Controller
             ->where('class_id',$classId)
             ->get();
 
+        $transformedData = [];
 
+        foreach ($timetableEntry as $entry)  {
+            $transformedData[] = [
+                'id' => $entry->id,
+                'day' => $entry->day,
+                'period' => $entry->period,
+                'data' => [
+                    'sub' => $entry->subject->name,
+                    'class' => $entry->class->grade . '\/' . $entry->class->class_number
+                ]
+            ];
+        }
 
-        return response()->json($timetableEntry);
+        return response()->json($transformedData);
     }
 
     public function saveUniqueEntry($data)

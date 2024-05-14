@@ -56,7 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('resetPassword/{id}',[\App\Http\Controllers\UserController::class,'resetPassword']);
-    Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
+    Route::post('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
     Route::post('uploadAvatar/{id}',[\App\Http\Controllers\UserController::class,'uploadAvatar']);
     Route::post('user/update/{user_id}',[\App\Http\Controllers\UserController::class,'update']);
 
