@@ -113,7 +113,7 @@ class AdminController extends Controller
             $resultArray[] = [
                 'id' => $item['user']['id'],
                 'emp_id' => $item['id'],
-                'avatarUrl' => '', // Add logic to get the avatar URL if available
+                'avatarUrl' => $item['user']['avatar_url'] ?? '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
                 'status' => $item['user']['status'],
