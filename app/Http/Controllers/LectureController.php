@@ -153,7 +153,7 @@ class LectureController extends Controller
         }
         if ($request->hasFile('video')) {
             $video = $request->file('video');
-            $fileName = time() . '_' . $video->getClientOriginalName();
+            $fileName = time() . '_' . str_replace(' ', '',$video->getClientOriginalName());
             $video->storeAs('videos', $fileName, 'public');
 
              $filePath = env('APP_URL') .'/storage/videos/' . $fileName;

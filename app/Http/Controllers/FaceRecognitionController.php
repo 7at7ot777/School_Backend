@@ -13,10 +13,9 @@ class FaceRecognitionController extends Controller
     {
         // Get all users where avatar_url is not null
         $users = User::where('avatar_url','!=','')->get();
-//        return $users;
         foreach ($users as $user) {
-
-                $data[] = [
+            $data[] =
+                [
                     'image_url' => $user->avatar_url,
                     'label' => $user->id . "|" . $user->name,
                 ];
@@ -26,15 +25,12 @@ class FaceRecognitionController extends Controller
 
                 // Handle the response as needed
                 if ($response->successful()) {
-                    // Training request was successful
-                    echo "Training successful for user: $user->name\n";
+                    return response()->json(['success' =>'training complete'],200);
+
                 } else {
                     // Training request failed
-                    echo "Failed to train user: $user->name\n";
+                    return response()->json(['error' =>'An error has occured'],400);
                 }
-
-
-        return 'training complete';
     }
 
     private function downloadAvatar($imageUrl)

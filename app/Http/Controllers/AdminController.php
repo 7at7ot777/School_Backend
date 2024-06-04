@@ -130,7 +130,6 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $newRequest = $this->addDumpData($request, 0);
-        //        return $request;
         $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
         if ($validator->fails()) {
             return $validator->errors();
@@ -144,14 +143,12 @@ class AdminController extends Controller
                 'user_type' => 'employee'
             ]);
             $user->save();
-
             $employee = Employee::create([
                 'user_id' => $user->id,
                 'department_id' => $request->department_id,
                 'basic_salary' => $newRequest->basic_salary,
                 'role' => 'admin',
                 'subject_id' => $request->subject_id,
-
             ]);
             $employee->save();
         }
@@ -182,11 +179,8 @@ class AdminController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->addDumpData($request, 1);
         $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
+        if ($validator->fails()) { return response()->json(['error' => $validator->errors()], 422); }
         $employee = Employee::find($id);
         if (!$employee) {
             return response()->json(['error' => 'Employee not found'], 404);
@@ -204,14 +198,14 @@ class AdminController extends Controller
         $user->phone = $request->phone;
         $user->address = $request->address;
         $user->status = $request->status;
-        //        $user->password = bcrypt($request->password);
         if (strcmp($user->email, $request->email) != 0) {
             $user->email = $request['swappedEmail'];
         }
         $user->save();
-
         return response()->json(['success' => 'Employee updated successfully'], 200);
     }
+
+
     private function addDumpData($request, $updateFlag = 0)
     {
         /* This function is used to add dump data to the request to escape from validation */

@@ -92,5 +92,22 @@ class UserController extends Controller
         }
     }
 
+    public function show($user_id)
+    {
+        $user = User::with('employee.department')->find($user_id);
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'address' => $user->address,
+            'avatarUrl' => $user->avatar_url,
+            'role' => $user->employee->role,
+            'department' => [
+                'id' => $user->employee->department_id,
+                'name' => $user->employee->department->name,
+                ]
+        ]);
+    }
+
 
 }

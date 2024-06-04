@@ -42,7 +42,13 @@ Route::post('/logout', [AuthenticationController::class, 'logout'])->middleware(
 
 //Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
 //    Route::get('/test', [AuthenticationController::class, 'test']);
+
+
 //});
+
+
+
+
 
 //Department
 Route::middleware('auth:sanctum')->group(function () {
@@ -59,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
     Route::post('uploadAvatar/{id}',[\App\Http\Controllers\UserController::class,'uploadAvatar']);
     Route::post('user/update/{user_id}',[\App\Http\Controllers\UserController::class,'update']);
+    Route::get('user/show/{user_id}',[\App\Http\Controllers\UserController::class,'show']);
 
 });
 
