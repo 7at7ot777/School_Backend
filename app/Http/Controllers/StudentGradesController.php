@@ -29,12 +29,12 @@ class StudentGradesController extends Controller
             $extractedData[] = [
                 'grades' =>
                     [
-                        'id' => $grade['id'],
-                        'midterm' => $grade['midterm'],
-                        'behavior' => $grade['behavior'],
-                        'final' => $grade['final'],
-                        'attendance' => $grade['attendance'],
-                        'total' => $grade['total']
+                        'id' => $grade['id'] ??  null,
+                        'midterm' => $grade['midterm'] ?? 0,
+                        'behavior' => $grade['behavior'] ?? 0,
+                        'final' => $grade['final'] ?? 0,
+                        'attendance' => $grade['attendance'] ?? 0,
+                        'total' => $grade['total'] ?? 0
                     ],
                 'student' =>[
                     'id' => $user['id'],
