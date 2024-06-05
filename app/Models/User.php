@@ -27,7 +27,9 @@ class User extends Authenticatable
         'password',
         'user_type',
         'address',
-        'phone'
+        'phone',
+        'avatar_url',
+        'isFirstTimeLogin',
     ];
 
     /**

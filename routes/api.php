@@ -36,6 +36,7 @@ use App\Http\Controllers\EmployeesAttendanceController;
 
 
 Route::post('/login', [AuthenticationController::class, 'login'])->name('login');
+Route::post('/loginUsingFaceRecogintion', [AuthenticationController::class, 'loginUsingFaceRecogintion'])->name('loginUsingFaceRecogintion');
 Route::post('/register', [AuthenticationController::class, 'register']);
 Route::post('/logout', [AuthenticationController::class, 'logout'])->middleware('auth:sanctum');
 
@@ -231,5 +232,10 @@ Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::cla
 //Face Detection
 Route::get('/trainUsersWithAvatars',[\App\Http\Controllers\FaceRecognitionController::class,'trainUsersWithAvatars']);
 Route::post('/addFace',[\App\Http\Controllers\FaceRecognitionController::class,'addFace']);
+Route::post('/detect',[\App\Http\Controllers\FaceRecognitionController::class,'detect']);
 
+//VARK
+Route::middleware('auth:sanctum')->group(function () {
+Route::apiResource('vark',\App\Http\Controllers\VARKController::class);
 
+});

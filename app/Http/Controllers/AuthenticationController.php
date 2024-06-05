@@ -151,4 +151,46 @@ class AuthenticationController extends Controller
         return 'test';
 
     }
+
+    public function loginUsingFaceRecogintion(Request $request){
+        $request->validate([
+            'image' => 'required|image|max:10240', // max 10MB
+        ]);
+         $faceRecogintion = new FaceRecognitionController();
+         $response = $faceRecogintion->detect($request);
+         if ($response->status() == 201)
+         {
+//             return $response;
+            // Retrieve the user by ID
+             $responseData = $response->getContent();
+             $responseData = json_decode($responseData, true);
+
+             // Access the 'user_id' or other relevant data from the response
+             $userId = $responseData['user_id']; // Assuming 'user_id' is returned in the response
+            $user = User::find($userId);
+            if ($user) {
+                if ($user->status == 0) {
+                    return response()->json(['error' => 'Your account is disabled'], 400);
+                }
+
+                // Generate a token for the user
+                $token = $user->createToken('auth_token')->plainTextToken;
+
+                // Check the user type and return the appropriate response
+                if ($user->user_type == 'employee') {
+                    $employee = $this->getEmployee($user->id);
+                    if (!$employee) {
+                        return response()->json(['error' => 'Employee not found'], 404);
+                    }
+                    return response()->json(['token' => $token, 'user' => $employee], 200);
+                } elseif ($user->user_type == 'student') {
+                    return response()->json(['token' => $token, 'user' => $this->getStudent($user->id)], 200);
+                } else {
+                    return response()->json(['token' => $token, 'user' => 'parent'], 200);
+                }
+            }}
+         return response()->json(['error' => 'User not found'], 404);
+          }
+
+
 }

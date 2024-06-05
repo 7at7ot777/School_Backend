@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('password')->default(bcrypt('welcome'));
             $table->boolean('status')->default(true);
+            $table->boolean('isFirstTimeLogin')->default(false);
             $table->string('email');//->unique();
             $table->string('avatar_url')->default('');//->unique();
             //$table->unsignedBigInteger('role_id')->nullable();

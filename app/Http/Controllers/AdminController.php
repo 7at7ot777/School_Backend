@@ -92,11 +92,10 @@ class AdminController extends Controller
 
     public function index()
     {
-        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')
+        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status,avatar_url')
             ->where('role', 'admin')
             ->get();
 
-//                        return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins, 200);
     }
@@ -157,7 +156,7 @@ class AdminController extends Controller
 
     public function show($id)
     {
-        $admin = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('id', $id)->first();
+        $admin = Employee::with('department:id,name', 'user:id,email,name,phone,status,avatar_url')->where('id', $id)->first();
 //                return $admin;
 
         if (!$admin) {

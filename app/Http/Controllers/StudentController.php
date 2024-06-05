@@ -106,7 +106,8 @@ class StudentController extends Controller
                 'address' => $request->input('address'),
                 'password' => bcrypt('welcome'),
                 'email' => $request->input('email'),
-                'user_type' => 'student'
+                'user_type' => 'student',
+                'isFirstTimeLogin' => true,
             ]);
 
             // Create a new student instance
@@ -156,6 +157,7 @@ class StudentController extends Controller
             'avatarUrl' => $user->avatar_url ?? null,
             'userType' => $user->user_type ?? null,
             'grade' => $user->student->grade_level ?? null,
+            'isFirstTimeLogin' => $user->isFirstTimeLogin,
             'class' => [
                 'id' => $user->student->classroom->id ?? null,
                 'grade' => $user->student->classroom->grade ?? null,
