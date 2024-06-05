@@ -104,6 +104,7 @@ class AuthenticationController extends Controller
                     'avatarUrl' => $user->avatar_url ?? null,
                     'userType' => $user->user_type ?? null,
                     'grade' => $user->student->grade_level ?? null,
+                    'isFirstTimeLogin' => $user->isFirstTimeLogin,
                 ],
             'role' => 'student',
             'class' => [
