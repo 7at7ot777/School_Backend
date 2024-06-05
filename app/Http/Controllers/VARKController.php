@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassRoom;
+use App\Models\Student;
 use App\Models\VARK;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,5 +37,11 @@ class VARKController extends Controller
         return $key;
 
 
+    }
+
+    public function getCountedVarkResults($teacher_id)
+    {
+        $TeachedClasses = ClassRoom::select('class_id')->where('teacher_id',$teacher_id)->get()->toArray();
+        $getStudentsIdsInClasses = Student::whereIn($TeachedClasses)->pluck('id')->toArray();
     }
 }
