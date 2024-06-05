@@ -101,6 +101,8 @@ class UserController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'address' => $user->address,
+            'phone' => $user->phone,
+            'status' => $user->status,
             'avatarUrl' => $user->avatar_url,
             'role' => $user->employee->role ?? '',
             'userType' => $user->user_type ,

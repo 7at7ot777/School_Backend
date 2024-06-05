@@ -41,7 +41,8 @@ class VARKController extends Controller
 
     public function getCountedVarkResults($teacher_id)
     {
-        $TeachedClasses = ClassRoom::select('class_id')->where('teacher_id',$teacher_id)->get()->toArray();
-        $getStudentsIdsInClasses = Student::whereIn($TeachedClasses)->pluck('id')->toArray();
+        $teachedClasses = ClassRoom::select('class_id')->where('teacher_id',$teacher_id)->get()->toArray();
+        $studentsIdsInClasses = Student::whereIn($teachedClasses)->pluck('id')->toArray();
+        $varkStudents = VARK::whereIn('student_id',$studentsIdsInClasses);
     }
 }
