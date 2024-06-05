@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
 use App\Models\Student;
+use App\Models\TimeTable;
 use App\Models\VARK;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,23 +41,35 @@ class VARKController extends Controller
 
     public function getCountedVarkResults($teacher_id)
     {
-        $teachedClasses = ClassRoom::select('class_id')->where('teacher_id', $teacher_id)->get()->toArray();
+        // Fetch all class IDs taught by the teacher
+        $teachedClasses = TimeTable::select('class_id')
+            ->where('teacher_id', $teacher_id)
+            ->pluck('class_id')
+            ->toArray();
+
         $classes = [];
-        foreach ($teachedClasses as $teachedClass) {
-            $studentsUsersIdsInClasses = Student::where('class_id', $teachedClass)->pluck('user_id')->toArray();
-            $varkStudents = VARK::whereIn('student_id', $studentsUsersIdsInClasses);
-            $classes = [
-                $teachedClass => [
-                    'vcount' => $varkStudents->where('result', 'v')->count(),
-                    'acount' => $varkStudents->where('result', 'a')->count(),
-                    'rcount' => $varkStudents->where('result', 'r')->count(),
-                    'kcount' => $varkStudents->where('result', 'k')->count(),
-                ]
+
+        // Loop through each class ID
+        foreach ($teachedClasses as $classId) {
+            // Fetch all student user IDs in the current class
+            $studentsUsersIdsInClasses = Student::where('class_id', $classId)
+                ->pluck('user_id')
+                ->toArray();
+
+            // Fetch VARK results for students in the current class
+            $varkStudents = VARK::whereIn('user_id', $studentsUsersIdsInClasses)->get();
+
+            // Count VARK results
+            $classes[] = [
+                'id' =>$classId,
+                'v' => $varkStudents->where('result', 'v')->count(),
+                'a' => $varkStudents->where('result', 'a')->count(),
+                'r' => $varkStudents->where('result', 'r')->count(),
+                'k' => $varkStudents->where('result', 'k')->count(),
             ];
-
         }
+
         return $classes;
-
-
     }
+
 }
