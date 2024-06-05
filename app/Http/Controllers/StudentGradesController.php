@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\StudentGrades;
+use App\Models\TimeTable;
 use Illuminate\Http\Request;
 
 class StudentGradesController extends Controller
@@ -143,9 +144,8 @@ class StudentGradesController extends Controller
         $existingGradesStudentIds = StudentGrades::where('subject_id',$subject_id)
             ->pluck('student_id')
             ->toArray();
-         $allStudentIds  = Student::with('subjects')->whereHas('subjects',function ($query)use($subject_id){
-            $query->where('subject_id',$subject_id);
-        })
+        $classesWithSubjectId = TimeTable::where('subject_id',$subject_id)->pluck('class_id')->toArray();
+         $allStudentIds  = Student::whereIn('class_id',$classesWithSubjectId)
           ->pluck('id')
           ->toArray();
 
