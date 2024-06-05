@@ -237,5 +237,6 @@ Route::post('/detect',[\App\Http\Controllers\FaceRecognitionController::class,'d
 //VARK
 Route::middleware('auth:sanctum')->group(function () {
 Route::apiResource('vark',\App\Http\Controllers\VARKController::class);
+Route::get('vark/getCountedVarkResults/{teacher_id}',[\App\Http\Controllers\VARKController::class,'getCountedVarkResults']);
 
 });

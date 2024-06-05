@@ -12,8 +12,8 @@ class VARKController extends Controller
 {
     public function store(Request $request)
     {
-       $key =  $this->getGreatestKey($request->all());
-        $request->merge(['user_id' => Auth::id(),'result' => $key]);
+        $key = $this->getGreatestKey($request->all());
+        $request->merge(['user_id' => Auth::id(), 'result' => $key]);
         VARK::create($request->all());
         $user = Auth::user();
         $user->isFirstTimeLogin = false;
@@ -27,8 +27,7 @@ class VARKController extends Controller
         $key = null;
 
         foreach ($data as $datumKey => $datum) {
-            if($datum > $greatest_value)
-            {
+            if ($datum > $greatest_value) {
                 $greatest_value = $datum;
                 $key = $datumKey;
             }
@@ -41,8 +40,23 @@ class VARKController extends Controller
 
     public function getCountedVarkResults($teacher_id)
     {
-        $teachedClasses = ClassRoom::select('class_id')->where('teacher_id',$teacher_id)->get()->toArray();
-        $studentsIdsInClasses = Student::whereIn($teachedClasses)->pluck('id')->toArray();
-        $varkStudents = VARK::whereIn('student_id',$studentsIdsInClasses);
+        $teachedClasses = ClassRoom::select('class_id')->where('teacher_id', $teacher_id)->get()->toArray();
+        $classes = [];
+        foreach ($teachedClasses as $teachedClass) {
+            $studentsUsersIdsInClasses = Student::where('class_id', $teachedClass)->pluck('user_id')->toArray();
+            $varkStudents = VARK::whereIn('student_id', $studentsUsersIdsInClasses);
+            $classes = [
+                $teachedClass => [
+                    'vcount' => $varkStudents->where('result', 'v')->count(),
+                    'acount' => $varkStudents->where('result', 'a')->count(),
+                    'rcount' => $varkStudents->where('result', 'r')->count(),
+                    'kcount' => $varkStudents->where('result', 'k')->count(),
+                ]
+            ];
+
+        }
+        return $classes;
+
+
     }
 }

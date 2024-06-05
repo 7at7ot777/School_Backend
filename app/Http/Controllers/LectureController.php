@@ -67,6 +67,8 @@ class LectureController extends Controller
                 'description' => $lecture->description,
                 'employee' => [
                     'id' => $lecture->user_id,
+                    'name' => $lecture->employee->user->name,
+                    'email' => $lecture->employee->user->email,
                     'employee_id' => $lecture->employee->id,
                     'role' => $lecture->employee->role,
                 ],
