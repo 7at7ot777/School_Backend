@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\ImportStudent;
+use App\Models\GradeFees;
 use App\Models\Student;
 use App\Models\TimeTable;
 use App\Models\User;
@@ -336,6 +337,13 @@ class StudentController extends Controller
             if($payment->createPaymentCode($student->id,$request->amount))
                 $codeCounter++;
         }
+        $fees = GradeFees::where('grade',$grade)->first();
+        if(!$fees)
+        {
+            $fees = GradeFees::create(['amount' => $request->amount, 'grade' => $grade]);
+        }
+        $fees->amount = $request->amount;
+        $fees->save();
         return response()->json(['success'=> $codeCounter . ' Student out of '.$numberOfStudents.' has payment codes']);
     }
 

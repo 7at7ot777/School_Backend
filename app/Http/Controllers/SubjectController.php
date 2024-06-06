@@ -61,10 +61,8 @@ class SubjectController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-
-        $subject = Subject::create($request->all());
-
-        return response()->json(['message' => 'stored successfully'], 201);
+         Subject::create($request->all());
+         return response()->json(['message' => 'stored successfully'], 201);
     }
 
     /**

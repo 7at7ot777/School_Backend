@@ -83,30 +83,4 @@ class FaceRecognitionController extends Controller
         }
     }
 
-//    TODO: remove this function
-    private function downloadAvatar($imageUrl)
-    {
-        // Make a GET request to the image URL
-        $response = Http::get($imageUrl);
-
-        // Check if the request was successful
-        if ($response->successful()) {
-            // Get the contents of the response (image data)
-            $imageData = $response->body();
-
-            // Generate a unique file name
-            $fileName = uniqid() . '.jpg';
-
-            // Store the image in the storage disk
-            Storage::disk('public')->put($fileName, $imageData);
-
-            // Return the file path
-            return $fileName;
-        } else {
-            // If the request was not successful, return null
-            return null;
-        }
-
-
-    }
 }

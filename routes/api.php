@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\GradeFeesController;
 use App\Http\Controllers\LectureController;
 use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentNoteController;
@@ -40,12 +41,6 @@ Route::post('/loginUsingFaceRecogintion', [AuthenticationController::class, 'log
 Route::post('/register', [AuthenticationController::class, 'register']);
 Route::post('/logout', [AuthenticationController::class, 'logout'])->middleware('auth:sanctum');
 
-
-//Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
-//    Route::get('/test', [AuthenticationController::class, 'test']);
-
-
-//});
 
 
 
@@ -238,5 +233,12 @@ Route::post('/detect',[\App\Http\Controllers\FaceRecognitionController::class,'d
 Route::middleware('auth:sanctum')->group(function () {
 Route::apiResource('vark',\App\Http\Controllers\VARKController::class);
 Route::get('vark/getCountedVarkResults/{teacher_id}',[\App\Http\Controllers\VARKController::class,'getCountedVarkResults']);
+
+});
+
+
+//Payment Grade
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('grade-fees', GradeFeesController::class);
 
 });

@@ -41,12 +41,8 @@ class LectureController extends Controller
         $lecture->description = $request->description;
         $lecture->subject_id = $request->subject_id;
         $lecture->save();
-
-
         return response()->json(['success' => 'Lecture is added successfully'], 201);
     }
-
-    // Display the specified resource.
     public function show($id)
     {
         $lecture = Lecture::with(['employee.user', 'subject'])->findOrFail($id);
@@ -94,16 +90,10 @@ class LectureController extends Controller
         if ($validator->fails()) {
             return $validator->errors();
         }
-
-        // Find the lecture by its ID
         $lecture = Lecture::find($id);
-
-        // Check if the lecture exists
         if (!$lecture) {
             return response()->json(['error' => 'Lecture not found'], 404);
         }
-
-        // Update the lecture attributes
         $lecture->employee_id = $request->employee_id;
         $lecture->user_id = Auth::id();
         $lecture->title = $request->title;
@@ -120,16 +110,10 @@ class LectureController extends Controller
     public function destroy($id)
     {
         $lecture = Lecture::find($id);
-
-        // Check if the lecture exists
         if (!$lecture) {
             return response()->json(['error' => 'Lecture not found'], 404);
         }
-
-        // Delete the lecture
         $lecture->delete();
-
-        // Return a success response with a status code of 200 OK
         return response()->json(['success' => 'Lecture deleted successfully'], 200);
     }
 

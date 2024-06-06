@@ -156,8 +156,9 @@ class AdminController extends Controller
 
     public function show($id)
     {
-        $admin = Employee::with('department:id,name', 'user:id,email,name,phone,status,avatar_url')->where('id', $id)->first();
-//                return $admin;
+        $admin = Employee::with('department:id,name', 'user:id,email,name,phone,status,avatar_url')
+            ->where('id', $id)
+            ->first();
 
         if (!$admin) {
             return response()->json(['error' => 'Employee not found'], 404);
