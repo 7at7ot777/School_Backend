@@ -334,7 +334,7 @@ class StudentController extends Controller
         $numberOfStudents = $students->count();
         $codeCounter = 0;
         foreach ($students as $student) {
-            if($payment->createPaymentCode($student->id,$request->amount))
+            if($payment->createPaymentCode($student->user_id,$request->amount))
                 $codeCounter++;
         }
         $fees = GradeFees::where('grade',$grade)->first();

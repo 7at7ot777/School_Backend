@@ -58,8 +58,9 @@ class User extends Authenticatable
     public function student (){return $this->hasOne(Student::class);}
     public function role(){return $this->hasOne(Role::class);}
 
-    public function payments(){
-        return $this->hasMany(Payment::class);
+    public function payments()
+    {
+        return $this->hasMany(Payment::class,'user_id','id');
     }
 
     public function edit(array $data)

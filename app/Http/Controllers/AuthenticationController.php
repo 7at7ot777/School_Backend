@@ -89,7 +89,7 @@ class AuthenticationController extends Controller
 
     private function getStudent($userId)
     {
-        $user = User::find($userId);
+        $user = User::with('payments')->find($userId);
         $user->load(['student.father', 'student.mother', 'student.classroom', 'payments']);
         $result = [
             'user' =>
