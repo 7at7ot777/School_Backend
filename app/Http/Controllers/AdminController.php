@@ -188,7 +188,7 @@ class AdminController extends Controller
         $employee->department_id = $request->department_id;
         $employee->basic_salary = $request->basic_salary;
         $employee->role = 'admin';
-        $employee->subject_id = $request->subject_id;
+//        $employee->subject_id = $request->subject_id;
 
         $employee->save();
 
