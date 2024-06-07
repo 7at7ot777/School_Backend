@@ -199,7 +199,7 @@ class AdminController extends Controller
         $user->address = $request->address;
         $user->status = $request->status;
         if (strcmp($user->email, $request->email) != 0) {
-            $user->email = $request['swappedEmail'];
+            $user->email = $request['email'];
         }
         $user->save();
         return response()->json(['success' => 'Employee updated successfully'], 200);
