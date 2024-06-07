@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassRoom;
 use App\Models\Employee;
 
 use App\Models\TimeTable;
@@ -144,5 +145,10 @@ class TeacherController extends Controller
 
     }
 
+    public function getClassesForTeacher($teacher_id)
+    {
+       $classesId = TimeTable::where('teacher_id',$teacher_id)->pluck('class_id')->toArray();
+        return $classess = ClassRoom::whereIn('id',$classesId)->get();
+    }
     
 }
