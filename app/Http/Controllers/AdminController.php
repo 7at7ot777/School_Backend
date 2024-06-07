@@ -177,11 +177,11 @@ class AdminController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $user_id)
     {
 //        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
 //        if ($validator->fails()) { return response()->json(['error' => $validator->errors()], 422); }
-        $employee = Employee::find($id);
+        $employee = Employee::where('user_id',$user_id)->first();
         if (!$employee) {
             return response()->json(['error' => 'Employee not found'], 404);
         }
