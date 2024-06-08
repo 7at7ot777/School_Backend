@@ -53,7 +53,7 @@ class DepartmentController extends Controller
                         return ($employee->role == 'employee' || $employee->role == 'teacher') && $employee->user->status == 1;
                     })->count(),
                     'mainAdmin' => [
-                        'id' => $mainAdmin ? $mainAdmin->id : '',
+                        'id' => $mainAdmin ? $mainAdmin->user_id : '',
                         'name' => $mainAdmin ? $mainAdmin->user->name : '',
                         'avatarUrl' => $mainAdmin ? $mainAdmin->user->avatar_url : '',
                     ],
@@ -106,8 +106,6 @@ class DepartmentController extends Controller
             return response()->json(['success' => 'Department updated successfully'], 200);
         }}
 
-
-    
     public function destroy($id)
     {
       $department =  Department::with(['employees' => function ($query) {
@@ -116,8 +114,6 @@ class DepartmentController extends Controller
         if (!$department) {
             return response()->json(['error' => 'Department not found'], 404);
         }
-//        $department->employees->department_id = null ;
-//        $department->save();
         $department->delete();
 
         return response()->json(['success' => 'Department deleted successfully'], 200);

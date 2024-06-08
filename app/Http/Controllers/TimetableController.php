@@ -15,7 +15,14 @@ class TimetableController extends Controller
         $classrooms= $this->getAllClasses();
         $periods = [1,2,3,4,5];
         $days = TimeTable::$DAYS;
-        return response()->json([$teachers,$classrooms,$days,$periods]);
+        $obj = new \stdClass();
+        $obj->teachers = $teachers;
+        $obj->classrooms = $classrooms;
+        $obj->periods = $periods;
+        $obj->days = $days;
+
+
+        return response()->json($obj);
     }
 
     public function addNewPeriod(Request $request){
@@ -68,16 +75,47 @@ class TimetableController extends Controller
 
     public function getTeacherTable($teacherId)
     {
-        $timetableEntry = Timetable::with('teacher:name','subject:name','class:class_number,grade')
+        $timetableEntry = Timetable::with('subject:id,name','class:id,class_number,grade')
             ->where('teacher_id',$teacherId)->get();
+        $timetableEntry->collect();
+
+        $timetableEntry = $timetableEntry->map(function ($item, $key) {
+            return [
+                'id' => $item['id'],
+                'day' => $item['day'] ,
+                'period' => $item['period'],
+                'data'=>[
+                    'sub' => $item['subject']['name'],
+                    'class' => $item['class']['grade']  . "/" . $item['class']['class_number']
+                ],
+            ];
+        });
+
         return response()->json($timetableEntry);
 
     }
 
     public function getClassTable($classId)
     {
-        $timetableEntry = Timetable::with('teacher:name','subject:name','class:class_number,grade')->where('class_id',$classId)->get();
-        return response()->json($timetableEntry);
+        $timetableEntry = Timetable::with('teacher.user:id,name','subject:id,name','class:id,class_number,grade')
+            ->where('class_id',$classId)
+            ->get();
+
+        $transformedData = [];
+
+        foreach ($timetableEntry as $entry)  {
+            $transformedData[] = [
+                'id' => $entry->id,
+                'day' => $entry->day,
+                'period' => $entry->period,
+                'data' => [
+                    'sub' => $entry->subject->name,
+                    'class' => $entry->class->grade . '\/' . $entry->class->class_number
+                ]
+            ];
+        }
+
+        return response()->json($transformedData);
     }
 
     public function saveUniqueEntry($data)
@@ -139,6 +177,16 @@ class TimetableController extends Controller
         $timetableEntry->delete();
 
         return response()->json(['success' => 'Period deleted successfully']);
+    }
+
+    public function removeSubjectFromClass($class_id,$subject_id)
+    {
+             TimeTable::where('class_id',$class_id)
+            ->where('subject_id',$subject_id)
+            ->delete();
+            return response()->json(['success' => 'Deleted Successfully.'], 200);
+
+
     }
 
 }

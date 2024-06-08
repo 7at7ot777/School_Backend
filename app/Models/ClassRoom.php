@@ -13,7 +13,7 @@ class ClassRoom extends Model
 
     public function students()
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(Student::class,'class_id','id');
     }
 
     public function subjects(){

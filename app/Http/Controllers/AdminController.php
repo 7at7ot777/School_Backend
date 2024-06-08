@@ -35,7 +35,7 @@ class AdminController extends Controller
                 $numOfClassRooms = ClassRoom::all()->count();
                 return response()->json(['numOfStudents' => $numOfStudents, 'numOfClassRooms' => $numOfClassRooms]);
             default:
-                $numOfEmployyes = Employee::where('department_id',$admin->department_id)->count();
+                $numOfEmployyes = Employee::where('department_id',$admin->department_id)->where('role','employee')->count();
                 return response()->json(['numOfEmployees' => $numOfEmployyes]);
 
 
@@ -92,11 +92,10 @@ class AdminController extends Controller
 
     public function index()
     {
-        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status')
+        $admins = Employee::with('department:id,name', 'user:id,email,name,phone,status,avatar_url')
             ->where('role', 'admin')
             ->get();
 
-//                        return $admins;
         $formattedAdmins = $this->formatAdmins($admins);
         return response()->json($formattedAdmins, 200);
     }
@@ -113,7 +112,7 @@ class AdminController extends Controller
             $resultArray[] = [
                 'id' => $item['user']['id'],
                 'emp_id' => $item['id'],
-                'avatarUrl' => '', // Add logic to get the avatar URL if available
+                'avatarUrl' => $item['user']['avatar_url'] ?? '', // Add logic to get the avatar URL if available
                 'name' => $item['user']['name'],
                 'email' => $item['user']['email'],
                 'status' => $item['user']['status'],
@@ -130,7 +129,6 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $newRequest = $this->addDumpData($request, 0);
-        //        return $request;
         $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
         if ($validator->fails()) {
             return $validator->errors();
@@ -144,14 +142,12 @@ class AdminController extends Controller
                 'user_type' => 'employee'
             ]);
             $user->save();
-
             $employee = Employee::create([
                 'user_id' => $user->id,
                 'department_id' => $request->department_id,
                 'basic_salary' => $newRequest->basic_salary,
                 'role' => 'admin',
                 'subject_id' => $request->subject_id,
-
             ]);
             $employee->save();
         }
@@ -160,8 +156,9 @@ class AdminController extends Controller
 
     public function show($id)
     {
-        $admin = Employee::with('department:id,name', 'user:id,email,name,phone,status')->where('id', $id)->first();
-//                return $admin;
+        $admin = Employee::with('department:id,name', 'user:id,email,name,phone,status,avatar_url')
+            ->where('id', $id)
+            ->first();
 
         if (!$admin) {
             return response()->json(['error' => 'Employee not found'], 404);
@@ -180,21 +177,18 @@ class AdminController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $user_id)
     {
-        $this->addDumpData($request, 1);
-        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
-        $employee = Employee::find($id);
+//        $validator = Validator::make($request->all(), self::$rules, self::$errorMessages);
+//        if ($validator->fails()) { return response()->json(['error' => $validator->errors()], 422); }
+        $employee = Employee::where('user_id',$user_id)->first();
         if (!$employee) {
             return response()->json(['error' => 'Employee not found'], 404);
         }
         $employee->department_id = $request->department_id;
         $employee->basic_salary = $request->basic_salary;
         $employee->role = 'admin';
-        $employee->subject_id = $request->subject_id;
+//        $employee->subject_id = $request->subject_id;
 
         $employee->save();
 
@@ -204,14 +198,14 @@ class AdminController extends Controller
         $user->phone = $request->phone;
         $user->address = $request->address;
         $user->status = $request->status;
-        //        $user->password = bcrypt($request->password);
         if (strcmp($user->email, $request->email) != 0) {
-            $user->email = $request['swappedEmail'];
+            $user->email = $request['email'];
         }
         $user->save();
-
         return response()->json(['success' => 'Employee updated successfully'], 200);
     }
+
+
     private function addDumpData($request, $updateFlag = 0)
     {
         /* This function is used to add dump data to the request to escape from validation */
@@ -264,26 +258,10 @@ class AdminController extends Controller
 
     }
 
-    //TODO: remoe thie
-    /*public function  dashboard($dept_id)
-    {
-        $employeesNumber = Employee::
-        where('department_id', $dept_id)
-            ->join('users', 'employees.user_id', '=', 'users.id')
-            ->where('users.status', 1)
-            ->count();
-
-        $subject = Subject::count();
-        if($dept_id==4 ){ // teaching department
-
-            return response()->json(['numOfTeachers' => $employeesNumber, 'numOfSubjects' => $subject]);
-        }else{
-            return response()->json(['numOfEmps' => $employeesNumber]);
-
-        }
 
 
 
-    }*/
+
+
     
 }

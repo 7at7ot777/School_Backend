@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassRoom;
 use App\Models\Employee;
 
+use App\Models\TimeTable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherController extends Controller
 {
@@ -127,5 +130,25 @@ class TeacherController extends Controller
 
     }
 
+    public function dashboard()
+    {
+
+        $employee = Employee::where('user_id', Auth::id())->first(); // Use firstOrFail to throw an exception if no employee found
+
+        $employeeWithSubjects = $employee->load('subject');
+
+        $numOfSubjects = $employeeWithSubjects->subject->count() ?? 0; // Use eager loaded subjects
+
+        $numOfPeriodsToday = TimeTable::where('teacher_id',$employee->id)->where('day',date('l'))->count() ?? 0;
+
+        return response()->json(['numOfSubjects'=>$numOfSubjects,'numOfPeriodsToday' => $numOfPeriodsToday]);
+
+    }
+
+    public function getClassesForTeacher($teacher_id)
+    {
+       $classesId = TimeTable::where('teacher_id',$teacher_id)->pluck('class_id')->toArray();
+        return $classess = ClassRoom::whereIn('id',$classesId)->get();
+    }
     
 }

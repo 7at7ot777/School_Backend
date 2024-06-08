@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\GradeFeesController;
 use App\Http\Controllers\LectureController;
 use App\Http\Controllers\StudentGradesController;
 use App\Http\Controllers\StudentNoteController;
+use App\Http\Controllers\GradeSubjectController;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AuthenticationController;
@@ -34,13 +37,14 @@ use App\Http\Controllers\EmployeesAttendanceController;
 
 
 Route::post('/login', [AuthenticationController::class, 'login'])->name('login');
+Route::post('/loginUsingFaceRecogintion', [AuthenticationController::class, 'loginUsingFaceRecogintion'])->name('loginUsingFaceRecogintion');
 Route::post('/register', [AuthenticationController::class, 'register']);
 Route::post('/logout', [AuthenticationController::class, 'logout'])->middleware('auth:sanctum');
 
 
-//Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
-//    Route::get('/test', [AuthenticationController::class, 'test']);
-//});
+
+
+
 
 //Department
 Route::middleware('auth:sanctum')->group(function () {
@@ -54,9 +58,10 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('resetPassword/{id}',[\App\Http\Controllers\UserController::class,'resetPassword']);
-    Route::get('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
+    Route::post('setPassword/{id}',[\App\Http\Controllers\UserController::class,'setPassword']);
     Route::post('uploadAvatar/{id}',[\App\Http\Controllers\UserController::class,'uploadAvatar']);
-    Route::post('user/update',[\App\Http\Controllers\UserController::class,'update']);
+    Route::post('user/update/{user_id}',[\App\Http\Controllers\UserController::class,'update']);
+    Route::get('user/show/{user_id}',[\App\Http\Controllers\UserController::class,'show']);
 
 });
 
@@ -69,7 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('adminDashboard',[AdminController::class,'adminDashboard']);
 });
 
-
+//TODO: Role API May be removed
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('role', RoleController::class);
 });
@@ -79,6 +84,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('subject', SubjectController::class);
     Route::post('importSubject',[SubjectController::class,'importSubject']);
     Route::get('DownloadSubjectTemplate',[SubjectController::class,'DownloadSubjectTemplate']);
+    Route::get('getSubjectStudents/{subject_id}',[SubjectController::class,'getSubjectStudents']);
+    Route::get('getClassSubjects/{class_id}',[SubjectController::class,'getClassSubjects']);
 });
 
 
@@ -88,6 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('class-rooms/{classRoom}/students', [ClassRoomController::class, 'students'])->name('class-rooms.students');
     Route::post('/importClassroom',[ClassroomController::class,'importClassroom']);
     Route::get('/DownloadClassroomTemplate',[ClassroomController::class,'DownloadClassroomTemplate']);
+    Route::get('/studentsInClass/{class_id}',[ClassroomController::class,'studentsInClass']);
 
 });
 
@@ -103,6 +111,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //Student
  Route::middleware('auth:sanctum')->group(function () {
+//     Route::put('update',[StudentController::class,'update']);
+
      Route::apiResource('student', StudentController::class);
      Route::delete('/student/{id}', [StudentController::class, 'toggleIsActive']);
      Route::post('importStudent',[StudentController::class,'importStudent']);
@@ -110,19 +120,32 @@ Route::middleware('auth:sanctum')->group(function () {
      Route::post('generatePaymentCodeForStudent',[StudentController::class,'generatePaymentCodeForStudent']);
      Route::post('createStudent',[StudentController::class,'createStudent']);
      Route::get('assignCodeToAllStudents',[StudentController::class,'assignCodeToAllStudents']);
+     Route::post('generatePaymentCodePerGrade',[StudentController::class,'generatePaymentCodePerGrade']);
+     Route::get('dashboard',[StudentController::class,'dashboard']);
 
  });
 
-
+//Lecture
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/lectures', [LectureController::class, 'index']); // Get all lectures
+    Route::post('/lectures', [LectureController::class, 'store']); // Create a new lecture
+    Route::get('/lectures/{lecture}', [LectureController::class, 'show']); // Get a specific lecture
+    Route::put('/lectures/{lecture}', [LectureController::class, 'update']); // Update a specific lecture
+    Route::delete('/lectures/{lecture}', [LectureController::class, 'destroy']); // Delete a specific lecture
+    Route::get('/getSubjectLectures/{subject_id}',[LectureController::class,'getSubjectLectures']);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teachers', TeacherController::class);
     Route::get('teachers/{id}', [TeacherController::class, 'show']);
     Route::get('getTeachersSubjects/{teacher_id}', [TeacherController::class, 'getTeachersSubjects']);
+    Route::get('teacher/dashboard', [TeacherController::class, 'dashboard']);
+    Route::get('getClassesForTeacher/{teacher_id}', [TeacherController::class, 'getClassesForTeacher']);
 });
 
 //parent
 Route::post('/parent', [ParentController::class, 'create']);
+Route::post('/assignParentToStudent', [ParentController::class, 'assignParentToStudent']);
 Route::get('/parent', [ParentController::class, 'index']);
 Route::put('/parent/{id}', [ParentController::class, 'update']);
 Route::delete('/parent/{id}', [ParentController::class, 'destroy']);
@@ -139,21 +162,24 @@ Route::post('/employee/attendance', [EmployeesAttendanceController::class, 'reco
 Route::get('/employee/absences/{employeeId}', [EmployeesAttendanceController::class, 'calculateAbsenceDays']);
 
 
-//Lecture
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('lectures', LectureController::class);
-    Route::get('/getSubjectLectures/{subject_id}',[LectureController::class,'getSubjectLectures']);
-});
+
 //Timetables
 Route::middleware('auth:sanctum')->prefix('/timetable')->group(function () {
     Route::get('/getTeacherTable/{teacher_id}', [\App\Http\Controllers\TimetableController::class, 'getTeacherTable']);
     Route::get('/getDataForMakeTable', [\App\Http\Controllers\TimetableController::class, 'getDataForMakeTable']);
     Route::post('/addNewPeriod', [\App\Http\Controllers\TimetableController::class, 'addNewPeriod']);
-    Route::get('/getClassTable', [\App\Http\Controllers\TimetableController::class, 'getClassTable']);
+    Route::get('/getClassTable/{class_id}', [\App\Http\Controllers\TimetableController::class, 'getClassTable']);
 
     // Add routes for edit and delete
     Route::put('/editPeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'editPeriod']);
     Route::delete('/deletePeriod/{id}', [\App\Http\Controllers\TimetableController::class, 'deletePeriod']);
+    Route::delete('/removeSubjectFromClass/{class_id}/{subject_id}', [\App\Http\Controllers\TimetableController::class, 'removeSubjectFromClass']);
+});
+
+
+Route::middleware('auth:sanctum')->prefix('/video')->group(function () {
+    Route::post('uploadLecture', [\App\Http\Controllers\LectureController::class, 'uploadLecture']);
+
 });
 
 
@@ -164,12 +190,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/showAllNotesFor1StudentAnd1Subject/{student_id}/{subject_id}',[StudentNoteController::class,'showAllNotesFor1StudentAnd1Subject']);
 });
 
-//Student Notes
+//Student Grade
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/student-grades/index/{subjectId}',[StudentGradesController::class,'index']);
     Route::get('/student-grades/show/{subjectId}/{studentId}',[StudentGradesController::class,'show']);
     Route::get('/student-grades/getStudentGrade/{studentId}',[StudentGradesController::class,'getStudentGrade']);
+    Route::get('/studentsWithNoGrades/{subject_id}',[StudentGradesController::class,'studentsWithNoGrades']);
     Route::apiResource('student-grades', StudentGradesController::class);
+
+});
+
+//Student Subjects Attachment
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('grade/attach/{grade_id}', [GradeSubjectController::class, 'attachSubject']);
+    Route::post('grade/detach/{grade_id}', [GradeSubjectController::class, 'detachSubject']);
+
 
 });
 
@@ -181,11 +217,7 @@ Route::prefix('superAdmin')->group(function () {
 
 Route::get('/test', function () {
 
-    $Controller  = new \App\Http\Controllers\TimetableController();
-    $user =  $Controller->getDataForMakeTable();
-
-    return response()->json($user);
-
+    return date('l');
 });
 
 
@@ -194,7 +226,20 @@ Route::get('/paymentInstatiantion',[\App\Http\Controllers\PaymentController::cla
 Route::get('/orderRegestrationAPI',[\App\Http\Controllers\PaymentController::class,'orderRegestrationAPI']);
 
 //Face Detection
-Route::get('/listAllFaces',[\App\Http\Controllers\FaceRecognitionController::class,'listAllFaces']);
+Route::get('/trainUsersWithAvatars',[\App\Http\Controllers\FaceRecognitionController::class,'trainUsersWithAvatars']);
 Route::post('/addFace',[\App\Http\Controllers\FaceRecognitionController::class,'addFace']);
+Route::post('/detect',[\App\Http\Controllers\FaceRecognitionController::class,'detect']);
+
+//VARK
+Route::middleware('auth:sanctum')->group(function () {
+Route::apiResource('vark',\App\Http\Controllers\VARKController::class);
+Route::get('vark/getCountedVarkResults/{teacher_id}',[\App\Http\Controllers\VARKController::class,'getCountedVarkResults']);
+
+});
 
 
+//Payment Grade
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('grade-fees', GradeFeesController::class);
+
+});

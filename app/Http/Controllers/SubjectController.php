@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Imports\ImportSubject;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Http\Controllers\Controller;
+use App\Models\TimeTable;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -31,8 +33,8 @@ class SubjectController extends Controller
             $resultArray[] = [
                 'id' => $subject->id,
                 'name' => $subject->name,
-              //  'numOfAdmins' => $subject->employees->where('role', 'admin')->where('user.status',1)->count() ,
-                'numOfTeachers' => $subject->teachers->where('user.status',1)->count(),
+                //  'numOfAdmins' => $subject->employees->where('role', 'admin')->where('user.status',1)->count() ,
+                'numOfTeachers' => $subject->teachers->where('user.status', 1)->count(),
                 'mainAdmin' => [
                     'id' => $mainAdmin ? $mainAdmin->user->id : '',
                     'name' => $mainAdmin ? $mainAdmin->user->name : '',
@@ -59,10 +61,8 @@ class SubjectController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-
-        $subject = Subject::create($request->all());
-
-        return response()->json(['message' => 'stored successfully'], 201);
+         Subject::create($request->all());
+         return response()->json(['message' => 'stored successfully'], 201);
     }
 
     /**
@@ -100,8 +100,7 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
-        if(!$subject)
-        {
+        if (!$subject) {
             return response()->json(['message' => 'Subject Not Found'], 404);
         }
         $subject->delete();
@@ -119,14 +118,55 @@ class SubjectController extends Controller
         ]);
     }
 
-    public function importSubject(Request $request){
+    public function importSubject(Request $request)
+    {
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $importSubject = new ImportSubject();
             Excel::import($importSubject, $file);
-            return response()->json(['success' =>  $importSubject->counter. ' Subjects imported successfully']);
+            return response()->json(['success' => $importSubject->counter . ' Subjects imported successfully']);
         }
-        return response()->json(['error'=>'No File Provided'],401);
+        return response()->json(['error' => 'No File Provided'], 401);
     }
 
+    public function getSubjectStudents($subjectId)
+    {
+        $students = Student::with('user')->whereHas('subjects', function ($query) use ($subjectId) {
+            $query->where('subjects.id', $subjectId);
+        })->get();
+
+        $mappedData = collect($students)->map(function ($item) {
+            return [
+                'student_id' => $item['id'],
+                'id' => $item['user']['id'],
+                'name' => $item['user']['name'],
+                'email' => $item['user']['email'],
+            ];
+        });
+        return $mappedData;
+    }
+
+    public function getClassSubjects($class_id)
+    {
+        $timetables = TimeTable::selectRaw('MAX(teacher_id) as teacher_id, subject_id')
+            ->with(['subject:id,name', 'teacher.user:id,name'])
+            ->where('class_id', $class_id)
+            ->groupBy('subject_id')
+            ->get();
+        $formattedTimetables = $timetables->map(function ($timetable) {
+            return [
+                'id' => $timetable->subject->id,
+                'name' => $timetable->subject->name,
+                'user_id' => $timetable->teacher->user->id,
+                'teacher' => [
+                    'id' => $timetable->teacher->id,
+                    'name' => $timetable->teacher->user->name,
+                ],
+//                'day' => $timetable->day,
+//                'period' => $timetable->period,
+            ];
+        });
+
+        return $formattedTimetables;
+    }
 }

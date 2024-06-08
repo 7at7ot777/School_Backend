@@ -55,23 +55,16 @@ class PaymentController extends Controller
 
     public function orderRegestrationAPI($authToken,$user,$amount)
     {
-
         $url = 'https://accept.paymob.com/api/ecommerce/orders';
-
         // Your merchant credentials and other required data
-        $items = [];
-
         $data = [
             "auth_token" => $authToken,
             "delivery_needed" => "false",
             "amount_cents" => $amount *100,
             "currency" => env('PAYMOB_CURRENCY'),
-//            "items" => $items,
-
         ];
         $response = Http::post($url, $data);
         $body = $response->getBody()->getContents();
-
 
         // Do something with the response (e.g., decode JSON)
         $data = json_decode($body, true);
@@ -85,9 +78,7 @@ class PaymentController extends Controller
 
 
       $paymentToken = $this->acceptancePaymentKey($authToken,$billingData);
-
       $finalBillInfo =   $this->kioskOrder($paymentToken);
-//      dd($finalBillInfo);
       $this->saveTransactionData($user->id,$finalBillInfo);
     }
 

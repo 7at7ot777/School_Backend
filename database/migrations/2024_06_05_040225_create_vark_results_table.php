@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lectures', function (Blueprint $table) {
+        Schema::create('vark_results', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('subject_id');
-            $table->unsignedBigInteger('employee_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('title');
-            $table->string('url')->nullable();
-            $table->text('description')->nullable();
-            $table->string('video_name')->nullable();
+            $table->float('v');
+            $table->float('a');
+            $table->float('r');
+            $table->float('k');
+            $table->enum('result',['v','a','r','k'])->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lectures');
+        Schema::dropIfExists('vark_results');
     }
 };

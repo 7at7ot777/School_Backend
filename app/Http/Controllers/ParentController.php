@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\Parents;
 use App\Models\User;
@@ -128,5 +129,22 @@ class ParentController extends Controller
         $status = $user->status == 1 ? 'active' : 'inactive';
         return response()->json(['message' => "Parent status toggled successfully. Now the parent is $status"], 200);
     
+    }
+
+
+    public function assignParentToStudent(Request $request)
+    {
+        $student = Student::find($request->student_id);
+
+        $fatherId = User::select('id')->where('email', 'LIKE', $request['father_email'])->first() ?? null;
+        $motherId = User::select('id')->where('email', 'LIKE', $request['mother_email'])->first() ?? null;
+
+        $student->father_id = $fatherId->id;
+        $student->mother_id = $motherId->id;
+
+        $student->save();
+
+        return response()->json(['success'=>'Parents are assigned successfully']);
+
     }
 }

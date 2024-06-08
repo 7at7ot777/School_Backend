@@ -71,11 +71,12 @@ class UserController extends Controller
         return response()->json(['success' => true, 'image' => $user->avatar_url]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request,$id)
     {
         // Validate the incoming request data as needed
 
-        $user = User::find(Auth::id());
+        $userId = $id;
+        $user = User::find($userId);
 
         if (!$user) {
             return response()->json(['error' => 'User not found']);
@@ -89,6 +90,27 @@ class UserController extends Controller
             // Failed to update
             return response()->json(['error' => 'Failed to update user details.']);
         }
+    }
+
+    public function show($user_id)
+    {
+        $user = User::with('employee.department')->find($user_id);
+        return response()->json([
+            'id' => $user->id,
+            'emp_id' => $user->employee->id ?? '',
+            'name' => $user->name,
+            'email' => $user->email,
+            'address' => $user->address,
+            'phone' => $user->phone,
+            'status' => $user->status,
+            'avatarUrl' => $user->avatar_url,
+            'role' => $user->employee->role ?? '',
+            'userType' => $user->user_type ,
+            'department' => [
+                'id' => $user->employee->department_id ?? '',
+                'name' => $user->employee->department->name ?? '',
+                ]
+        ]);
     }
 
 

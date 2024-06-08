@@ -13,7 +13,8 @@ class LectureController extends Controller
     //Get All Lectures for All Subjects for a specific Teacher
     public function index()
     {
-        $teacher = Employee::where('user_id', Auth::id())->first();
+         $teacher = Employee::where('user_id', Auth::id())->first();
+
         $lectures = Lecture::with(['employee.user', 'subject'])->where('employee_id', $teacher->id)->get();
         $formatedLecture = $this->formatData($lectures);
         return response()->json($formatedLecture);
@@ -40,12 +41,8 @@ class LectureController extends Controller
         $lecture->description = $request->description;
         $lecture->subject_id = $request->subject_id;
         $lecture->save();
-
-
         return response()->json(['success' => 'Lecture is added successfully'], 201);
     }
-
-    // Display the specified resource.
     public function show($id)
     {
         $lecture = Lecture::with(['employee.user', 'subject'])->findOrFail($id);
@@ -66,6 +63,8 @@ class LectureController extends Controller
                 'description' => $lecture->description,
                 'employee' => [
                     'id' => $lecture->user_id,
+                    'name' => $lecture->employee->user->name,
+                    'email' => $lecture->employee->user->email,
                     'employee_id' => $lecture->employee->id,
                     'role' => $lecture->employee->role,
                 ],
@@ -91,16 +90,10 @@ class LectureController extends Controller
         if ($validator->fails()) {
             return $validator->errors();
         }
-
-        // Find the lecture by its ID
         $lecture = Lecture::find($id);
-
-        // Check if the lecture exists
         if (!$lecture) {
             return response()->json(['error' => 'Lecture not found'], 404);
         }
-
-        // Update the lecture attributes
         $lecture->employee_id = $request->employee_id;
         $lecture->user_id = Auth::id();
         $lecture->title = $request->title;
@@ -117,22 +110,53 @@ class LectureController extends Controller
     public function destroy($id)
     {
         $lecture = Lecture::find($id);
-
-        // Check if the lecture exists
         if (!$lecture) {
             return response()->json(['error' => 'Lecture not found'], 404);
         }
-
-        // Delete the lecture
         $lecture->delete();
-
-        // Return a success response with a status code of 200 OK
         return response()->json(['success' => 'Lecture deleted successfully'], 200);
     }
 
     public function getSubjectLectures($subjectId)
     {
-        return $lectures = Lecture::select('title','url','description')->where('subject_id',$subjectId)->get();
+        return Lecture::select('id','title','url','description')->where('subject_id',$subjectId)->get();
 
     }
+
+    public function uploadLecture(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'employee_id' => 'required|exists:employees,id',
+            'subject_id' => 'required',
+            'title' => 'required|string|max:255',
+            'url' => 'nullable|url',
+            'description' => 'required|string',
+            'video' => 'required|mimes:mp4,mov,avi|max:20000', // Example validation rules
+
+        ]);
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+        if ($request->hasFile('video')) {
+            $video = $request->file('video');
+            $fileName = time() . '_' . str_replace(' ', '',$video->getClientOriginalName());
+            $video->storeAs('videos', $fileName, 'public');
+
+             $filePath = env('APP_URL') .'/storage/videos/' . $fileName;
+            $lecture = new Lecture();
+            $lecture->employee_id = $request->employee_id;
+            $lecture->user_id = Auth::id();
+            $lecture->title = $request->title;
+            $lecture->url = $filePath;
+            $lecture->description = $request->description;
+            $lecture->subject_id = $request->subject_id;
+            $lecture->video_name = $filePath; //TODO: dead code // remove it later
+            $lecture->save();
+
+            return response()->json(['message' => 'Video uploaded successfully' , $filePath], 200);
+        } else {
+            return response()->json(['error' => 'No video file selected'], 400);
+        }
+    }
+
 }
