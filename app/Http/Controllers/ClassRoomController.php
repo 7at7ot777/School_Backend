@@ -21,10 +21,15 @@ class ClassRoomController extends Controller
         return response()->json($classRooms, 200);
     }
 
-    public function show(ClassRoom $classRoom)
+    public function show($id)
     {
-        return response()->json($classRoom, 200);
-    }
+        $classRoom = ClassRoom::find($id);
+        if(!$classRoom)
+        {
+            return response()->json(['message' => 'Class room not found'], 404);
+
+        }
+        return response()->json($classRoom, 200);    }
 
     public function store(Request $request)
     {

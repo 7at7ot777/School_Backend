@@ -126,14 +126,14 @@ class StudentGradesController extends Controller
             ->where('student_id',$studentId)->get();
         $formattedData = $model->map(function ($grade) {
             return [
-                'subject_name' => $grade['subject']['name'],  // Include subject name
-                'student_id' => $grade['student_id'],
-                'subject_id' => $grade['subject_id'],
-                'midterm' => $grade['midterm'],
-                'final' => $grade['final'],
-                'attendance' => $grade['attendance'],
-                'behavior' => $grade['behavior'],
-                'total' => $grade['total'] ,  // Calculate total here
+                'subject_name' => $grade['subject']['name'] ?? null,  // Include subject name
+                'student_id' => $grade['student_id'] ?? null,
+                'subject_id' => $grade['subject_id'] ?? null,
+                'midterm' => $grade['midterm'] ?? null,
+                'final' => $grade['final'] ?? null,
+                'attendance' => $grade['attendance'] ?? null,
+                'behavior' => $grade['behavior'] ?? null,
+                'total' => $grade['total'] ?? null ,  // Calculate total here
             ];
         });
         return $formattedData;
