@@ -209,6 +209,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+use App\Http\Controllers\TeacherVideoController;
+
+// Route to upload a video
+Route::post('/videos/upload', [TeacherVideoController::class, 'upload'])->name('videos.upload');
+// Route to return a video
+Route::get('/videos/{id}', [TeacherVideoController::class, 'returnVideo'])->name('videos.return');
+
 
 Route::prefix('superAdmin')->group(function () {
     Route::get('/departmentDashboard', [SuperAdminDashboardController::class, 'departmentDashboard']); // Not Used
